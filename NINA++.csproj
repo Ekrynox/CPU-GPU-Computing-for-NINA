@@ -10,7 +10,38 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NINA.Plugin" Version="3.0.0.2017-beta" />
+    <Compile Remove="NINA++.Native\**" />
+    <Compile Remove="NINA++.Wrapper\**" />
+    <Compile Remove="x64\**" />
+    <EmbeddedResource Remove="NINA++.Native\**" />
+    <EmbeddedResource Remove="NINA++.Wrapper\**" />
+    <EmbeddedResource Remove="x64\**" />
+    <None Remove="NINA++.Native\**" />
+    <None Remove="NINA++.Wrapper\**" />
+    <None Remove="x64\**" />
+    <Page Remove="NINA++.Native\**" />
+    <Page Remove="NINA++.Wrapper\**" />
+    <Page Remove="x64\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.4.0" />
+    <PackageReference Include="NINA.Plugin" Version="3.2.0.2001-beta" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="NINA++.Wrapper\NINA++.Wrapper.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.Settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.Settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <PropertyGroup />
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
