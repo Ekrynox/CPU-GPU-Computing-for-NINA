@@ -42,12 +42,18 @@
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.hpp">
       <Filter>Header Files\Image\ImageAnalysis</Filter>
     </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.hpp">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
     <ClCompile Include="Image\ImageAnalysis\ColorRemappingGeneral.cpp">
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Image\ImageAnalysis\FastGaussianBlur.cpp">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
   </ItemGroup>
