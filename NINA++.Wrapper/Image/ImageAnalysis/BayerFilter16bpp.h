@@ -11,10 +11,10 @@ using namespace Accord::Imaging::Filters;
 
 namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
-	public ref class BayerFilter16bppCPP : public BayerFilter16bpp {
+	public ref class Patch_BayerFilter16bpp {
+	public:
 
-	protected:
-		virtual void ProcessFilter(UnmanagedImage^ sourceData, UnmanagedImage^ destinationData) override {
+		static void ProcessFilter(UnmanagedImage^ sourceData, UnmanagedImage^ destinationData, ::NINA::Image::ImageData::LRGBArrays^ LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing) {
 			int32_t width = sourceData->Width;
 			int32_t height = sourceData->Height;
 
@@ -24,18 +24,18 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 			pin_ptr<uint16_t> Barr = nullptr;
 			pin_ptr<uint16_t> Larr = nullptr;
 			if (SaveColorChannels && SaveLumChannel) {
-				this->LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
 				Rarr = &LRGBArrays->Red[0];
 				Garr = &LRGBArrays->Green[0];
 				Barr = &LRGBArrays->Blue[0];
 				Larr = &LRGBArrays->Lum[0];
 			}
 			else if (!SaveColorChannels && SaveLumChannel) {
-				this->LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0));
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0));
 				Larr = &LRGBArrays->Lum[0];
 			}
 			else if (SaveColorChannels && !SaveLumChannel) {
-				this->LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
 				Rarr = &LRGBArrays->Red[0];
 				Garr = &LRGBArrays->Green[0];
 				Barr = &LRGBArrays->Blue[0];
