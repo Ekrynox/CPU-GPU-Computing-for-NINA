@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // [MANDATORY] The following GUID is used as a unique identifier of the plugin. Generate a fresh one for your plugin!
-[assembly: Guid("db5087e9-8273-47fe-84e2-3c303c176c73")]
+[assembly: Guid("b2ccb2de-7f7d-40be-915f-96ce68df38fa")]
 
 // [MANDATORY] The assembly versioning
 //Should be incremented for each new release build of a plugin
-[assembly: AssemblyVersion("1.0.0.1")]
-[assembly: AssemblyFileVersion("1.0.0.1")]
+[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyFileVersion("0.1.0.0")]
 
 // [MANDATORY] The name of your plugin
 [assembly: AssemblyTitle("NINA++")]
@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © 2025 Lucas Alias")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
-[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.0.0.2017")]
+[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.2.0.2001")]
 
 // The license your plugin code is using
 [assembly: AssemblyMetadata("License", "MPL-2.0")]

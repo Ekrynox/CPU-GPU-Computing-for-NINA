@@ -1,4 +1,5 @@
-﻿using LucasAlias.NINA.NinaPP.Properties;
+﻿using HarmonyLib;
+using LucasAlias.NINA.NinaPP.Properties;
 using NINA.Core.Model;
 using NINA.Core.Utility;
 using NINA.Image.ImageData;
@@ -28,6 +29,9 @@ namespace LucasAlias.NINA.NinaPP {
         public Nina(IProfileService profileService, IOptionsVM options) {
             this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
             this.profileService = profileService;
+
+            var harmony = new Harmony("com.example.patch");
+            harmony.PatchAll();
         }
 
         public override Task Teardown() {

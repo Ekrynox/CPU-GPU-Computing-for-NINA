@@ -1,3 +1,0 @@
-namespace NinaPP::Image::ImageAnalysis{
-
-}

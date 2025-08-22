@@ -24,7 +24,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Image\ImageAnalysis\ImageUtility.h">
+    <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,12 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Image\ImageAnalysis\ImageUtility.hpp" />
+    <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp" />
     <ClInclude Include="ninapp.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Image\ImageAnalysis\ImageUtility.cpp" />
-    <ClCompile Include="ninapp.cpp" />
+    <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

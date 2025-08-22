@@ -18,15 +18,12 @@
     <ClInclude Include="ninapp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Image\ImageAnalysis\ImageUtility.hpp">
+    <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ninapp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Image\ImageAnalysis\ImageUtility.cpp">
+    <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
