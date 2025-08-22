@@ -155,9 +155,6 @@
     <ResourceCompile Include="app.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="app.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\NINA++.Native\NINA++.Native.vcxproj">
       <Project>{6211addf-3f7e-457b-9e41-baccd717a23f}</Project>
     </ProjectReference>

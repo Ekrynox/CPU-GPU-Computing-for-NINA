@@ -21,9 +21,13 @@
   <ItemGroup>
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp" />
     <ClInclude Include="ninapp.hpp" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NINA++.Native.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
