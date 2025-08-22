@@ -1,3 +1,5 @@
+#pragma once
+
 using namespace NINA::Image::ImageAnalysis;
 using namespace NINA::Image::ImageData;
 using namespace Accord::Imaging;
@@ -58,9 +60,9 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 				for (int32_t y = 0; y < height; y++) {
 					// for each pixel
 					for (int32_t x = 0; x < width; x++, src++, dst += 3) {
-						dst[RGB::R] = 0;
-						dst[RGB::G] = 0;
-						dst[RGB::B] = 0;
+						dst[::RGB::R] = 0;
+						dst[::RGB::G] = 0;
+						dst[::RGB::B] = 0;
 						dst[BayerPattern[y & 1, x & 1]] = *src;
 					}
 					src += srcOffset;

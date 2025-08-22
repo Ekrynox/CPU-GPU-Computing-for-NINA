@@ -4,15 +4,6 @@
 
 
 
-namespace RGB {
-    enum RGB {
-        R = 2,
-        G = 1,
-        B = 0
-    };
-}
-
-
 
 void LucasAlias::NINA::NinaPP::Image::ImageAnalysis::debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr) {
     int32_t widthM1 = width - 1;
