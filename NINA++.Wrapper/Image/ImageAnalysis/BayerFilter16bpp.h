@@ -16,7 +16,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 	public ref class Patch_BayerFilter16bpp {
 	public:
 
-		static void ProcessFilter(UnmanagedImage^ sourceData, UnmanagedImage^ destinationData, ::NINA::Image::ImageData::LRGBArrays^ LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing) {
+		static void ProcessFilter(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing) {
 			int32_t width = sourceData->Width;
 			int32_t height = sourceData->Height;
 

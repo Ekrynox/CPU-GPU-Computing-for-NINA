@@ -1,6 +1,8 @@
 ﻿using Accord.Imaging;
 using HarmonyLib;
+using NINA.CustomControlLibrary;
 using NINA.Image.ImageAnalysis;
+using NINA.Image.ImageData;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +15,9 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
     [HarmonyPatch(typeof(BayerFilter16bpp), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(UnmanagedImage) })]
     class Patch_BayerFilter16bpp_ProcessFilter {
         static bool Prefix (BayerFilter16bpp __instance, UnmanagedImage sourceData, UnmanagedImage destinationData) {
-            Patch_BayerFilter16bpp.ProcessFilter(sourceData, destinationData, __instance.LRGBArrays, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing);
+            LRGBArrays arr = __instance.LRGBArrays;
+            Patch_BayerFilter16bpp.ProcessFilter(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing);
+            __instance.LRGBArrays = arr;
             return false;
         }
     }
