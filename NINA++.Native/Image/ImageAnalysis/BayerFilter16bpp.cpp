@@ -18,7 +18,20 @@
 #include <cmath>
 
 
-
+void LucasAlias::NINA::NinaPP::Image::ImageAnalysis::copyImage(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols) {
+    // for each line
+    for (int32_t y = 0; y < height; y++) {
+        // for each pixel
+        for (int32_t x = 0; x < width; x++, src++, dst += 3) {
+            dst[RGB::R] = 0;
+            dst[RGB::G] = 0;
+            dst[RGB::B] = 0;
+            dst[BayerPattern[(y & 1) * BPCols + (x & 1)]] = *src;
+        }
+        src += srcOffset;
+        dst += dstOffset;
+    }
+}
 
 void LucasAlias::NINA::NinaPP::Image::ImageAnalysis::debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr) {
     int32_t widthM1 = width - 1;
