@@ -45,6 +45,12 @@
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.hpp">
       <Filter>Header Files\Image\ImageAnalysis</Filter>
     </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.hpp">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\struct.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
@@ -54,6 +60,9 @@
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
     <ClCompile Include="Image\ImageAnalysis\FastGaussianBlur.cpp">
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Image\ImageAnalysis\StarDetection.cpp">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
   </ItemGroup>

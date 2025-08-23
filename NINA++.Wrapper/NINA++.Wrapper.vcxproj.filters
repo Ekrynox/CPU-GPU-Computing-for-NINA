@@ -39,6 +39,9 @@
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h">
       <Filter>Header Files\Image\ImageAnalysis</Filter>
     </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NINA++.Wrapper.cpp">

@@ -139,6 +139,7 @@
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h" />
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h" />
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.h" />
     <ClInclude Include="NINA++.Wrapper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
