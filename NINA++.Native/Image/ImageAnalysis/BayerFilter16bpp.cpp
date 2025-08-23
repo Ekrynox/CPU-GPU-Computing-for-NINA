@@ -1,16 +1,22 @@
+/*
+    Copyright © 2016 - 2024 Stefan Berg <isbeorn86+NINA@googlemail.com> and the N.I.N.A. contributors
+    Copyright © 2025 - Lucas Alias <https://github.com/Ekrynox> (adapted to C++)
+
+    This file is part of N.I.N.A. - Nighttime Imaging 'N' Astronomy.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+    Notes:
+    - This file is a modified/adapted version of the original N.I.N.A. C# code.
+    - Modifications include translation to C++.
+*/
+
 #include "BayerFilter16bpp.hpp"
 
 #include <cmath>
 
-
-
-namespace RGB {
-    enum RGB {
-        R = 2,
-        G = 1,
-        B = 0
-    };
-}
 
 
 
@@ -18,8 +24,8 @@ void LucasAlias::NINA::NinaPP::Image::ImageAnalysis::debayerPattern(const int32_
     int32_t widthM1 = width - 1;
     int32_t heightM1 = height - 1;
 
-    int32_t* rgbValues = new int32_t[3];
-    int32_t* rgbCounters = new int32_t[3];
+    uint32_t rgbValues[3];
+    uint32_t rgbCounters[3];
 
 
     int32_t counter = 0;
@@ -89,6 +95,7 @@ void LucasAlias::NINA::NinaPP::Image::ImageAnalysis::debayerPattern(const int32_
                     rgbCounters[bayerIndex]++;
                 }
             }
+
             dst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
             dst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
             dst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
@@ -98,7 +105,7 @@ void LucasAlias::NINA::NinaPP::Image::ImageAnalysis::debayerPattern(const int32_
                 Barr[counter] = dst[RGB::R];
             }
             if (Larr != nullptr) {
-                Larr[counter] = (uint16_t)std::floor((dst[RGB::R] + dst[RGB::G] + dst[RGB::B]) / 3.0);
+                Larr[counter] = (uint16_t)std::floor(((uint32_t)dst[RGB::R] + (uint32_t)dst[RGB::G] + (uint32_t)dst[RGB::B]) / 3.0);
             }
             counter++;
         }

@@ -1,3 +1,20 @@
+/*
+	Copyright © 2016 - 2024 Stefan Berg <isbeorn86+NINA@googlemail.com> and the N.I.N.A. contributors
+	Copyright © 2025 - Lucas Alias <https://github.com/Ekrynox> (adapted to C++)
+
+	This file is part of N.I.N.A. - Nighttime Imaging 'N' Astronomy.
+
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this
+	file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+	Notes:
+	- This file is a modified/adapted version of the original N.I.N.A. C# code.
+	- Modifications include translation to C++.
+*/
+
+#pragma once
+
 using namespace NINA::Image::ImageAnalysis;
 using namespace NINA::Image::ImageData;
 using namespace Accord::Imaging;
@@ -11,10 +28,10 @@ using namespace Accord::Imaging::Filters;
 
 namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
-	public ref class BayerFilter16bppCPP : public BayerFilter16bpp {
+	public ref class Patch_BayerFilter16bpp {
+	public:
 
-	protected:
-		virtual void ProcessFilter(UnmanagedImage^ sourceData, UnmanagedImage^ destinationData) override {
+		static void ProcessFilter(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing) {
 			int32_t width = sourceData->Width;
 			int32_t height = sourceData->Height;
 
@@ -24,18 +41,18 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 			pin_ptr<uint16_t> Barr = nullptr;
 			pin_ptr<uint16_t> Larr = nullptr;
 			if (SaveColorChannels && SaveLumChannel) {
-				this->LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
 				Rarr = &LRGBArrays->Red[0];
 				Garr = &LRGBArrays->Green[0];
 				Barr = &LRGBArrays->Blue[0];
 				Larr = &LRGBArrays->Lum[0];
 			}
 			else if (!SaveColorChannels && SaveLumChannel) {
-				this->LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0));
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0));
 				Larr = &LRGBArrays->Lum[0];
 			}
 			else if (SaveColorChannels && !SaveLumChannel) {
-				this->LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
 				Rarr = &LRGBArrays->Red[0];
 				Garr = &LRGBArrays->Green[0];
 				Barr = &LRGBArrays->Blue[0];
@@ -58,9 +75,9 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 				for (int32_t y = 0; y < height; y++) {
 					// for each pixel
 					for (int32_t x = 0; x < width; x++, src++, dst += 3) {
-						dst[RGB::R] = 0;
-						dst[RGB::G] = 0;
-						dst[RGB::B] = 0;
+						dst[::RGB::R] = 0;
+						dst[::RGB::G] = 0;
+						dst[::RGB::B] = 0;
 						dst[BayerPattern[y & 1, x & 1]] = *src;
 					}
 					src += srcOffset;

@@ -1,9 +1,9 @@
 #pragma once
 #include "../../ninapp.hpp"
 
-
-
 #include <stdint.h>
+
+#include "../enums.hpp"
 
 
 

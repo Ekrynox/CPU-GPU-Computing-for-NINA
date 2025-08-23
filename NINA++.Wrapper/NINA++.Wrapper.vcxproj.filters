@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Image">
+      <UniqueIdentifier>{666effd7-fe97-49a0-8e81-2efdda2cd187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Image\ImageAnalysis">
+      <UniqueIdentifier>{a6a6f833-3ab6-495b-b3d3-5bf705ba16f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NINA++.Wrapper.h">
@@ -25,7 +31,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

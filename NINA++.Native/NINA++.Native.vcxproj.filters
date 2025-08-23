@@ -13,21 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Image">
+      <UniqueIdentifier>{b1a708d6-3d67-402b-9b5f-9f212fce29a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Image\ImageAnalysis">
+      <UniqueIdentifier>{1948f65a-72ea-41ca-bab2-fc18a8d59871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Image">
+      <UniqueIdentifier>{ff8bb1d9-bbf7-465c-9115-c58b7443457f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Image\ImageAnalysis">
+      <UniqueIdentifier>{edd03c3e-a8bb-4a33-a64f-b6b21b5eaa28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ninapp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\enums.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.hpp">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.hpp">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Image\ImageAnalysis\ColorRemappingGeneral.cpp">
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Image\ImageAnalysis\FastGaussianBlur.cpp">
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
