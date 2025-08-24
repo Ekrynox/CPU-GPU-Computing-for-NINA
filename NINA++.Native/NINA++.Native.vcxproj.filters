@@ -31,17 +31,11 @@
     <Filter Include="Source Files\Accord\Imaging">
       <UniqueIdentifier>{a10bca4e-a016-4399-a759-2876d024801a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Imaging">
-      <UniqueIdentifier>{c56e7b9f-8cd3-49e2-bbf7-af460880c6f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Accord">
       <UniqueIdentifier>{f056d1a8-507b-44ce-99f9-c353cbbbc107}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Accord\Imaging">
       <UniqueIdentifier>{a7cfd9f1-5070-4f26-a9fd-fe1ad1a4edca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Imaging">
-      <UniqueIdentifier>{6bcaa1a1-79c0-4c51-b041-85e0796e9909}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
