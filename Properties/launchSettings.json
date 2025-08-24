@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NINA++": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

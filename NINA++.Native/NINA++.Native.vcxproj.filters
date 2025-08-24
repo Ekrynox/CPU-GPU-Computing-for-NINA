@@ -25,6 +25,18 @@
     <Filter Include="Source Files\Image\ImageAnalysis">
       <UniqueIdentifier>{edd03c3e-a8bb-4a33-a64f-b6b21b5eaa28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Accord">
+      <UniqueIdentifier>{2c9b5c47-f973-4400-9fc1-4a41805ea277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Accord\Imaging">
+      <UniqueIdentifier>{a10bca4e-a016-4399-a759-2876d024801a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Accord">
+      <UniqueIdentifier>{f056d1a8-507b-44ce-99f9-c353cbbbc107}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Accord\Imaging">
+      <UniqueIdentifier>{a7cfd9f1-5070-4f26-a9fd-fe1ad1a4edca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ninapp.hpp">
@@ -45,6 +57,18 @@
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.hpp">
       <Filter>Header Files\Image\ImageAnalysis</Filter>
     </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.hpp">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\struct.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounter.hpp">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounterBase.hpp">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
@@ -55,6 +79,15 @@
     </ClCompile>
     <ClCompile Include="Image\ImageAnalysis\FastGaussianBlur.cpp">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Image\ImageAnalysis\StarDetection.cpp">
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\BlobCounter.cpp">
+      <Filter>Source Files\Accord\Imaging</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\BlobCounterBase.cpp">
+      <Filter>Source Files\Accord\Imaging</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

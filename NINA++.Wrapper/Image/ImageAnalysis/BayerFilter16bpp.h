@@ -71,18 +71,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
 
 			if (!PerformDemosaicing) {
-				// for each line
-				for (int32_t y = 0; y < height; y++) {
-					// for each pixel
-					for (int32_t x = 0; x < width; x++, src++, dst += 3) {
-						dst[::RGB::R] = 0;
-						dst[::RGB::G] = 0;
-						dst[::RGB::B] = 0;
-						dst[BayerPattern[y & 1, x & 1]] = *src;
-					}
-					src += srcOffset;
-					dst += dstOffset;
-				}
+				copyImage(width, height, src, dst, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1));
 			}
 			else {
 				debayerPattern(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr);

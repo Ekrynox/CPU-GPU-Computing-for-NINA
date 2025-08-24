@@ -19,17 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Accord\Imaging\BlobCounter.hpp" />
+    <ClInclude Include="Accord\Imaging\BlobCounterBase.hpp" />
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.hpp" />
     <ClInclude Include="Image\enums.hpp" />
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.hpp" />
+    <ClInclude Include="Image\struct.hpp" />
     <ClInclude Include="ninapp.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Accord\Imaging\BlobCounter.cpp" />
+    <ClCompile Include="Accord\Imaging\BlobCounterBase.cpp" />
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp" />
     <ClCompile Include="Image\ImageAnalysis\ColorRemappingGeneral.cpp" />
     <ClCompile Include="Image\ImageAnalysis\FastGaussianBlur.cpp" />
+    <ClCompile Include="Image\ImageAnalysis\StarDetection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NINA++.Native.rc" />

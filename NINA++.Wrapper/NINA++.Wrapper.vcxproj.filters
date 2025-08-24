@@ -19,6 +19,12 @@
     <Filter Include="Header Files\Image\ImageAnalysis">
       <UniqueIdentifier>{a6a6f833-3ab6-495b-b3d3-5bf705ba16f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Accord">
+      <UniqueIdentifier>{9d09ba35-e2c3-4ee4-b3ff-dae057941e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Accord\Imaging">
+      <UniqueIdentifier>{bda57f04-5931-4911-9209-0f202f07d27e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NINA++.Wrapper.h">
@@ -38,6 +44,15 @@
     </ClInclude>
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h">
       <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounter.h">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounterBase.h">
+      <Filter>Header Files\Accord\Imaging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
