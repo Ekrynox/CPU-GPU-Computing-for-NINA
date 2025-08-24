@@ -30,6 +30,7 @@
     <ClInclude Include="Image\ImageAnalysis\StarDetection.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Accord\Imaging\BlobCounter.cpp" />
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp" />
     <ClCompile Include="Image\ImageAnalysis\ColorRemappingGeneral.cpp" />
     <ClCompile Include="Image\ImageAnalysis\FastGaussianBlur.cpp" />

@@ -86,6 +86,9 @@
     <ClCompile Include="Image\ImageAnalysis\StarDetection.cpp">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
+    <ClCompile Include="Accord\Imaging\BlobCounter.cpp">
+      <Filter>Source Files\Accord\Imaging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NINA++.Native.rc">
