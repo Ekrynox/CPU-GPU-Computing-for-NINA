@@ -25,6 +25,9 @@
     <Filter Include="Header Files\Accord\Imaging">
       <UniqueIdentifier>{bda57f04-5931-4911-9209-0f202f07d27e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Accord\Imaging\Filters">
+      <UniqueIdentifier>{4003c7cb-7904-4561-8919-49f62336eab0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NINA++.Wrapper.h">
@@ -53,6 +56,9 @@
     </ClInclude>
     <ClInclude Include="Accord\Imaging\BlobCounterBase.h">
       <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\Convolution.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
