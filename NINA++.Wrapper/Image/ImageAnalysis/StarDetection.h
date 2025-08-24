@@ -10,7 +10,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 	public:
 		ref class Patch_Star {
 		public:
-			static void Calculate(System::Collections::Generic::List<StarDetection::PixelData^>^% pixelData, Accord::Point% _Position, System::Drawing::Rectangle% _Rectangle, double% _Average, double% _HFR, const double _Radius, const double _SurroundingMean) {
+			static void Calculate(System::Collections::Generic::List<StarDetection::PixelData^>^% pixelData, ::Accord::Point% _Position, System::Drawing::Rectangle% _Rectangle, double% _Average, double% _HFR, const double _Radius, const double _SurroundingMean) {
 				auto cpixelData = std::vector<CPPStarDetection::PixelData>();
 				for each (auto p in pixelData) {
 					auto pd = CPPStarDetection::PixelData();
@@ -20,11 +20,11 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 					cpixelData.push_back(pd);
 				}
 
-				auto pos = Point();
+				auto pos = ::Point();
 				pos.X = _Position.X;
 				pos.Y = _Position.Y;
 
-				auto rec = Rectangle();
+				auto rec = ::Rectangle();
 				rec.X = _Rectangle.X;
 				rec.Y = _Rectangle.Y;
 				rec.Width = _Rectangle.Width;

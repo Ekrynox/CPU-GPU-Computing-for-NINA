@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Accord\Imaging\BlobCounter.hpp" />
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.hpp" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.hpp" />
     <ClInclude Include="Image\enums.hpp" />

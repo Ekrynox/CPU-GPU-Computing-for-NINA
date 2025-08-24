@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Accord\Imaging\BlobCounter.h" />
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h" />
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h" />
