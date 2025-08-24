@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Accord/Imaging/BlobCounter.h"
+#include "Accord/Imaging/BlobCounterBase.h"
 
 #include "Image/ImageAnalysis/BayerFilter16bpp.h"
 #include "Image/ImageAnalysis/ColorRemappingGeneral.h"

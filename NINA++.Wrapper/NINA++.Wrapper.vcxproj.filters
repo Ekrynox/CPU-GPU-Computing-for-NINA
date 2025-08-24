@@ -51,6 +51,9 @@
     <ClInclude Include="Accord\Imaging\BlobCounter.h">
       <Filter>Header Files\Accord\Imaging</Filter>
     </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounterBase.h">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NINA++.Wrapper.cpp">

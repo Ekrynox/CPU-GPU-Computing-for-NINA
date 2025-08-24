@@ -66,6 +66,9 @@
     <ClInclude Include="Accord\Imaging\BlobCounter.hpp">
       <Filter>Header Files\Accord\Imaging</Filter>
     </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounterBase.hpp">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
@@ -81,6 +84,9 @@
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </ClCompile>
     <ClCompile Include="Accord\Imaging\BlobCounter.cpp">
+      <Filter>Source Files\Accord\Imaging</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\BlobCounterBase.cpp">
       <Filter>Source Files\Accord\Imaging</Filter>
     </ClCompile>
   </ItemGroup>
