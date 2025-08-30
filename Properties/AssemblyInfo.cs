@@ -11,9 +11,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("0.3.0.0")]
 
 // [MANDATORY] The name of your plugin
-[assembly: AssemblyTitle("NINA++")]
+[assembly: AssemblyTitle("NINA++ - You gotta go fast!")]
 // [MANDATORY] A short description of your plugin
-[assembly: AssemblyDescription("A NINA Plugin that implement some heavy functions inside native code.")]
+[assembly: AssemblyDescription("A NINA Plugin that move some N.I.N.A & Accord heavy functions inside native code to speed it up.")]
 
 // The following attributes are not required for the plugin per se, but are required by the official manifest meta data
 
@@ -31,27 +31,36 @@ using System.Runtime.InteropServices;
 // The url to the license
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 // The repository where your pluggin is hosted
-[assembly: AssemblyMetadata("Repository", "https://mypluginsourcerepo.com/project")]
+[assembly: AssemblyMetadata("Repository", "https://github.com/Ekrynox/NINAPlusPlus")]
 
 // The following attributes are optional for the official manifest meta data
 
 //[Optional] Your plugin homepage URL - omit if not applicaple
-[assembly: AssemblyMetadata("Homepage", "https://mypluginwebsite.com/")]
+[assembly: AssemblyMetadata("Homepage", "https://github.com/Ekrynox/NINAPlusPlus")]
 
 //[Optional] Common tags that quickly describe your plugin
 [assembly: AssemblyMetadata("Tags", "")]
 
 //[Optional] A link that will show a log of all changes in between your plugin's versions
-[assembly: AssemblyMetadata("ChangelogURL", "https://mypluginsourcerepo.com/project/CHANGELOG.md")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/Ekrynox/NINAPlusPlus/blob/main/CHANGELOG.md")]
 
 //[Optional] The url to a featured logo that will be displayed in the plugin list next to the name
-[assembly: AssemblyMetadata("FeaturedImageURL", "")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/Ekrynox/NINAPlusPlus/refs/heads/main/assets/images/NINAPP.png?raw=true")]
 //[Optional] A url to an example screenshot of your plugin in action
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 //[Optional] An additional url to an example example screenshot of your plugin in action
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 //[Optional] An in-depth description of your plugin
-[assembly: AssemblyMetadata("LongDescription", @"")]
+[assembly: AssemblyMetadata("LongDescription", @"
+Almost all the source code of this plugin originates from N.I.N.A and Accord Framework.
+I only copied it from C# to C++, did the few needed adjustements, and make the code to inject the new native functions inside N.I.N.A with Harmony.
+
+Hence almost all files from this project remains under the licenses of their sources. A updated copy of the different licenses is available at the top of concerned files.
+
+This plugin allow great performance gains on smaller configurations, with no impact on results.
+
+Example: Ultrabook with an Intel I5 6200U (2c/4t) + 4Gb DDR4 => arround 2.5 times reduction on snashot pipeline (debayering & stars detections) => from arround 17s to 6s on a Nikon Z6II 24mp raw shot for 5000+ stars.
+")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
