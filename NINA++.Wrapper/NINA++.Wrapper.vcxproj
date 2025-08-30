@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -138,6 +138,12 @@
   <ItemGroup>
     <ClInclude Include="Accord\Imaging\BlobCounter.h" />
     <ClInclude Include="Accord\Imaging\BlobCounterBase.h" />
+    <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.h" />
+    <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.h" />
+    <ClInclude Include="Accord\Imaging\Filters\Convolution.h" />
+    <ClInclude Include="Accord\Imaging\Filters\NoBlurCannyEdgeDetector.h" />
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h" />
+    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h" />
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h" />
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h" />
