@@ -52,7 +52,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
     }
 
 
-	void ResizeBicubicGrayScale(uint8_t* src, int32_t width, int32_t height, int32_t srcStride, uint8_t* dst, int32_t newWidth, int32_t newHeight, int32_t dstOffset) {
+	void ResizeBicubicGrayScale(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstOffset) {
         double xFactor = (double)width / newWidth;
         double yFactor = (double)height / newHeight;
 
@@ -99,7 +99,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         }
 	}
 
-    void ResizeBicubicRGB(uint8_t* src, int32_t width, int32_t height, int32_t srcStride, uint8_t* dst, int32_t newWidth, int32_t newHeight, int32_t dstOffset) {
+    void ResizeBicubicRGB(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstOffset) {
         double xFactor = (double)width / newWidth;
         double yFactor = (double)height / newHeight;
 
@@ -156,7 +156,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         }
     }
 
-    void ResizeBicubicARGB(uint8_t* src, int32_t width, int32_t height, int32_t srcStride, uint8_t* dst, int32_t newWidth, int32_t newHeight, int32_t dstOffset) {
+    void ResizeBicubicARGB(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstOffset) {
         double xFactor = (double)width / newWidth;
         double yFactor = (double)height / newHeight;
 
