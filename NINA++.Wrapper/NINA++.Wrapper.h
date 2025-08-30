@@ -2,6 +2,7 @@
 
 #include "Accord/Imaging/BlobCounter.h"
 #include "Accord/Imaging/BlobCounterBase.h"
+#include "Accord/Imaging/Filters/BinaryDilation3x3.h"
 #include "Accord/Imaging/Filters/Convolution.h"
 #include "Accord/Imaging/Filters/ResizeBicubic.h"
 #include "Accord/Imaging/Filters/SISThreshold.h"

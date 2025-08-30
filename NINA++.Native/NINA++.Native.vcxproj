@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Accord\Imaging\BlobCounter.hpp" />
     <ClInclude Include="Accord\Imaging\BlobCounterBase.hpp" />
+    <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.hpp" />
     <ClInclude Include="Accord\Imaging\Filters\Convolution.hpp" />
     <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.hpp" />
     <ClInclude Include="Accord\Imaging\Filters\SISThreshold.hpp" />
@@ -36,6 +37,7 @@
   <ItemGroup>
     <ClCompile Include="Accord\Imaging\BlobCounter.cpp" />
     <ClCompile Include="Accord\Imaging\BlobCounterBase.cpp" />
+    <ClCompile Include="Accord\Imaging\Filters\BinaryDilation3x3.cpp" />
     <ClCompile Include="Accord\Imaging\Filters\Convolution.cpp" />
     <ClCompile Include="Accord\Imaging\Filters\ResizeBicubic.cpp" />
     <ClCompile Include="Accord\Imaging\Filters\SISThreshold.cpp" />
