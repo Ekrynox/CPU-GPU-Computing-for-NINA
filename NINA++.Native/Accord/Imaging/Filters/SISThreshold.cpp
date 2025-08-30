@@ -1,3 +1,15 @@
+// AForge Image Processing Library
+// AForge.NET framework
+//
+// Copyright © Andrew Kirillov, 2005-2009
+// andrew.kirillov@aforgenet.com
+// 
+// NINA++ Plugin for NINA
+// https://github.com/Ekrynox/NINAPlusPlus
+// 
+// Copyright © Lucas Alias, 2015
+// https://github.com/Ekrynox
+
 #include <algorithm>
 
 #include "SISThreshold.hpp"
