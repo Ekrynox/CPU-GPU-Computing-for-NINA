@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "../../../Image/enums.hpp"
-
 
 
 namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
