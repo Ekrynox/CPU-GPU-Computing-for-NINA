@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -139,12 +139,14 @@
     <ClInclude Include="Accord\Imaging\BlobCounter.h" />
     <ClInclude Include="Accord\Imaging\BlobCounterBase.h" />
     <ClInclude Include="Accord\Imaging\Filters\Convolution.h" />
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h" />
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h" />
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h" />
     <ClInclude Include="Image\ImageAnalysis\StarDetection.h" />
     <ClInclude Include="NINA++.Wrapper.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ResizeBicubic.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>

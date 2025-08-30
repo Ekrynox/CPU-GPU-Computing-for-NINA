@@ -3,6 +3,7 @@
 #include "Accord/Imaging/BlobCounter.h"
 #include "Accord/Imaging/BlobCounterBase.h"
 #include "Accord/Imaging/Filters/Convolution.h"
+#include "Accord/Imaging/Filters/ResizeBicubic.h"
 
 #include "Image/ImageAnalysis/BayerFilter16bpp.h"
 #include "Image/ImageAnalysis/ColorRemappingGeneral.h"

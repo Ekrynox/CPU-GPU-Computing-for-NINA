@@ -78,6 +78,9 @@
     <ClInclude Include="Accord\Imaging\Filters\Convolution.hpp">
       <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="Accord\Imaging\Filters\Convolution.cpp">
       <Filter>Source Files\Accord\Imaging\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\Filters\ResizeBicubic.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
