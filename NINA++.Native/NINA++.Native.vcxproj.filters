@@ -87,6 +87,9 @@
     <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
@@ -117,6 +120,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Accord\Imaging\Filters\BinaryDilation3x3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\Filters\CannyEdgeDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

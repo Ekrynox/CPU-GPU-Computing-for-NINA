@@ -139,6 +139,7 @@
     <ClInclude Include="Accord\Imaging\BlobCounter.h" />
     <ClInclude Include="Accord\Imaging\BlobCounterBase.h" />
     <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.h" />
+    <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.h" />
     <ClInclude Include="Accord\Imaging\Filters\Convolution.h" />
     <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h" />
     <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h" />

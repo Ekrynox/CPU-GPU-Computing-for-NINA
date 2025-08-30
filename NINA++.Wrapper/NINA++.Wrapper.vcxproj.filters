@@ -69,6 +69,9 @@
     <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NINA++.Wrapper.cpp">
