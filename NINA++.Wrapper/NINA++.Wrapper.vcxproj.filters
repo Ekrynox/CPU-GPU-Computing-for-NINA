@@ -60,10 +60,10 @@
     <ClInclude Include="Accord\Imaging\Filters\Convolution.h">
       <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
-    <ClInclude Include="ResizeBicubic.h">
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h">
+    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

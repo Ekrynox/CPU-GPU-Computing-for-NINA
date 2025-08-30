@@ -140,13 +140,13 @@
     <ClInclude Include="Accord\Imaging\BlobCounterBase.h" />
     <ClInclude Include="Accord\Imaging\Filters\Convolution.h" />
     <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h" />
+    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h" />
     <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h" />
     <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h" />
     <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h" />
     <ClInclude Include="Image\ImageAnalysis\StarDetection.h" />
     <ClInclude Include="NINA++.Wrapper.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="ResizeBicubic.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
