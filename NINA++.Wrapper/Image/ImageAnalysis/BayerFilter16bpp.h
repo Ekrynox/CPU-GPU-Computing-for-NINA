@@ -74,7 +74,15 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 				copyImage(width, height, src, dst, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1));
 			}
 			else {
-				debayerPattern(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr);
+				if (SaveColorChannels && SaveLumChannel) {
+					debayerPattern(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr);
+				}
+				else if (!SaveColorChannels && SaveLumChannel) {
+					debayerPatternL(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Larr);
+				}
+				else if (SaveColorChannels && !SaveLumChannel) {
+					debayerPatternRGB(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr);
+				}
 			}
 		}
 
