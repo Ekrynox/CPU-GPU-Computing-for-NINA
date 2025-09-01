@@ -1,5 +1,8 @@
 ﻿# NINA++
 
+## 0.3.2.0
+- Auto Manifest generation
+
 ## 0.3.1.0
 - Reduce branching inside BayerFilter16bpp loops
 

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <NormalizedTFM>$([System.String]::Copy($(TargetFramework)).Replace("-windows", ""))</NormalizedTFM>
     <OutputType>Library</OutputType>
     <RootNamespace>LucasAlias.NINA.NinaPP</RootNamespace>
     <AssemblyName>LucasAlias.NINA.NinaPP</AssemblyName>
@@ -24,10 +25,14 @@
     <Page Remove="x64\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony" Version="2.4.0" />
+	  <PackageReference Include="Lib.Harmony" Version="2.4.1" GeneratePathProperty="true" />
     <PackageReference Include="NINA.Plugin" Version="3.2.0.2001-beta" />
   </ItemGroup>
-  <ItemGroup>
+	<Target Name="CopyHarmony" AfterTargets="Build">
+		<Copy SourceFiles="$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.dll" DestinationFolder="$(OutputPath)" />
+		<Copy SourceFiles="$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.pdb" DestinationFolder="$(OutputPath)" Condition="Exists('$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.pdb')" />
+	</Target>
+	<ItemGroup>
     <ProjectReference Include="NINA++.Wrapper\NINA++.Wrapper.vcxproj" />
   </ItemGroup>
   <ItemGroup>
