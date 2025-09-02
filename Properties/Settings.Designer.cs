@@ -22,5 +22,149 @@ namespace LucasAlias.NINA.NinaPP.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NINA_Image_ImageAnalysis_BayerFilter16bpp {
+            get {
+                return ((bool)(this["NINA_Image_ImageAnalysis_BayerFilter16bpp"]));
+            }
+            set {
+                this["NINA_Image_ImageAnalysis_BayerFilter16bpp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NINA_Image_ImageAnalysis_ColorRemappingGeneral {
+            get {
+                return ((bool)(this["NINA_Image_ImageAnalysis_ColorRemappingGeneral"]));
+            }
+            set {
+                this["NINA_Image_ImageAnalysis_ColorRemappingGeneral"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NINA_Image_ImageAnalysis_FastGaussianBlur {
+            get {
+                return ((bool)(this["NINA_Image_ImageAnalysis_FastGaussianBlur"]));
+            }
+            set {
+                this["NINA_Image_ImageAnalysis_FastGaussianBlur"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NINA_Image_ImageAnalysis_StarDetection {
+            get {
+                return ((bool)(this["NINA_Image_ImageAnalysis_StarDetection"]));
+            }
+            set {
+                this["NINA_Image_ImageAnalysis_StarDetection"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_BlobCounter {
+            get {
+                return ((bool)(this["Accord_Imaging_BlobCounter"]));
+            }
+            set {
+                this["Accord_Imaging_BlobCounter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_BlobCounterBase {
+            get {
+                return ((bool)(this["Accord_Imaging_BlobCounterBase"]));
+            }
+            set {
+                this["Accord_Imaging_BlobCounterBase"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_Filters_BinaryDilation3x3 {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_BinaryDilation3x3"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_BinaryDilation3x3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_Filters_CannyEdgeDetector {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_CannyEdgeDetector"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_CannyEdgeDetector"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_Filters_Convolution {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_Convolution"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_Convolution"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_Filters_NoBlurCannyEdgeDetector {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_NoBlurCannyEdgeDetector"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_NoBlurCannyEdgeDetector"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_Filters_ResizeBicubic {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_ResizeBicubic"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_ResizeBicubic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Accord_Imaging_Filters_SISThreshold {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_SISThreshold"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_SISThreshold"] = value;
+            }
+        }
     }
 }

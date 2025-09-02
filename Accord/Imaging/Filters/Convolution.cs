@@ -12,6 +12,7 @@ using System.Windows;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LucasAlias.NINA.NinaPP.Accord.Imaging.Filters {
+    [HarmonyPatchCategory("Accord_Imaging_Filters_Convolution")]
     [HarmonyPatch(typeof(Convolution), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(UnmanagedImage), typeof(Rectangle) })]
     internal class Patch_Convolution_ProcessFilter {
         static bool Prefix(Convolution __instance, UnmanagedImage sourceData, UnmanagedImage destinationData, Rectangle rect) {

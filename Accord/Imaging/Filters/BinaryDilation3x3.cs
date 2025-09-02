@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LucasAlias.NINA.NinaPP.Accord.Imaging.Filters {
+    [HarmonyPatchCategory("Accord_Imaging_Filters_BinaryDilation3x3")]
     [HarmonyPatch(typeof(BinaryDilation3x3), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(UnmanagedImage), typeof(Rectangle) })]
     internal class Patch_BinaryDilation3x3_ProcessFilter {
         static bool Prefix(UnmanagedImage sourceData, UnmanagedImage destinationData, Rectangle rect) {
