@@ -13,13 +13,13 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
 			pin_ptr<uint8_t> dst = (uint8_t*)destinationData->ImageData.ToPointer();
 
 			if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
-				ResizeBicubicGrayScale(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Offset);
+				ResizeBicubicGrayScale(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
 			}
 			else if (sourceData->PixelSize == 3) {
-				ResizeBicubicRGB(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Offset);
+				ResizeBicubicRGB(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
 			}
 			else if (sourceData->PixelSize == 4) {
-				ResizeBicubicARGB(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Offset);
+				ResizeBicubicARGB(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
 			}
 			else {
 				throw gcnew System::InvalidOperationException("Execution should never reach here.");
