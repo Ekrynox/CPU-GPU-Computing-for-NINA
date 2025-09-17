@@ -60,20 +60,20 @@
     <ClInclude Include="Accord\Imaging\Filters\Convolution.h">
       <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
-    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
     <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
     <ClInclude Include="Accord\Imaging\Filters\NoBlurCannyEdgeDetector.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
