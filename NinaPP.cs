@@ -21,47 +21,65 @@ using Settings = LucasAlias.NINA.NinaPP.Properties.Settings;
 
 namespace LucasAlias.NINA.NinaPP {
     [Export(typeof(IPluginManifest))]
-    public class Nina : PluginBase {
+    public class NinaPP : PluginBase {
         private readonly IPluginOptionsAccessor pluginSettings;
         private readonly IProfileService profileService;
 
+        private Harmony _harmony;
+        private Object _harmonyLock = new Object();
+
         [ImportingConstructor]
-        public Nina(IProfileService profileService, IOptionsVM options) {
+        public NinaPP(IProfileService profileService, IOptionsVM options) {
             this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
             this.profileService = profileService;
 
-            var harmony = new Harmony("com.example.patch");
-
-            if (NINA_Image_ImageAnalysis_BayerFilter16bpp) harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
-            if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
-            if (NINA_Image_ImageAnalysis_FastGaussianBlur) harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
-            if (NINA_Image_ImageAnalysis_StarDetection) harmony.PatchCategory("NINA_Image_ImageAnalysis_StarDetection");
-
-
-            if (Accord_Imaging_Filters_BinaryDilation3x3) harmony.PatchCategory("Accord_Imaging_Filters_BinaryDilation3x3");
-            if (Accord_Imaging_Filters_CannyEdgeDetector) harmony.PatchCategory("Accord_Imaging_Filters_CannyEdgeDetector");
-            if (Accord_Imaging_Filters_Convolution) harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
-            if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
-            if (Accord_Imaging_Filters_ResizeBicubic) harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
-            if (Accord_Imaging_Filters_SISThreshold) harmony.PatchCategory("Accord_Imaging_Filters_SISThreshold");
-
-            if (Accord_Imaging_BlobCounter) harmony.PatchCategory("Accord_Imaging_BlobCounter");
-            if (Accord_Imaging_BlobCounterBase) harmony.PatchCategory("Accord_Imaging_BlobCounterBase");
-
-            harmony.PatchAllUncategorized();
+            this._harmony = new Harmony("com.example.patch");
+            PatchAll();
         }
 
         public override Task Teardown() {
+            UnPatchAll();
             return base.Teardown();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = null) {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PatchAll();
         }
 
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {}
 
+
+        private void PatchAll() {
+            lock (this._harmonyLock) {
+                this._harmony.UnpatchAll(this._harmony.Id);
+
+                if (NINA_Image_ImageAnalysis_BayerFilter16bpp) _harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
+                if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) _harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
+                if (NINA_Image_ImageAnalysis_FastGaussianBlur) _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
+                if (NINA_Image_ImageAnalysis_StarDetection) _harmony.PatchCategory("NINA_Image_ImageAnalysis_StarDetection");
+
+
+                if (Accord_Imaging_Filters_BinaryDilation3x3) _harmony.PatchCategory("Accord_Imaging_Filters_BinaryDilation3x3");
+                if (Accord_Imaging_Filters_CannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_CannyEdgeDetector");
+                if (Accord_Imaging_Filters_Convolution) _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
+                if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
+                if (Accord_Imaging_Filters_ResizeBicubic) _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
+                if (Accord_Imaging_Filters_SISThreshold) _harmony.PatchCategory("Accord_Imaging_Filters_SISThreshold");
+
+                if (Accord_Imaging_BlobCounter) _harmony.PatchCategory("Accord_Imaging_BlobCounter");
+                if (Accord_Imaging_BlobCounterBase) _harmony.PatchCategory("Accord_Imaging_BlobCounterBase");
+
+                this._harmony.PatchAllUncategorized();
+            }
+        }
+
+        private void UnPatchAll() {
+            lock (this._harmonyLock) {
+                this._harmony.UnpatchAll(this._harmony.Id);
+            }
+        }
 
 
         public bool NINA_Image_ImageAnalysis_BayerFilter16bpp {
