@@ -33,8 +33,11 @@ namespace LucasAlias.NINA.NinaPP {
             this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
             this.profileService = profileService;
 
+            NinaPPMediator.RegisterPlugin(this);
+
             this._harmony = new Harmony("com.example.patch");
             PatchAll();
+
         }
 
         public override Task Teardown() {
