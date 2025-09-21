@@ -17,7 +17,7 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
     class Patch_BayerFilter16bpp_ProcessFilter {
         static bool Prefix (BayerFilter16bpp __instance, UnmanagedImage sourceData, UnmanagedImage destinationData) {
             LRGBArrays arr = __instance.LRGBArrays;
-            Patch_BayerFilter16bpp.ProcessFilter(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing);
+            Patch_BayerFilter16bpp.ProcessFilter(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing, NinaPPMediator.Plugin.NINA_Image_ImageAnalysis_BayerFilter16bpp__MT);
             __instance.LRGBArrays = arr;
             return false;
         }

@@ -53,316 +53,328 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
     }
 
 
-	void ResizeBicubicGrayScale(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* baseDst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
+	void ResizeBicubicGrayScale(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* baseDst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset, const bool __MT) {
         double xFactor = (double)width / newWidth;
         double yFactor = (double)height / newHeight;
 
         int32_t ymax = height - 1;
         int32_t xmax = width - 1;
 
-        /*for (int32_t y = 0; y < newHeight; y++) {
-            // Y coordinates
-            double oy = (double)y * yFactor - 0.5;
-            int32_t oy1 = (int32_t)oy;
-            double dy = oy - (double)oy1;
+        if (__MT) {
+            std::vector<int32_t> indices(newHeight);
+            std::iota(indices.begin(), indices.end(), 0);
+            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
+                // Y coordinates
+                uint8_t* dst = baseDst + y * dstStride;
 
-            for (int32_t x = 0; x < newWidth; x++, dst++) {
-                // X coordinates
-                double ox = (double)x * xFactor - 0.5f;
-                int32_t ox1 = (int32_t)ox;
-                double dx = ox - (double)ox1;
+                // Y coordinates
+                double oy = (double)y * yFactor - 0.5;
+                int32_t oy1 = (int32_t)oy;
+                double dy = oy - (double)oy1;
 
-                // initial pixel value
-                double g = 0;
+                for (int32_t x = 0; x < newWidth; x++, dst++) {
+                    // X coordinates
+                    double ox = (double)x * xFactor - 0.5f;
+                    int32_t ox1 = (int32_t)ox;
+                    double dx = ox - (double)ox1;
 
-                for (int32_t n = -1; n < 3; n++) {
-                    // get Y cooefficient
-                    double k1 = BiCubicKernel(dy - (double)n);
+                    // initial pixel value
+                    double g = 0;
 
-                    int32_t oy2 = oy1 + n;
-                    if (oy2 < 0) oy2 = 0;
-                    if (oy2 > ymax)  oy2 = ymax;
+                    for (int32_t n = -1; n < 3; n++) {
+                        // get Y cooefficient
+                        double k1 = BiCubicKernel(dy - (double)n);
 
-                    for (int32_t m = -1; m < 3; m++) {
-                        // get X cooefficient
-                        double k2 = k1 * BiCubicKernel((double)m - dx);
+                        int32_t oy2 = oy1 + n;
+                        if (oy2 < 0) oy2 = 0;
+                        if (oy2 > ymax)  oy2 = ymax;
 
-                        int32_t ox2 = ox1 + m;
-                        if (ox2 < 0) ox2 = 0;
-                        if (ox2 > xmax) ox2 = xmax;
+                        for (int32_t m = -1; m < 3; m++) {
+                            // get X cooefficient
+                            double k2 = k1 * BiCubicKernel((double)m - dx);
 
-                        g += k2 * src[oy2 * srcStride + ox2];
+                            int32_t ox2 = ox1 + m;
+                            if (ox2 < 0) ox2 = 0;
+                            if (ox2 > xmax) ox2 = xmax;
+
+                            g += k2 * src[oy2 * srcStride + ox2];
+                        }
                     }
+                    *dst = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
                 }
-                *dst = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-            }
-            dst += dstOffset;
-        }*/
-        std::vector<int32_t> indices(newHeight);
-        std::iota(indices.begin(), indices.end(), 0);
-        std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
-            // Y coordinates
-            uint8_t* dst = baseDst + y * dstStride;
+                });
+        }
+        else {
+            for (int32_t y = 0; y < newHeight; y++) {
+                // Y coordinates
+                double oy = (double)y * yFactor - 0.5;
+                int32_t oy1 = (int32_t)oy;
+                double dy = oy - (double)oy1;
 
-            // Y coordinates
-            double oy = (double)y * yFactor - 0.5;
-            int32_t oy1 = (int32_t)oy;
-            double dy = oy - (double)oy1;
+                for (int32_t x = 0; x < newWidth; x++, baseDst++) {
+                    // X coordinates
+                    double ox = (double)x * xFactor - 0.5f;
+                    int32_t ox1 = (int32_t)ox;
+                    double dx = ox - (double)ox1;
 
-            for (int32_t x = 0; x < newWidth; x++, dst++) {
-                // X coordinates
-                double ox = (double)x * xFactor - 0.5f;
-                int32_t ox1 = (int32_t)ox;
-                double dx = ox - (double)ox1;
+                    // initial pixel value
+                    double g = 0;
 
-                // initial pixel value
-                double g = 0;
+                    for (int32_t n = -1; n < 3; n++) {
+                        // get Y cooefficient
+                        double k1 = BiCubicKernel(dy - (double)n);
 
-                for (int32_t n = -1; n < 3; n++) {
-                    // get Y cooefficient
-                    double k1 = BiCubicKernel(dy - (double)n);
+                        int32_t oy2 = oy1 + n;
+                        if (oy2 < 0) oy2 = 0;
+                        if (oy2 > ymax)  oy2 = ymax;
 
-                    int32_t oy2 = oy1 + n;
-                    if (oy2 < 0) oy2 = 0;
-                    if (oy2 > ymax)  oy2 = ymax;
+                        for (int32_t m = -1; m < 3; m++) {
+                            // get X cooefficient
+                            double k2 = k1 * BiCubicKernel((double)m - dx);
 
-                    for (int32_t m = -1; m < 3; m++) {
-                        // get X cooefficient
-                        double k2 = k1 * BiCubicKernel((double)m - dx);
+                            int32_t ox2 = ox1 + m;
+                            if (ox2 < 0) ox2 = 0;
+                            if (ox2 > xmax) ox2 = xmax;
 
-                        int32_t ox2 = ox1 + m;
-                        if (ox2 < 0) ox2 = 0;
-                        if (ox2 > xmax) ox2 = xmax;
-
-                        g += k2 * src[oy2 * srcStride + ox2];
+                            g += k2 * src[oy2 * srcStride + ox2];
+                        }
                     }
+                    *baseDst = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
                 }
-                *dst = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                baseDst += dstOffset;
             }
-            });
+        }
 	}
 
-    void ResizeBicubicRGB(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* baseDst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
+    void ResizeBicubicRGB(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* baseDst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset, const bool __MT) {
         double xFactor = (double)width / newWidth;
         double yFactor = (double)height / newHeight;
 
         int32_t ymax = height - 1;
         int32_t xmax = width - 1;
         
-        /*for (int32_t y = 0; y < newHeight; y++) {
-            // Y coordinates
-            double oy = (double)y * yFactor - 0.5f;
-            int32_t oy1 = (int32_t)oy;
-            double dy = oy - (double)oy1;
+        if (__MT) {
+            std::vector<int32_t> indices(newHeight);
+            std::iota(indices.begin(), indices.end(), 0);
+            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
+                // Y coordinates
+                uint8_t* dst = baseDst + y * dstStride;
 
-            for (int32_t x = 0; x < newWidth; x++, dst += 3) {
-                // X coordinates
-                double ox = (double)x * xFactor - 0.5f;
-                int32_t ox1 = (int32_t)ox;
-                double dx = ox - (double)ox1;
+                // Y coordinates
+                double oy = (double)y * yFactor - 0.5f;
+                int32_t oy1 = (int32_t)oy;
+                double dy = oy - (double)oy1;
 
-                // initial pixel value
-                double r = 0;
-                double g = 0;
-                double b = 0;
+                for (int32_t x = 0; x < newWidth; x++, dst += 3) {
+                    // X coordinates
+                    double ox = (double)x * xFactor - 0.5f;
+                    int32_t ox1 = (int32_t)ox;
+                    double dx = ox - (double)ox1;
 
-                for (int32_t n = -1; n < 3; n++) {
-                    // get Y cooefficient
-                    double k1 = BiCubicKernel(dy - (double)n);
+                    // initial pixel value
+                    double r = 0;
+                    double g = 0;
+                    double b = 0;
 
-                    int32_t oy2 = oy1 + n;
-                    if (oy2 < 0) oy2 = 0;
-                    if (oy2 > ymax) oy2 = ymax;
+                    for (int32_t n = -1; n < 3; n++) {
+                        // get Y cooefficient
+                        double k1 = BiCubicKernel(dy - (double)n);
 
-                    for (int32_t m = -1; m < 3; m++) {
-                        // get X cooefficient
-                        double k2 = k1 * BiCubicKernel((double)m - dx);
+                        int32_t oy2 = oy1 + n;
+                        if (oy2 < 0) oy2 = 0;
+                        if (oy2 > ymax) oy2 = ymax;
 
-                        int32_t ox2 = ox1 + m;
-                        if (ox2 < 0) ox2 = 0;
-                        if (ox2 > xmax) ox2 = xmax;
+                        for (int32_t m = -1; m < 3; m++) {
+                            // get X cooefficient
+                            double k2 = k1 * BiCubicKernel((double)m - dx);
 
-                        // get pixel of original image
-                        uint8_t* p = src + oy2 * srcStride + ox2 * 3;
+                            int32_t ox2 = ox1 + m;
+                            if (ox2 < 0) ox2 = 0;
+                            if (ox2 > xmax) ox2 = xmax;
 
-                        r += k2 * p[RGB::R];
-                        g += k2 * p[RGB::G];
-                        b += k2 * p[RGB::B];
+                            // get pixel of original image
+                            uint8_t* p = src + oy2 * srcStride + ox2 * 3;
+
+                            r += k2 * p[RGB::R];
+                            g += k2 * p[RGB::G];
+                            b += k2 * p[RGB::B];
+                        }
                     }
+
+                    dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
+                    dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                    dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
                 }
+                });
+        }
+        else {
+            for (int32_t y = 0; y < newHeight; y++) {
+                // Y coordinates
+                double oy = (double)y * yFactor - 0.5f;
+                int32_t oy1 = (int32_t)oy;
+                double dy = oy - (double)oy1;
 
-                dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
-            }
-            dst += dstOffset;
-        }*/
-        std::vector<int32_t> indices(newHeight);
-        std::iota(indices.begin(), indices.end(), 0);
-        std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
-            // Y coordinates
-            uint8_t* dst = baseDst + y * dstStride;
+                for (int32_t x = 0; x < newWidth; x++, baseDst += 3) {
+                    // X coordinates
+                    double ox = (double)x * xFactor - 0.5f;
+                    int32_t ox1 = (int32_t)ox;
+                    double dx = ox - (double)ox1;
 
-            // Y coordinates
-            double oy = (double)y * yFactor - 0.5f;
-            int32_t oy1 = (int32_t)oy;
-            double dy = oy - (double)oy1;
+                    // initial pixel value
+                    double r = 0;
+                    double g = 0;
+                    double b = 0;
 
-            for (int32_t x = 0; x < newWidth; x++, dst += 3) {
-                // X coordinates
-                double ox = (double)x * xFactor - 0.5f;
-                int32_t ox1 = (int32_t)ox;
-                double dx = ox - (double)ox1;
+                    for (int32_t n = -1; n < 3; n++) {
+                        // get Y cooefficient
+                        double k1 = BiCubicKernel(dy - (double)n);
 
-                // initial pixel value
-                double r = 0;
-                double g = 0;
-                double b = 0;
+                        int32_t oy2 = oy1 + n;
+                        if (oy2 < 0) oy2 = 0;
+                        if (oy2 > ymax) oy2 = ymax;
 
-                for (int32_t n = -1; n < 3; n++) {
-                    // get Y cooefficient
-                    double k1 = BiCubicKernel(dy - (double)n);
+                        for (int32_t m = -1; m < 3; m++) {
+                            // get X cooefficient
+                            double k2 = k1 * BiCubicKernel((double)m - dx);
 
-                    int32_t oy2 = oy1 + n;
-                    if (oy2 < 0) oy2 = 0;
-                    if (oy2 > ymax) oy2 = ymax;
+                            int32_t ox2 = ox1 + m;
+                            if (ox2 < 0) ox2 = 0;
+                            if (ox2 > xmax) ox2 = xmax;
 
-                    for (int32_t m = -1; m < 3; m++) {
-                        // get X cooefficient
-                        double k2 = k1 * BiCubicKernel((double)m - dx);
+                            // get pixel of original image
+                            uint8_t* p = src + oy2 * srcStride + ox2 * 3;
 
-                        int32_t ox2 = ox1 + m;
-                        if (ox2 < 0) ox2 = 0;
-                        if (ox2 > xmax) ox2 = xmax;
-
-                        // get pixel of original image
-                        uint8_t* p = src + oy2 * srcStride + ox2 * 3;
-
-                        r += k2 * p[RGB::R];
-                        g += k2 * p[RGB::G];
-                        b += k2 * p[RGB::B];
+                            r += k2 * p[RGB::R];
+                            g += k2 * p[RGB::G];
+                            b += k2 * p[RGB::B];
+                        }
                     }
-                }
 
-                dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                    baseDst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
+                    baseDst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                    baseDst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                }
+                baseDst += dstOffset;
             }
-            });
+        }
     }
 
-    void ResizeBicubicARGB(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* baseDst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
+    void ResizeBicubicARGB(uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* baseDst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset, const bool __MT) {
         double xFactor = (double)width / newWidth;
         double yFactor = (double)height / newHeight;
 
         int32_t ymax = height - 1;
         int32_t xmax = width - 1;
 
-        /*for (int32_t y = 0; y < newHeight; y++) {
-            // Y coordinates
-            double oy = (double)y * yFactor - 0.5f;
-            int32_t oy1 = (int32_t)oy;
-            double dy = oy - (double)oy1;
+        if (__MT) {
+            std::vector<int32_t> indices(newHeight);
+            std::iota(indices.begin(), indices.end(), 0);
+            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
+                // Y coordinates
+                uint8_t* dst = baseDst + y * dstStride;
 
-            for (int32_t x = 0; x < newWidth; x++, dst += 3) {
-                // X coordinates
-                double ox = (double)x * xFactor - 0.5f;
-                int32_t ox1 = (int32_t)ox;
-                double dx = ox - (double)ox1;
+                double oy = (double)y * yFactor - 0.5f;
+                int32_t oy1 = (int32_t)oy;
+                double dy = oy - (double)oy1;
 
-                // initial pixel value
-                double a = 0;
-                double r = 0;
-                double g = 0;
-                double b = 0;
+                for (int32_t x = 0; x < newWidth; x++, dst += 3) {
+                    // X coordinates
+                    double ox = (double)x * xFactor - 0.5f;
+                    int32_t ox1 = (int32_t)ox;
+                    double dx = ox - (double)ox1;
 
-                for (int32_t n = -1; n < 3; n++) {
-                    // get Y cooefficient
-                    double k1 = BiCubicKernel(dy - (double)n);
+                    // initial pixel value
+                    double a = 0;
+                    double r = 0;
+                    double g = 0;
+                    double b = 0;
 
-                    int32_t oy2 = oy1 + n;
-                    if (oy2 < 0) oy2 = 0;
-                    if (oy2 > ymax) oy2 = ymax;
+                    for (int32_t n = -1; n < 3; n++) {
+                        // get Y cooefficient
+                        double k1 = BiCubicKernel(dy - (double)n);
 
-                    for (int32_t m = -1; m < 3; m++) {
-                        // get X cooefficient
-                        double k2 = k1 * BiCubicKernel((double)m - dx);
+                        int32_t oy2 = oy1 + n;
+                        if (oy2 < 0) oy2 = 0;
+                        if (oy2 > ymax) oy2 = ymax;
 
-                        int32_t ox2 = ox1 + m;
-                        if (ox2 < 0) ox2 = 0;
-                        if (ox2 > xmax) ox2 = xmax;
+                        for (int32_t m = -1; m < 3; m++) {
+                            // get X cooefficient
+                            double k2 = k1 * BiCubicKernel((double)m - dx);
 
-                        // get pixel of original image
-                        uint8_t* p = src + oy2 * srcStride + ox2 * 3;
+                            int32_t ox2 = ox1 + m;
+                            if (ox2 < 0) ox2 = 0;
+                            if (ox2 > xmax) ox2 = xmax;
 
-                        a += k2 * p[RGB::A];
-                        r += k2 * p[RGB::R];
-                        g += k2 * p[RGB::G];
-                        b += k2 * p[RGB::B];
+                            // get pixel of original image
+                            uint8_t* p = src + oy2 * srcStride + ox2 * 3;
+
+                            a += k2 * p[RGB::A];
+                            r += k2 * p[RGB::R];
+                            g += k2 * p[RGB::G];
+                            b += k2 * p[RGB::B];
+                        }
                     }
+
+                    dst[RGB::A] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)a));
+                    dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
+                    dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                    dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
                 }
+                });
+        }
+        else {
+            for (int32_t y = 0; y < newHeight; y++) {
+                // Y coordinates
+                double oy = (double)y * yFactor - 0.5f;
+                int32_t oy1 = (int32_t)oy;
+                double dy = oy - (double)oy1;
 
-                dst[RGB::A] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)a));
-                dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
-            }
-            dst += dstOffset;
-        }*/
-        std::vector<int32_t> indices(newHeight);
-        std::iota(indices.begin(), indices.end(), 0);
-        std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
-            // Y coordinates
-            uint8_t* dst = baseDst + y * dstStride;
+                for (int32_t x = 0; x < newWidth; x++, baseDst += 3) {
+                    // X coordinates
+                    double ox = (double)x * xFactor - 0.5f;
+                    int32_t ox1 = (int32_t)ox;
+                    double dx = ox - (double)ox1;
 
-            double oy = (double)y * yFactor - 0.5f;
-            int32_t oy1 = (int32_t)oy;
-            double dy = oy - (double)oy1;
+                    // initial pixel value
+                    double a = 0;
+                    double r = 0;
+                    double g = 0;
+                    double b = 0;
 
-            for (int32_t x = 0; x < newWidth; x++, dst += 3) {
-                // X coordinates
-                double ox = (double)x * xFactor - 0.5f;
-                int32_t ox1 = (int32_t)ox;
-                double dx = ox - (double)ox1;
+                    for (int32_t n = -1; n < 3; n++) {
+                        // get Y cooefficient
+                        double k1 = BiCubicKernel(dy - (double)n);
 
-                // initial pixel value
-                double a = 0;
-                double r = 0;
-                double g = 0;
-                double b = 0;
+                        int32_t oy2 = oy1 + n;
+                        if (oy2 < 0) oy2 = 0;
+                        if (oy2 > ymax) oy2 = ymax;
 
-                for (int32_t n = -1; n < 3; n++) {
-                    // get Y cooefficient
-                    double k1 = BiCubicKernel(dy - (double)n);
+                        for (int32_t m = -1; m < 3; m++) {
+                            // get X cooefficient
+                            double k2 = k1 * BiCubicKernel((double)m - dx);
 
-                    int32_t oy2 = oy1 + n;
-                    if (oy2 < 0) oy2 = 0;
-                    if (oy2 > ymax) oy2 = ymax;
+                            int32_t ox2 = ox1 + m;
+                            if (ox2 < 0) ox2 = 0;
+                            if (ox2 > xmax) ox2 = xmax;
 
-                    for (int32_t m = -1; m < 3; m++) {
-                        // get X cooefficient
-                        double k2 = k1 * BiCubicKernel((double)m - dx);
+                            // get pixel of original image
+                            uint8_t* p = src + oy2 * srcStride + ox2 * 3;
 
-                        int32_t ox2 = ox1 + m;
-                        if (ox2 < 0) ox2 = 0;
-                        if (ox2 > xmax) ox2 = xmax;
-
-                        // get pixel of original image
-                        uint8_t* p = src + oy2 * srcStride + ox2 * 3;
-
-                        a += k2 * p[RGB::A];
-                        r += k2 * p[RGB::R];
-                        g += k2 * p[RGB::G];
-                        b += k2 * p[RGB::B];
+                            a += k2 * p[RGB::A];
+                            r += k2 * p[RGB::R];
+                            g += k2 * p[RGB::G];
+                            b += k2 * p[RGB::B];
+                        }
                     }
-                }
 
-                dst[RGB::A] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)a));
-                dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                    baseDst[RGB::A] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)a));
+                    baseDst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
+                    baseDst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                    baseDst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                }
+                baseDst += dstOffset;
             }
-            });
+        }
     }
 
 }
