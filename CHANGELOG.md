@@ -2,7 +2,7 @@
 
 ## 0.4.0.0
 - Add Settings to enable/disable functions patch
-- Add Settings to toogle Multithreaded variants
+- Add Settings to toggle Multithreaded variants
 - Add Multithreaded
     - Accord: Filters: Convolution
     - Accord: Filters: ResizeBicubic
