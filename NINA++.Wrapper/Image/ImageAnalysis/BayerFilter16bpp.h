@@ -31,7 +31,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 	public ref class Patch_BayerFilter16bpp {
 	public:
 
-		static void ProcessFilter(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing) {
+		static void ProcessFilter(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing, bool^ __MT) {
 			int32_t width = sourceData->Width;
 			int32_t height = sourceData->Height;
 
@@ -75,13 +75,13 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 			}
 			else {
 				if (SaveColorChannels && SaveLumChannel) {
-					debayerPattern(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr);
+					debayerPattern(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr, *__MT);
 				}
 				else if (!SaveColorChannels && SaveLumChannel) {
-					debayerPatternL(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Larr);
+					debayerPatternL(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Larr, *__MT);
 				}
 				else if (SaveColorChannels && !SaveLumChannel) {
-					debayerPatternRGB(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr);
+					debayerPatternRGB(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, *__MT);
 				}
 			}
 		}

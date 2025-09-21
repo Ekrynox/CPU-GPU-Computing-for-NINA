@@ -12,6 +12,7 @@ using static NINA.Image.ImageAnalysis.StarDetection;
 
 namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_StarDetection")]
     [HarmonyPatch(typeof(StarDetection.Star), nameof(StarDetection.Star.Calculate), new Type[] { typeof(List<PixelData>) })]
     internal class Patch_StarDetection_Star_Calculate {
         static readonly FieldInfo RectangleBacking = AccessTools.DeclaredField(typeof(StarDetection.Star), $"<{nameof(StarDetection.Star.Rectangle)}>k__BackingField");

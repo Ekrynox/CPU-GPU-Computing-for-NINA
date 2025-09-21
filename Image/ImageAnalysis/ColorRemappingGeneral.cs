@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral")]
     [HarmonyPatch(typeof(ColorRemappingGeneral), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(System.Drawing.Rectangle) })]
     internal class Patch_ColorRemappingGeneral_ProcessFilter {
         static bool Prefix(BayerFilter16bpp __instance, UnmanagedImage image, System.Drawing.Rectangle rect) {

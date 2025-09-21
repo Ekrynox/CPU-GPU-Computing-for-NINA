@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur")]
     [HarmonyPatch(typeof(FastGaussianBlur), "gaussBlur_4", new Type[] { typeof(byte[]), typeof(byte[]), typeof(int) })]
     internal class Patch_FastGaussianBlur_gaussBlur_4 {
         static bool Prefix(FastGaussianBlur __instance, byte[] source, byte[] dest, int r) {
@@ -20,6 +21,7 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
         }
     }
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur")]
     [HarmonyPatch(typeof(FastGaussianBlur), "boxesForGauss", new Type[] { typeof(int), typeof(int) })]
     internal class Patch_FastGaussianBlur_boxesForGauss {
         static bool Prefix(int[] __result, int sigma, int n) {
@@ -28,6 +30,7 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
         }
     }
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur")]
     [HarmonyPatch(typeof(FastGaussianBlur), "boxBlur_4", new Type[] { typeof(byte[]), typeof(byte[]), typeof(int), typeof(int), typeof(int) })]
     internal class Patch_FastGaussianBlur_boxBlur_4 {
         static bool Prefix(byte[] source, byte[] dest, int w, int h, int r) {
@@ -36,6 +39,7 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
         }
     }
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur")]
     [HarmonyPatch(typeof(FastGaussianBlur), "boxBlurH_4", new Type[] { typeof(byte[]), typeof(byte[]), typeof(int), typeof(int), typeof(int) })]
     internal class Patch_FastGaussianBlur_boxBlurH_4 {
         static bool Prefix(byte[] source, byte[] dest, int w, int h, int r) {
@@ -44,6 +48,7 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
         }
     }
 
+    [HarmonyPatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur")]
     [HarmonyPatch(typeof(FastGaussianBlur), "boxBlurT_4", new Type[] { typeof(byte[]), typeof(byte[]), typeof(int), typeof(int), typeof(int) })]
     internal class Patch_FastGaussianBlur_boxBlurT_4 {
         static bool Prefix(byte[] source, byte[] dest, int w, int h, int r) {

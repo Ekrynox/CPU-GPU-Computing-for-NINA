@@ -1,10 +1,170 @@
 ﻿<ResourceDictionary
     x:Class="LucasAlias.NINA.NinaPP.Options"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--  This data template will be displayed in N.I.N.A. on the options->plugin tab with the datacontext of the TestPlugin instance  -->
-    <!--  In order for this datatemplate to be picked correctly, the key has to follow the naming convention of <IPlugin.Name>_Options -->
-    <!--  Furthermore the Resource Dictionary has to be exported via code behind export attributes  -->
-    <DataTemplate x:Key="NINA++_Options">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ninactrl="clr-namespace:NINA.CustomControlLibrary;assembly=NINA.CustomControlLibrary">
+    <DataTemplate x:Key="NINA++ - You gotta go fast!_Options">
+        <StackPanel Grid.IsSharedSizeScope="True" Orientation="Vertical">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="NINA > Image > ImageAnalysis > BayerFilter16bpp" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding NINA_Image_ImageAnalysis_BayerFilter16bpp}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+            <Grid Visibility="{Binding NINA_Image_ImageAnalysis_BayerFilter16bpp, Converter={StaticResource BooleanToVisibilityConverter }}" Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="↳ Multithreaded" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock.LayoutTransform>
+                        <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                <CheckBox IsChecked="{Binding NINA_Image_ImageAnalysis_BayerFilter16bpp__MT}" IsEnabled="{Binding NINA_Image_ImageAnalysis_BayerFilter16bpp}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="0.75" ScaleY="0.75"/>
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="NINA > Image > ImageAnalysis > ColorRemappingGeneral" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding NINA_Image_ImageAnalysis_ColorRemappingGeneral}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="NINA > Image > ImageAnalysis > FastGaussianBlur" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding NINA_Image_ImageAnalysis_FastGaussianBlur}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="NINA > Image > ImageAnalysis > StarDetection" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding NINA_Image_ImageAnalysis_StarDetection}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > Filters > BinaryDilation3x3" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_BinaryDilation3x3}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > Filters > CannyEdgeDetector" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_CannyEdgeDetector}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > Filters > Convolution" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_Convolution}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+            <Grid Visibility="{Binding Accord_Imaging_Filters_Convolution, Converter={StaticResource BooleanToVisibilityConverter }}" Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="↳ Multithreaded" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock.LayoutTransform>
+                        <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_Convolution__MT}" IsEnabled="{Binding Accord_Imaging_Filters_Convolution}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="0.75" ScaleY="0.75"/>
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > Filters > NoBlurCannyEdgeDetector" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_NoBlurCannyEdgeDetector}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > Filters > ResizeBicubic" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_ResizeBicubic}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+            <Grid Visibility="{Binding Accord_Imaging_Filters_ResizeBicubic, Converter={StaticResource BooleanToVisibilityConverter }}" Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="↳ Multithreaded" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock.LayoutTransform>
+                        <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_ResizeBicubic__MT}" IsEnabled="{Binding Accord_Imaging_Filters_ResizeBicubic}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="0.75" ScaleY="0.75"/>
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > Filters > SISThreshold" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_Filters_SISThreshold}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > BlobCounter" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_BlobCounter}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Accord > Imaging > BlobCounterBase" VerticalAlignment="Center" />
+                <CheckBox IsChecked="{Binding Accord_Imaging_BlobCounterBase}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
+            </Grid>
+            
+        </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

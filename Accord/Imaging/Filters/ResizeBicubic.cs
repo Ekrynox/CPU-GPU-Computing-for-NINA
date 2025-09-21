@@ -8,10 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LucasAlias.NINA.NinaPP.Accord.Imaging.Filters {
+    [HarmonyPatchCategory("Accord_Imaging_Filters_ResizeBicubic")]
     [HarmonyPatch(typeof(ResizeBicubic), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(UnmanagedImage) })]
     internal class Patch_ResizeBicubic_ProcessFilter {
         static bool Prefix(UnmanagedImage sourceData, UnmanagedImage destinationData) {
-            Patch_ResizeBicubic.ProcessFilter(ref sourceData, ref destinationData);
+            Patch_ResizeBicubic.ProcessFilter(ref sourceData, ref destinationData, NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__MT);
             return false;
         }
     }

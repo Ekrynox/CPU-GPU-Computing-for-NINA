@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LucasAlias.NINA.NinaPP.Accord.Imaging {
+    [HarmonyPatchCategory("Accord_Imaging_BlobCounter")]
     [HarmonyPatch(typeof(BlobCounter), "BuildObjectsMap", new Type[] { typeof(UnmanagedImage) })]
     internal class Patch_BlobCounter_BuildObjectsMap {
         static readonly FieldInfo ImageWidthBacking = AccessTools.DeclaredField(typeof(BlobCounterBase), $"<ImageWidth>k__BackingField");

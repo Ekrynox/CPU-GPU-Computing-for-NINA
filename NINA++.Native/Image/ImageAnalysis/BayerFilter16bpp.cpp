@@ -16,6 +16,8 @@
 #include "BayerFilter16bpp.hpp"
 
 #include <cmath>
+#include <algorithm>
+#include <execution>
 
 
 
@@ -36,7 +38,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         }
     }
 
-    void debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr) {
+    void debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -530,66 +532,131 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
 
         // Main part of picture
-        // for each line
-        for (int32_t y = 1; y < heightM1; y++) {
-            counter = y * width + 1;
-            tmpsrc = src + (srcOffset + width) * y + 1;
-            tmpdst = dst + (dstOffset + 3 * width) * y + 3;
-            // for each pixel
-            for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
-                rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
-                rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
+        if (__MT) {
+            if (heightM1 >= 2) {
+                std::vector<int32_t> indices(heightM1 - 1);
+                std::iota(indices.begin(), indices.end(), 1);
+                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr, &Larr](int32_t y) {
+                    uint32_t rgbValues[3];
+                    uint32_t rgbCounters[3];
 
-                int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += *tmpsrc;
-                rgbCounters[bayerIndex]++;
+                    auto counter = y * width + 1;
+                    auto tmpsrc = src + (srcOffset + width) * y + 1;
+                    auto tmpdst = dst + (dstOffset + 3 * width) * y + 3;
+                    // for each pixel
+                    for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
+                        rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
+                        rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
 
-                bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-1];
-                rgbCounters[bayerIndex]++;
+                        int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += *tmpsrc;
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
+                        rgbCounters[bayerIndex]++;
 
-                tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
-                tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
-                tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
-                Rarr[counter] = tmpdst[RGB::B];
-                Garr[counter] = tmpdst[RGB::G];
-                Barr[counter] = tmpdst[RGB::R];
-                Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
-                counter++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
+                        rgbCounters[bayerIndex]++;
+
+                        tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
+                        tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
+                        tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
+                        Rarr[counter] = tmpdst[RGB::B];
+                        Garr[counter] = tmpdst[RGB::G];
+                        Barr[counter] = tmpdst[RGB::R];
+                        Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+                        counter++;
+                    }
+                    });
             }
         }
+        else {
+            // for each line
+            for (int32_t y = 1; y < heightM1; y++) {
+                counter = y * width + 1;
+                tmpsrc = src + (srcOffset + width) * y + 1;
+                tmpdst = dst + (dstOffset + 3 * width) * y + 3;
+                // for each pixel
+                for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
+                    rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
+                    rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
 
+                    int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += *tmpsrc;
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
+                    rgbCounters[bayerIndex]++;
+
+                    tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
+                    tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
+                    tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+                    counter++;
+                }
+            }
+        }
     }
 
-    void debayerPatternRGB(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr) {
+    void debayerPatternRGB(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -1065,65 +1132,130 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
 
         // Main part of picture
-        // for each line
-        for (int32_t y = 1; y < heightM1; y++) {
-            counter = y * width + 1;
-            tmpsrc = src + (srcOffset + width) * y + 1;
-            tmpdst = dst + (dstOffset + 3 * width) * y + 3;
-            // for each pixel
-            for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
-                rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
-                rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
+        if (__MT) {
+            if (heightM1 >= 2) {
+                std::vector<int32_t> indices(heightM1 - 1);
+                std::iota(indices.begin(), indices.end(), 1);
+                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr](int32_t y) {
+                    uint32_t rgbValues[3];
+                    uint32_t rgbCounters[3];
 
-                int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += *tmpsrc;
-                rgbCounters[bayerIndex]++;
+                    auto counter = y * width + 1;
+                    auto tmpsrc = src + (srcOffset + width) * y + 1;
+                    auto tmpdst = dst + (dstOffset + 3 * width) * y + 3;
+                    // for each pixel
+                    for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
+                        rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
+                        rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
 
-                bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-1];
-                rgbCounters[bayerIndex]++;
+                        int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += *tmpsrc;
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
+                        rgbCounters[bayerIndex]++;
 
-                tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
-                tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
-                tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
-                Rarr[counter] = tmpdst[RGB::B];
-                Garr[counter] = tmpdst[RGB::G];
-                Barr[counter] = tmpdst[RGB::R];
-                counter++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
+                        rgbCounters[bayerIndex]++;
+
+                        tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
+                        tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
+                        tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
+                        Rarr[counter] = tmpdst[RGB::B];
+                        Garr[counter] = tmpdst[RGB::G];
+                        Barr[counter] = tmpdst[RGB::R];
+                        counter++;
+                    }
+                    });
+            }
+        }
+        else {
+            // for each line
+            for (int32_t y = 1; y < heightM1; y++) {
+                counter = y * width + 1;
+                tmpsrc = src + (srcOffset + width) * y + 1;
+                tmpdst = dst + (dstOffset + 3 * width) * y + 3;
+                // for each pixel
+                for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
+                    rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
+                    rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
+
+                    int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += *tmpsrc;
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
+                    rgbCounters[bayerIndex]++;
+
+                    tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
+                    tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
+                    tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+                    counter++;
+                }
             }
         }
 
     }
 
-    void debayerPatternL(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Larr) {
+    void debayerPatternL(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Larr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -1572,57 +1704,119 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
 
         // Main part of picture
-        // for each line
-        for (int32_t y = 1; y < heightM1; y++) {
-            counter = y * width + 1;
-            tmpsrc = src + (srcOffset + width) * y + 1;
-            tmpdst = dst + (dstOffset + 3 * width) * y + 3;
-            // for each pixel
-            for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
-                rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
-                rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
+        if (__MT) {
+            if (heightM1 >= 2) {
+                std::vector<int32_t> indices(heightM1 - 1);
+                std::iota(indices.begin(), indices.end(), 1);
+                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Larr](int32_t y) {
+                    uint32_t rgbValues[3];
+                    uint32_t rgbCounters[3];
 
-                int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += *tmpsrc;
-                rgbCounters[bayerIndex]++;
+                    auto counter = y * width + 1;
+                    auto tmpsrc = src + (srcOffset + width) * y + 1;
+                    auto tmpdst = dst + (dstOffset + 3 * width) * y + 3;
+                    for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
+                        rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
+                        rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
 
-                bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-1];
-                rgbCounters[bayerIndex]++;
+                        int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += *tmpsrc;
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride];
+                        rgbCounters[bayerIndex]++;
 
-                bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
-                rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
-                rgbCounters[bayerIndex]++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
+                        rgbCounters[bayerIndex]++;
 
-                tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
-                tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
-                tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
-                Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
-                counter++;
+                        bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
+                        rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
+                        rgbCounters[bayerIndex]++;
+
+                        tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
+                        tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
+                        tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
+                        Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+                        counter++;
+                    }
+                    });
+            }
+        }
+        else {
+            // for each line
+            for (int32_t y = 1; y < heightM1; y++) {
+                counter = y * width + 1;
+                tmpsrc = src + (srcOffset + width) * y + 1;
+                tmpdst = dst + (dstOffset + 3 * width) * y + 3;
+                // for each pixel
+                for (int32_t x = 1; x < widthM1; x++, tmpsrc++, tmpdst += 3) {
+                    rgbValues[0] = rgbValues[1] = rgbValues[2] = 0;
+                    rgbCounters[0] = rgbCounters[1] = rgbCounters[2] = 0;
+
+                    int32_t bayerIndex = BayerPattern[(y & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += *tmpsrc;
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[(y & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[(y & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y - 1) & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + (x & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x - 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
+                    rgbCounters[bayerIndex]++;
+
+                    bayerIndex = BayerPattern[((y + 1) & 1) * BPCols + ((x + 1) & 1)];
+                    rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
+                    rgbCounters[bayerIndex]++;
+
+                    tmpdst[RGB::R] = (uint16_t)(rgbValues[RGB::R] / rgbCounters[RGB::R]);
+                    tmpdst[RGB::G] = (uint16_t)(rgbValues[RGB::G] / rgbCounters[RGB::G]);
+                    tmpdst[RGB::B] = (uint16_t)(rgbValues[RGB::B] / rgbCounters[RGB::B]);
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+                    counter++;
+                }
             }
         }
 
