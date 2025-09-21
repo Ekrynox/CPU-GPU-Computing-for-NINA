@@ -1,5 +1,13 @@
 ﻿# NINA++
 
+## 0.4.0.0
+- Add Settings to enable/disable functions patch
+- Add Settings to toogle Multithreaded variants
+- Add Multithreaded
+    - Accord: Filters: Convolution
+    - Accord: Filters: ResizeBicubic
+	- NINA: Image: ImageAnalysis: BayerFilter16bpp
+
 ## 0.3.2.0
 - Auto Manifest generation
 
