@@ -38,5 +38,14 @@
     <Setting Name="Accord_Imaging_Filters_SISThreshold" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="NINA_Image_ImageAnalysis_BayerFilter16bpp__MT" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Accord_Imaging_Filters_ResizeBicubic__MT" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Accord_Imaging_Filters_Convolution__MT" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

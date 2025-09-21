@@ -166,5 +166,41 @@ namespace LucasAlias.NINA.NinaPP.Properties {
                 this["Accord_Imaging_Filters_SISThreshold"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NINA_Image_ImageAnalysis_BayerFilter16bpp__MT {
+            get {
+                return ((bool)(this["NINA_Image_ImageAnalysis_BayerFilter16bpp__MT"]));
+            }
+            set {
+                this["NINA_Image_ImageAnalysis_BayerFilter16bpp__MT"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Accord_Imaging_Filters_ResizeBicubic__MT {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_ResizeBicubic__MT"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_ResizeBicubic__MT"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Accord_Imaging_Filters_Convolution__MT {
+            get {
+                return ((bool)(this["Accord_Imaging_Filters_Convolution__MT"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_Convolution__MT"] = value;
+            }
+        }
     }
 }

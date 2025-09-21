@@ -90,6 +90,14 @@ namespace LucasAlias.NINA.NinaPP {
                 RaisePropertyChanged();
             }
         }
+        public bool NINA_Image_ImageAnalysis_BayerFilter16bpp__MT {
+            get => Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__MT;
+            set {
+                Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__MT = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
         public bool NINA_Image_ImageAnalysis_ColorRemappingGeneral {
             get => Settings.Default.NINA_Image_ImageAnalysis_ColorRemappingGeneral;
             set {
@@ -140,6 +148,14 @@ namespace LucasAlias.NINA.NinaPP {
                 RaisePropertyChanged();
             }
         }
+        public bool Accord_Imaging_Filters_Convolution__MT {
+            get => Settings.Default.Accord_Imaging_Filters_Convolution__MT;
+            set {
+                Settings.Default.Accord_Imaging_Filters_Convolution__MT = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
         public bool Accord_Imaging_Filters_NoBlurCannyEdgeDetector {
             get => Settings.Default.Accord_Imaging_Filters_NoBlurCannyEdgeDetector;
             set {
@@ -152,6 +168,14 @@ namespace LucasAlias.NINA.NinaPP {
             get => Settings.Default.Accord_Imaging_Filters_ResizeBicubic;
             set {
                 Settings.Default.Accord_Imaging_Filters_ResizeBicubic = value;
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+        public bool Accord_Imaging_Filters_ResizeBicubic__MT {
+            get => Settings.Default.Accord_Imaging_Filters_ResizeBicubic__MT;
+            set {
+                Settings.Default.Accord_Imaging_Filters_ResizeBicubic__MT = value;
                 CoreUtil.SaveSettings(Settings.Default);
                 RaisePropertyChanged();
             }
