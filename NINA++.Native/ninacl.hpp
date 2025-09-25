@@ -18,12 +18,12 @@ namespace LucasAlias::NINA::NinaPP {
 		Impl& GetImpl();
 
 		NINAPP_API void refreshPlatformList();
-		NINAPP_API size_t getPlatformsNumber();
+		NINAPP_API size_t getPlatformNumber();
 
 		NINAPP_API void refreshDeviceList();
-		NINAPP_API size_t getDevicesNumber();
+		NINAPP_API size_t getDeviceNumber();
 		NINAPP_API void refreshDeviceList(size_t platform);
-		NINAPP_API size_t getDevicesNumber(size_t platform);
+		NINAPP_API size_t getDeviceNumber(size_t platform);
 
 	private:
 		OpenCLManager();

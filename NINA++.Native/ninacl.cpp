@@ -27,7 +27,7 @@ namespace LucasAlias::NINA::NinaPP {
 		std::erase_if(this->_impl->devices, [&](auto const& dl) { return std::find(this->_impl->platforms.begin(), this->_impl->platforms.end(), dl.first) == this->_impl->platforms.end(); });
 	}
 
-	size_t OpenCLManager::getPlatformsNumber() {
+	size_t OpenCLManager::getPlatformNumber() {
 		return this->_impl->platforms.size();
 	}
 
@@ -41,7 +41,7 @@ namespace LucasAlias::NINA::NinaPP {
 		clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, num_devices, devices->data(), nullptr);
 	}
 
-	size_t  OpenCLManager::Impl::getDevicesNumber(cl_platform_id platform) {
+	size_t  OpenCLManager::Impl::getDeviceNumber(cl_platform_id platform) {
 		if (this->devices.contains(platform)) return this->devices[platform].size();
 		return 0;
 	}
@@ -53,10 +53,10 @@ namespace LucasAlias::NINA::NinaPP {
 		}
 	}
 
-	size_t OpenCLManager::getDevicesNumber() {
+	size_t OpenCLManager::getDeviceNumber() {
 		size_t nb = 0;
 		for (auto p : this->_impl->platforms) {
-			nb += this->_impl->getDevicesNumber(p);
+			nb += this->_impl->getDeviceNumber(p);
 		}
 		return nb;
 	}
@@ -66,9 +66,9 @@ namespace LucasAlias::NINA::NinaPP {
 		this->_impl->refreshDeviceList(this->_impl->platforms[platform]);
 	}
 
-	size_t OpenCLManager::getDevicesNumber(size_t platform) {
+	size_t OpenCLManager::getDeviceNumber(size_t platform) {
 		if (platform >= this->_impl->platforms.size()) return 0;
-		return this->_impl->getDevicesNumber(this->_impl->platforms[platform]);
+		return this->_impl->getDeviceNumber(this->_impl->platforms[platform]);
 	}
 
 }

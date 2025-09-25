@@ -13,7 +13,7 @@ namespace LucasAlias::NINA::NinaPP {
 	class OpenCLManager::Impl {
 	public:
 		void refreshDeviceList(cl_platform_id platform);
-		size_t getDevicesNumber(cl_platform_id platform);
+		size_t getDeviceNumber(cl_platform_id platform);
 
 	friend class OpenCLManager;
 	private:
