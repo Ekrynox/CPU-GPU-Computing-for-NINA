@@ -1,17 +1,33 @@
 #pragma once
 #include "ninapp.hpp"
 
-#define CL_HPP_ENABLE_EXCEPTIONS
-#define CL_HPP_MINIMUM_OPENCL_VERSION 120
-#define CL_HPP_TARGET_OPENCL_VERSION 120
-
-
+#include <algorithm>
+#include <map>
+#include <memory>
 #include <vector>
 
 
 
 namespace LucasAlias::NINA::NinaPP {
 
-	NINAPP_API size_t getCLPlateformsNumber();
+	class OpenCLManager {
+	public:
+		NINAPP_API static OpenCLManager& Instance();
+
+		class Impl;
+		Impl& GetImpl();
+
+		NINAPP_API void refreshPlatformList();
+		NINAPP_API size_t getPlatformsNumber();
+
+		NINAPP_API void refreshDeviceList();
+		NINAPP_API size_t getDevicesNumber();
+		NINAPP_API void refreshDeviceList(size_t platform);
+		NINAPP_API size_t getDevicesNumber(size_t platform);
+
+	private:
+		OpenCLManager();
+		std::unique_ptr<Impl> _impl;
+	};
 
 }

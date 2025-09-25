@@ -93,6 +93,9 @@
     <ClInclude Include="ninacl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ninacl_internal.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Image\ImageAnalysis\BayerFilter16bpp.cpp">
