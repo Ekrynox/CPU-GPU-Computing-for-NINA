@@ -37,9 +37,6 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                 int32_t srcStride = sourceData->Stride;
                 int32_t dstStride = destinationData->Stride;
 
-                int32_t srcOffset = srcStride - rect.Width * pixelSize;
-                int32_t dstOffset = dstStride - rect.Width * pixelSize;
-
                 pin_ptr<uint8_t> src = (uint8_t*)sourceData->ImageData.ToPointer();
                 pin_ptr<uint8_t> dst = (uint8_t*)destinationData->ImageData.ToPointer();
 
@@ -50,15 +47,15 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                 // do the processing job
                 if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
                     // grayscale image
-                    Process8bppImage(src, dst, srcStride, dstStride, srcOffset, dstOffset, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                    Process1CImage((uint8_t*)src, (uint8_t *)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                 }
                 else {
                     // RGB image
                     if ((pixelSize == 3) || (!processAlpha)) {
-                        Process24bppImage(src, dst, srcStride, dstStride, srcOffset, dstOffset, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process3CImage((uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                     }
                     else {
-                        Process32bppImage(src, dst, srcStride, dstStride, srcOffset, dstOffset, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process4CImage((uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                     }
                 }
             }
@@ -78,15 +75,15 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
 
                 if (sourceData->PixelFormat == PixelFormat::Format16bppGrayScale) {
                     // 16 bpp grayscale image
-                    Process16bppImage(baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                    Process1CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                 }
                 else {
                     // RGB image
                     if ((pixelSize == 3) || (!processAlpha)) {
-                        Process48bppImage(baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process3CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                     }
                     else {
-                        Process64bppImage(baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process4CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                     }
                 }
             }
