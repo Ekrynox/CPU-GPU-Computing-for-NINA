@@ -39,7 +39,14 @@ namespace LucasAlias.NINA.NinaPP {
             this._harmony = new Harmony("com.example.patch");
             PatchAll();
 
-            Notification.ShowSuccess($"Plateforms Number: {CL.GetCLPlatformNumber()}\nDevices Number: {CL.GetCLDeviceNumber()}");
+            string devices = "";
+            for (uint p = 0; p < CL.GetCLPlatformNumber(); p++) {
+                for (uint d = 0; d < CL.GetCLDeviceNumber(p); d++) {
+                    var info = CL.getDeviceInfo(p, d);
+                    devices += $"{p}:{d} -> {info.vendor} {info.name}\n";
+                }
+            }
+            Notification.ShowSuccess($"Plateforms Number: {CL.GetCLPlatformNumber()}\nDevices Number: {CL.GetCLDeviceNumber()}\n{devices}");
         }
 
         public override Task Teardown() {

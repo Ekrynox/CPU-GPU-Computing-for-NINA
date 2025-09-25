@@ -12,8 +12,13 @@ namespace LucasAlias::NINA::NinaPP {
 
 	class OpenCLManager::Impl {
 	public:
-		void refreshDeviceList(cl_platform_id platform);
+		std::vector<cl_platform_id> getPlatformList();
+		size_t getPlatformNumber();
+
+		std::vector<cl_device_id> getDeviceList(cl_platform_id platform);
 		size_t getDeviceNumber(cl_platform_id platform);
+
+		OpenCLDeviceInfo getDeviceInfo(cl_platform_id platform, cl_device_id device);
 
 	friend class OpenCLManager;
 	private:

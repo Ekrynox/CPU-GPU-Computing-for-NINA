@@ -2,13 +2,41 @@
 #include "ninapp.hpp"
 
 #include <algorithm>
+#include <stdexcept>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 
 
 namespace LucasAlias::NINA::NinaPP {
+
+	class OpenCLPlatformNotExisting : public std::runtime_error {
+	public:
+		explicit OpenCLPlatformNotExisting() : std::runtime_error("OpenCLPlatformNotExisting: The provided Id doesn't correspond to any existing Platform!") {};
+	};
+	class OpenCLPlatformNotFound : public std::runtime_error {
+	public:
+		explicit OpenCLPlatformNotFound() : std::runtime_error("OpenCLPlatformNotFound: The provided id was not found in the list!") {};
+	};
+	class OpenCLDeviceNotExisting : public std::runtime_error {
+	public:
+		explicit OpenCLDeviceNotExisting() : std::runtime_error("OpenCLDeviceNotExisting: The provided Id doesn't correspond to any existing Device!") {};
+	};
+	class OpenCLDeviceNotFound : public std::runtime_error {
+	public:
+		explicit OpenCLDeviceNotFound() : std::runtime_error("OpenCLDeviceNotFound: The provided id was not found in the list!") {};
+	};
+
+
+	struct OpenCLDeviceInfo_ {
+		std::string name;
+		std::string vendor;
+	};
+	typedef struct OpenCLDeviceInfo_ OpenCLDeviceInfo;
+
+
 
 	class OpenCLManager {
 	public:
@@ -24,6 +52,8 @@ namespace LucasAlias::NINA::NinaPP {
 		NINAPP_API size_t getDeviceNumber();
 		NINAPP_API void refreshDeviceList(size_t platform);
 		NINAPP_API size_t getDeviceNumber(size_t platform);
+
+		NINAPP_API OpenCLDeviceInfo getDeviceInfo(size_t platform, size_t device);
 
 	private:
 		OpenCLManager();
