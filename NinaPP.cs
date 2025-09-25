@@ -5,6 +5,7 @@ using NINA.Core.Utility;
 using NINA.Image.ImageData;
 using NINA.Plugin;
 using NINA.Plugin.Interfaces;
+using NINA.Core.Utility.Notification;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.Mediator;
@@ -38,6 +39,7 @@ namespace LucasAlias.NINA.NinaPP {
             this._harmony = new Harmony("com.example.patch");
             PatchAll();
 
+            Notification.ShowSuccess($"{CL.GetCLPlateformsNumber()}");
         }
 
         public override Task Teardown() {
