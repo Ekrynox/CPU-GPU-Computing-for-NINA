@@ -27,9 +27,17 @@ namespace LucasAlias::NINA::NinaPP {
 	friend class OpenCLManager;
 	private:
 		struct PlatformCompare { bool operator()(const cl::Platform& a, const cl::Platform& b) const noexcept { return a() < b(); } };
+		struct DeviceCompare { bool operator()(const cl::Device& a, const cl::Device& b) const noexcept { return a() < b(); } };
 
 		std::vector<cl::Platform> platforms;
 		std::map<cl::Platform, std::vector<cl::Device>, PlatformCompare> devices;
+		cl::Platform& getPlatform(size_t platform);
+		cl::Device& getDevice(const cl::Platform& platform, size_t device);
+		cl::Device& getDevice(size_t platform, size_t device);
+
+		std::map<cl::Device, std::vector<cl::Context>, DeviceCompare> contexts;
+		//std::vector<cl::CommandQueue> commandQ;
+		//std::vector<cl::Program> programs;
 	};
 
 }

@@ -10,10 +10,27 @@ namespace LucasAlias::NINA::NinaPP {
 		refreshPlatformList();
 	}
 	OpenCLManager::~OpenCLManager() {
+		//this->_impl->programs.clear();
+		//this->_impl->commandQ.clear();
+		this->_impl->contexts.clear();
+
 		this->_impl->devices.clear();
 		this->_impl->platforms.clear();
 	}
 	OpenCLManager::Impl& OpenCLManager::GetImpl() { return *(this->_impl); }
+
+
+	cl::Platform& OpenCLManager::Impl::getPlatform(size_t platform) {
+		if (platform >= this->platforms.size()) throw OpenCLPlatformNotFound();
+		return this->platforms[platform];
+	}
+	cl::Device& OpenCLManager::Impl::getDevice(const cl::Platform& platform, size_t device) {
+		if (device >= this->devices[platform].size()) throw OpenCLDeviceNotFound();
+		return this->devices[platform][device];
+	}
+	cl::Device& OpenCLManager::Impl::getDevice(size_t platform, size_t device) {
+		return getDevice(getPlatform(platform), device);
+	}
 
 
 	std::vector<cl::Platform> OpenCLManager::Impl::getPlatformList() {
@@ -50,17 +67,19 @@ namespace LucasAlias::NINA::NinaPP {
 		}
 	}
 	size_t OpenCLManager::getDeviceNumber() {
-		return this->_impl->devices.size();
+		size_t nb = 0;
+		for (const auto& i : this->_impl->devices) {
+			nb += i.second.size();
+		}
+		return nb;
 	}
 	void OpenCLManager::refreshDeviceList(size_t platform) {
-		if (platform >= this->_impl->platforms.size()) throw OpenCLPlatformNotFound();
-		auto& p = this->_impl->platforms[platform];
+		auto& p = this->_impl->getPlatform(platform);
 		this->_impl->devices.erase(p);
 		this->_impl->devices[p] = this->_impl->getDeviceList(p);
 	}
 	size_t OpenCLManager::getDeviceNumber(size_t platform) {
-		if (platform >= this->_impl->platforms.size()) throw OpenCLPlatformNotFound();
-		return this->_impl->devices[this->_impl->platforms[platform]].size();
+		return this->_impl->devices[this->_impl->getPlatform(platform)].size();
 	}
 
 
@@ -74,11 +93,10 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 
 	OpenCLDeviceInfo OpenCLManager::getDeviceInfo(size_t platform, size_t device) {
-		if (platform >= this->_impl->platforms.size()) throw OpenCLPlatformNotFound();
-		auto& p = this->_impl->platforms[platform];
+		auto& p = this->_impl->getPlatform(platform);
 		if (device >= this->_impl->devices[p].size()) throw OpenCLDeviceNotFound();
 		auto& d = this->_impl->devices[p][device];
-		return this->_impl->getDeviceInfo(d);
+		return this->_impl->getDeviceInfo(this->_impl->getDevice(platform, device));
 	}
 
 
@@ -88,14 +106,12 @@ namespace LucasAlias::NINA::NinaPP {
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL context!");
 		return context;
 	}
-
 	cl::CommandQueue OpenCLManager::Impl::createCommandQueue(const cl::Context &context, const cl::Device &device) {
 		cl_int err = CL_SUCCESS;
 		auto command = cl::CommandQueue(context, device, 0, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL command queue!");
 		return command;
 	}
-
 	cl::Program OpenCLManager::Impl::buildProgram(const cl::Context &context, const std::vector<std::wstring> &sourceFiles) {
 		auto sources = cl::Program::Sources();
 		for (const auto &sf : sourceFiles) {
@@ -108,5 +124,25 @@ namespace LucasAlias::NINA::NinaPP {
 		auto program = cl::Program(context, sources, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while building the OpenCL program!");
 		return program;
+	}
+
+	std::vector<size_t> OpenCLManager::createContext(const std::vector<std::pair<size_t, size_t>>& programs_devices) {
+		auto d = std::vector<cl::Device>();
+		for (const auto& i : programs_devices) {
+			d.push_back(this->_impl->getDevice(i.first, i.second));
+		}
+
+		auto c = this->_impl->createContext(d);
+		auto cl = std::vector<size_t>();
+		for (const auto& i : d) {
+			if (!this->_impl->contexts.contains(i)) this->_impl->contexts[i] = std::vector<cl::Context>();
+			this->_impl->contexts[i].push_back(c);
+			cl.push_back(this->_impl->contexts[i].size() - 1);
+		}
+
+		return cl;
+	}
+	size_t OpenCLManager::createContext(size_t program, size_t device) {
+		return createContext(std::vector({ std::pair(program, device) }))[0];
 	}
 }

@@ -48,6 +48,9 @@ namespace LucasAlias::NINA::NinaPP {
 
 		NINAPP_API OpenCLDeviceInfo getDeviceInfo(size_t platform, size_t device);
 
+		NINAPP_API std::vector<size_t> createContext(const std::vector<std::pair<size_t, size_t>>& programs_devices);
+		NINAPP_API size_t createContext(size_t program, size_t device);
+
 	private:
 		std::unique_ptr<Impl> _impl;
 	};

@@ -28,7 +28,7 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 
 
 
-		void refreshPlatformList() {
+		void RefreshPlatformList() {
 			try {
 				_native->refreshPlatformList();
 			}
@@ -46,7 +46,7 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 		}
 
 
-		void refreshDeviceList() {
+		void RefreshDeviceList() {
 			try {
 				_native->refreshDeviceList();
 			}
@@ -63,7 +63,7 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
 			}
 		}
-		void refreshDeviceList(System::UInt32 platform) {
+		void RefreshDeviceList(System::UInt32 platform) {
 			try {
 				_native->refreshDeviceList(platform);
 			}
@@ -80,9 +80,32 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 			}
 		}
 
-		DeviceInfo^ getDeviceInfo(System::UInt32 platform, System::UInt32 device) {
+		DeviceInfo^ GetDeviceInfo(System::UInt32 platform, System::UInt32 device) {
 			try {
 				return gcnew DeviceInfo(_native->getDeviceInfo(platform, device));
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+
+		System::Collections::Generic::List<System::UInt32>^ CreateContext(System::Collections::Generic::List<System::Tuple<System::UInt32, System::UInt32>^>^ programs_devices) {
+			auto d = std::vector<std::pair<size_t, size_t>>();
+			for each (const auto %i in programs_devices) d.push_back(std::pair(i->Item1, i->Item2));
+
+			try {
+				auto c = _native->createContext(d);
+				auto res = gcnew System::Collections::Generic::List<System::UInt32>(0);
+				for (const auto& i : c) res->Add(i);
+				return res;
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+		System::UInt32 CreateContext(System::UInt32 program, System::UInt32 device) {
+			try {
+				return _native->createContext(program, device);
 			}
 			catch (const std::exception& e) {
 				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
