@@ -1,5 +1,7 @@
 #include "ninacl_internal.hpp"
 
+#include <fstream>
+
 
 
 namespace LucasAlias::NINA::NinaPP {
@@ -14,11 +16,9 @@ namespace LucasAlias::NINA::NinaPP {
 	OpenCLManager::Impl& OpenCLManager::GetImpl() { return *(this->_impl); }
 
 
-	std::vector<cl_platform_id> OpenCLManager::Impl::getPlatformList() {
-		cl_uint num_platforms;
-		clGetPlatformIDs(0, nullptr, &num_platforms);
-		auto platforms = std::vector<cl_platform_id>(num_platforms);
-		clGetPlatformIDs(num_platforms, platforms.data(), nullptr);
+	std::vector<cl::Platform> OpenCLManager::Impl::getPlatformList() {
+		auto platforms = std::vector<cl::Platform>();
+		cl::Platform::get(&platforms);
 		return platforms;
 	}
 	size_t OpenCLManager::Impl::getPlatformNumber() {
@@ -34,20 +34,18 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 
 
-	std::vector<cl_device_id> OpenCLManager::Impl::getDeviceList(cl_platform_id platform) {
-		cl_uint num_devices;
-		if (clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, nullptr, &num_devices) == CL_INVALID_PLATFORM) throw OpenCLPlatformNotExisting();
-		auto devices = std::vector<cl_device_id>(num_devices);
-		if (clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, num_devices, devices.data(), nullptr) == CL_INVALID_PLATFORM) throw OpenCLPlatformNotExisting();
+	std::vector<cl::Device> OpenCLManager::Impl::getDeviceList(const cl::Platform &platform) {
+		auto devices = std::vector<cl::Device>();
+		platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
 		return devices;
 	}
-	size_t OpenCLManager::Impl::getDeviceNumber(cl_platform_id platform) {
+	size_t OpenCLManager::Impl::getDeviceNumber(const cl::Platform &platform) {
 		return getDeviceList(platform).size();
 	}
 
 	void OpenCLManager::refreshDeviceList() {
 		this->_impl->devices.clear();
-		for (auto p : this->_impl->platforms) {
+		for (const auto &p : this->_impl->platforms) {
 			this->_impl->devices[p] = this->_impl->getDeviceList(p);
 		}
 	}
@@ -66,14 +64,11 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 
 
-	OpenCLDeviceInfo OpenCLManager::Impl::getDeviceInfo(cl_platform_id platform, cl_device_id device) {
-		char buffer[128];
+	OpenCLDeviceInfo OpenCLManager::Impl::getDeviceInfo(const cl::Device &device) {
 		auto deviceInfo = OpenCLDeviceInfo();
 
-		if (clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, NULL) == CL_INVALID_DEVICE) throw OpenCLDeviceNotExisting();
-		deviceInfo.name = std::string(buffer, sizeof(buffer));
-		if (clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL) == CL_INVALID_DEVICE) throw OpenCLDeviceNotExisting();
-		deviceInfo.vendor = std::string(buffer, sizeof(buffer));
+		deviceInfo.name = device.getInfo<CL_DEVICE_NAME>();
+		deviceInfo.vendor = device.getInfo<CL_DEVICE_VENDOR>();
 
 		return deviceInfo;
 	}
@@ -83,8 +78,35 @@ namespace LucasAlias::NINA::NinaPP {
 		auto p = this->_impl->platforms[platform];
 		if (device >= this->_impl->devices[p].size()) throw OpenCLDeviceNotFound();
 		auto d = this->_impl->devices[p][device];
-
-		return this->_impl->getDeviceInfo(p, d);
+		return this->_impl->getDeviceInfo(d);
 	}
 
+
+	cl::Context OpenCLManager::Impl::createContext(std::vector<cl::Device>& devices) {
+		cl_int err = CL_SUCCESS;
+		auto context = cl::Context(devices, nullptr, nullptr, nullptr, &err);
+		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL context!");
+		return context;
+	}
+
+	cl::CommandQueue OpenCLManager::Impl::createCommandQueue(cl::Context &context, cl::Device &device) {
+		cl_int err = CL_SUCCESS;
+		auto command = cl::CommandQueue(context, device, 0, &err);
+		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL command queue!");
+		return command;
+	}
+
+	cl::Program OpenCLManager::Impl::buildProgram(cl::Context &context, const std::vector<std::wstring> &sourceFiles) {
+		auto sources = cl::Program::Sources();
+		for (auto sf : sourceFiles) {
+			auto sourceStream = std::ifstream(sf);
+			auto sourceCode = std::string(std::istreambuf_iterator<char>(sourceStream), (std::istreambuf_iterator<char>()));
+			sources.push_back(sourceCode);
+		}
+
+		cl_int err = CL_SUCCESS;
+		auto program = cl::Program(context, sources, &err);
+		if (err != CL_SUCCESS) throw std::runtime_error("Error while building the OpenCL program!");
+		return program;
+	}
 }

@@ -12,17 +12,9 @@
 
 namespace LucasAlias::NINA::NinaPP {
 
-	class OpenCLPlatformNotExisting : public std::runtime_error {
-	public:
-		explicit OpenCLPlatformNotExisting() : std::runtime_error("OpenCLPlatformNotExisting: The provided Id doesn't correspond to any existing Platform!") {};
-	};
 	class OpenCLPlatformNotFound : public std::runtime_error {
 	public:
 		explicit OpenCLPlatformNotFound() : std::runtime_error("OpenCLPlatformNotFound: The provided id was not found in the list!") {};
-	};
-	class OpenCLDeviceNotExisting : public std::runtime_error {
-	public:
-		explicit OpenCLDeviceNotExisting() : std::runtime_error("OpenCLDeviceNotExisting: The provided Id doesn't correspond to any existing Device!") {};
 	};
 	class OpenCLDeviceNotFound : public std::runtime_error {
 	public:
@@ -31,8 +23,8 @@ namespace LucasAlias::NINA::NinaPP {
 
 
 	struct OpenCLDeviceInfo_ {
-		std::string name;
-		std::string vendor;
+		std::string name = "";
+		std::string vendor = "";
 	};
 	typedef struct OpenCLDeviceInfo_ OpenCLDeviceInfo;
 

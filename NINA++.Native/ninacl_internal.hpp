@@ -12,18 +12,24 @@ namespace LucasAlias::NINA::NinaPP {
 
 	class OpenCLManager::Impl {
 	public:
-		std::vector<cl_platform_id> getPlatformList();
+		std::vector<cl::Platform> getPlatformList();
 		size_t getPlatformNumber();
 
-		std::vector<cl_device_id> getDeviceList(cl_platform_id platform);
-		size_t getDeviceNumber(cl_platform_id platform);
+		std::vector<cl::Device> getDeviceList(const cl::Platform &platform);
+		size_t getDeviceNumber(const cl::Platform &platform);
 
-		OpenCLDeviceInfo getDeviceInfo(cl_platform_id platform, cl_device_id device);
+		OpenCLDeviceInfo getDeviceInfo(const cl::Device &device);
+
+		cl::Context createContext(std::vector<cl::Device> &devices);
+		cl::CommandQueue createCommandQueue(cl::Context &context, cl::Device &device);
+		cl::Program buildProgram(cl::Context &context, const std::vector<std::wstring> &sourceFiles);
 
 	friend class OpenCLManager;
 	private:
-		std::vector<cl_platform_id> platforms;
-		std::map<cl_platform_id, std::vector<cl_device_id>> devices;
+		struct PlatformCompare { bool operator()(const cl::Platform& a, const cl::Platform& b) const noexcept { return a() < b(); } };
+
+		std::vector<cl::Platform> platforms;
+		std::map<cl::Platform, std::vector<cl::Device>, PlatformCompare> devices;
 	};
 
 }

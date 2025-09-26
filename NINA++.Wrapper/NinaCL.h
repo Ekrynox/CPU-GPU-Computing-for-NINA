@@ -17,15 +17,66 @@ namespace LucasAlias::NINA::NinaPP {
 		};
 
 
-		static void refreshPlatformList() { OpenCLManager::Instance().refreshPlatformList(); };
-		static System::UInt32 GetCLPlatformNumber() { return OpenCLManager::Instance().getPlatformNumber(); }
+		static void refreshPlatformList() {
+			try {
+				OpenCLManager::Instance().refreshPlatformList();
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+		static System::UInt32 GetCLPlatformNumber() {
+			try {
+				return OpenCLManager::Instance().getPlatformNumber();
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
 
-		static void refreshDeviceList() { OpenCLManager::Instance().refreshDeviceList(); };
-		static System::UInt32 GetCLDeviceNumber() { return OpenCLManager::Instance().getDeviceNumber(); }
-		static void refreshDeviceList(System::UInt32 platform) { OpenCLManager::Instance().refreshDeviceList(platform); };
-		static System::UInt32 GetCLDeviceNumber(System::UInt32 platform) { return OpenCLManager::Instance().getDeviceNumber(platform); }
 
-		static DeviceInfo^ getDeviceInfo(System::UInt32 platform, System::UInt32 device) { return gcnew DeviceInfo(OpenCLManager::Instance().getDeviceInfo(platform, device)); }
+		static void refreshDeviceList() {
+			try {
+				OpenCLManager::Instance().refreshDeviceList();
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+
+		}
+		static System::UInt32 GetCLDeviceNumber() {
+			try {
+				return OpenCLManager::Instance().getDeviceNumber();
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+		static void refreshDeviceList(System::UInt32 platform) {
+			try {
+				OpenCLManager::Instance().refreshDeviceList(platform);
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+		static System::UInt32 GetCLDeviceNumber(System::UInt32 platform) {
+			try {
+				return OpenCLManager::Instance().getDeviceNumber(platform);
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+
+		static DeviceInfo^ getDeviceInfo(System::UInt32 platform, System::UInt32 device) {
+			try {
+				return gcnew DeviceInfo(OpenCLManager::Instance().getDeviceInfo(platform, device));
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
 
 	};
 }
