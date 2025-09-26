@@ -32,7 +32,8 @@ namespace LucasAlias::NINA::NinaPP {
 
 	class OpenCLManager {
 	public:
-		NINAPP_API static OpenCLManager& Instance();
+		NINAPP_API OpenCLManager();
+		NINAPP_API ~OpenCLManager();
 
 		class Impl;
 		Impl& GetImpl();
@@ -48,7 +49,6 @@ namespace LucasAlias::NINA::NinaPP {
 		NINAPP_API OpenCLDeviceInfo getDeviceInfo(size_t platform, size_t device);
 
 	private:
-		OpenCLManager();
 		std::unique_ptr<Impl> _impl;
 	};
 

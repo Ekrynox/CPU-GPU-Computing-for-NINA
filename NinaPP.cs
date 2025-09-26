@@ -39,14 +39,15 @@ namespace LucasAlias.NINA.NinaPP {
             this._harmony = new Harmony("com.example.patch");
             PatchAll();
 
+            var opcl = new OpenCL.Manager();
             string devices = "";
-            for (uint p = 0; p < CL.GetCLPlatformNumber(); p++) {
-                for (uint d = 0; d < CL.GetCLDeviceNumber(p); d++) {
-                    var info = CL.getDeviceInfo(p, d);
+            for (uint p = 0; p < opcl.GetCLPlatformNumber(); p++) {
+                for (uint d = 0; d < opcl.GetCLDeviceNumber(p); d++) {
+                    var info = opcl.getDeviceInfo(p, d);
                     devices += $"{p}:{d} -> {info.vendor} {info.name}\n";
                 }
             }
-            Notification.ShowSuccess($"Plateforms Number: {CL.GetCLPlatformNumber()}\nDevices Number: {CL.GetCLDeviceNumber()}\n{devices}");
+            Notification.ShowSuccess($"Plateforms Number: {opcl.GetCLPlatformNumber()}\nDevices Number: {opcl.GetCLDeviceNumber()}\n{devices}");
         }
 
         public override Task Teardown() {

@@ -6,12 +6,12 @@
 
 namespace LucasAlias::NINA::NinaPP {
 
-	OpenCLManager& OpenCLManager::Instance() {
-		static OpenCLManager instance = OpenCLManager();
-		return instance;
-	}
 	OpenCLManager::OpenCLManager() : _impl(std::make_unique<Impl>()) {
 		refreshPlatformList();
+	}
+	OpenCLManager::~OpenCLManager() {
+		this->_impl->devices.clear();
+		this->_impl->platforms.clear();
 	}
 	OpenCLManager::Impl& OpenCLManager::GetImpl() { return *(this->_impl); }
 
@@ -54,7 +54,7 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 	void OpenCLManager::refreshDeviceList(size_t platform) {
 		if (platform >= this->_impl->platforms.size()) throw OpenCLPlatformNotFound();
-		auto p = this->_impl->platforms[platform];
+		auto& p = this->_impl->platforms[platform];
 		this->_impl->devices.erase(p);
 		this->_impl->devices[p] = this->_impl->getDeviceList(p);
 	}
@@ -75,9 +75,9 @@ namespace LucasAlias::NINA::NinaPP {
 
 	OpenCLDeviceInfo OpenCLManager::getDeviceInfo(size_t platform, size_t device) {
 		if (platform >= this->_impl->platforms.size()) throw OpenCLPlatformNotFound();
-		auto p = this->_impl->platforms[platform];
+		auto& p = this->_impl->platforms[platform];
 		if (device >= this->_impl->devices[p].size()) throw OpenCLDeviceNotFound();
-		auto d = this->_impl->devices[p][device];
+		auto& d = this->_impl->devices[p][device];
 		return this->_impl->getDeviceInfo(d);
 	}
 
@@ -98,7 +98,7 @@ namespace LucasAlias::NINA::NinaPP {
 
 	cl::Program OpenCLManager::Impl::buildProgram(cl::Context &context, const std::vector<std::wstring> &sourceFiles) {
 		auto sources = cl::Program::Sources();
-		for (auto sf : sourceFiles) {
+		for (const auto &sf : sourceFiles) {
 			auto sourceStream = std::ifstream(sf);
 			auto sourceCode = std::string(std::istreambuf_iterator<char>(sourceStream), (std::istreambuf_iterator<char>()));
 			sources.push_back(sourceCode);
