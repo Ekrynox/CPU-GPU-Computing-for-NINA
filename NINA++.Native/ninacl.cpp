@@ -11,7 +11,7 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 	OpenCLManager::~OpenCLManager() {
 		//this->_impl->programs.clear();
-		//this->_impl->commandQ.clear();
+		this->_impl->commandQ.clear();
 		this->_impl->contexts.clear();
 
 		this->_impl->devices.clear();
@@ -100,13 +100,27 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 
 
+
+	cl::Context& OpenCLManager::Impl::getContext(const cl::Device& device, size_t context) {
+		if (!this->contexts.contains(device)) throw OpenCLContextNotFound();
+		if (context >= this->contexts[device].size()) throw OpenCLContextNotFound();
+		return this->contexts[device][context];
+	}
+	cl::Context& OpenCLManager::Impl::getContext(const cl::Platform& platform, size_t device, size_t context) {
+		return this->getContext(this->getDevice(platform, device), context);
+	}
+	cl::Context& OpenCLManager::Impl::getContext(size_t platform, size_t device, size_t context) {
+		return this->getContext(this->getDevice(platform, device), context);
+	}
+
+
 	cl::Context OpenCLManager::Impl::createContext(const std::vector<cl::Device>& devices) {
 		cl_int err = CL_SUCCESS;
 		auto context = cl::Context(devices, nullptr, nullptr, nullptr, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL context!");
 		return context;
 	}
-	cl::CommandQueue OpenCLManager::Impl::createCommandQueue(const cl::Context &context, const cl::Device &device) {
+	cl::CommandQueue OpenCLManager::Impl::createCommandQueue(const cl::Device& device, const cl::Context &context) {
 		cl_int err = CL_SUCCESS;
 		auto command = cl::CommandQueue(context, device, 0, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL command queue!");
@@ -126,9 +140,9 @@ namespace LucasAlias::NINA::NinaPP {
 		return program;
 	}
 
-	std::vector<size_t> OpenCLManager::createContext(const std::vector<std::pair<size_t, size_t>>& programs_devices) {
+	std::vector<size_t> OpenCLManager::createContext(const std::vector<std::pair<size_t, size_t>>& platforms_devices) {
 		auto d = std::vector<cl::Device>();
-		for (const auto& i : programs_devices) {
+		for (const auto& i : platforms_devices) {
 			d.push_back(this->_impl->getDevice(i.first, i.second));
 		}
 
@@ -142,7 +156,17 @@ namespace LucasAlias::NINA::NinaPP {
 
 		return cl;
 	}
-	size_t OpenCLManager::createContext(size_t program, size_t device) {
-		return createContext(std::vector({ std::pair(program, device) }))[0];
+	size_t OpenCLManager::createContext(size_t platform, size_t device) {
+		return createContext(std::vector({ std::pair(platform, device) }))[0];
+	}
+
+	size_t OpenCLManager::createCommandQueue(size_t platform, size_t device, size_t context) {
+		auto& d = this->_impl->getDevice(platform, device);
+		auto& c = this->_impl->getContext(d, context);
+		auto q = this->_impl->createCommandQueue(d, c);
+		
+		if (!this->_impl->commandQ.contains(std::pair(d, c))) this->_impl->commandQ[std::pair(d, c)] = std::vector<cl::CommandQueue>();
+		this->_impl->commandQ[std::pair(d, c)].push_back(q);
+		return this->_impl->commandQ[std::pair(d, c)].size() - 1;
 	}
 }

@@ -20,6 +20,10 @@ namespace LucasAlias::NINA::NinaPP {
 	public:
 		explicit OpenCLDeviceNotFound() : std::runtime_error("OpenCLDeviceNotFound: The provided id was not found in the list!") {};
 	};
+	class OpenCLContextNotFound : public std::runtime_error {
+	public:
+		explicit OpenCLContextNotFound() : std::runtime_error("OpenCLContextNotFound: The provided id was not found in the list!") {};
+	};
 
 
 	struct OpenCLDeviceInfo_ {
@@ -48,8 +52,10 @@ namespace LucasAlias::NINA::NinaPP {
 
 		NINAPP_API OpenCLDeviceInfo getDeviceInfo(size_t platform, size_t device);
 
-		NINAPP_API std::vector<size_t> createContext(const std::vector<std::pair<size_t, size_t>>& programs_devices);
-		NINAPP_API size_t createContext(size_t program, size_t device);
+		NINAPP_API std::vector<size_t> createContext(const std::vector<std::pair<size_t, size_t>>& platforms_devices);
+		NINAPP_API size_t createContext(size_t platform, size_t device);
+
+		NINAPP_API size_t createCommandQueue(size_t platform, size_t device, size_t context);
 
 	private:
 		std::unique_ptr<Impl> _impl;

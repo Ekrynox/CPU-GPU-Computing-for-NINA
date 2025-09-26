@@ -43,11 +43,14 @@ namespace LucasAlias.NINA.NinaPP {
             string devices = "";
             for (uint p = 0; p < opcl.GetCLPlatformNumber(); p++) {
                 for (uint d = 0; d < opcl.GetCLDeviceNumber(p); d++) {
-                    var info = opcl.getDeviceInfo(p, d);
+                    var info = opcl.GetDeviceInfo(p, d);
                     devices += $"{p}:{d} -> {info.vendor} {info.name}\n";
                 }
             }
             Notification.ShowSuccess($"Plateforms Number: {opcl.GetCLPlatformNumber()}\nDevices Number: {opcl.GetCLDeviceNumber()}\n{devices}");
+
+            var context = opcl.CreateContext(1, 0);
+            var queue = opcl.CreateCommandQueue(1, 0, context);
         }
 
         public override Task Teardown() {
