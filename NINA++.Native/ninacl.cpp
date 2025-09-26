@@ -82,21 +82,21 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 
 
-	cl::Context OpenCLManager::Impl::createContext(std::vector<cl::Device>& devices) {
+	cl::Context OpenCLManager::Impl::createContext(const std::vector<cl::Device>& devices) {
 		cl_int err = CL_SUCCESS;
 		auto context = cl::Context(devices, nullptr, nullptr, nullptr, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL context!");
 		return context;
 	}
 
-	cl::CommandQueue OpenCLManager::Impl::createCommandQueue(cl::Context &context, cl::Device &device) {
+	cl::CommandQueue OpenCLManager::Impl::createCommandQueue(const cl::Context &context, const cl::Device &device) {
 		cl_int err = CL_SUCCESS;
 		auto command = cl::CommandQueue(context, device, 0, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL command queue!");
 		return command;
 	}
 
-	cl::Program OpenCLManager::Impl::buildProgram(cl::Context &context, const std::vector<std::wstring> &sourceFiles) {
+	cl::Program OpenCLManager::Impl::buildProgram(const cl::Context &context, const std::vector<std::wstring> &sourceFiles) {
 		auto sources = cl::Program::Sources();
 		for (const auto &sf : sourceFiles) {
 			auto sourceStream = std::ifstream(sf);

@@ -20,9 +20,9 @@ namespace LucasAlias::NINA::NinaPP {
 
 		OpenCLDeviceInfo getDeviceInfo(const cl::Device &device);
 
-		cl::Context createContext(std::vector<cl::Device> &devices);
-		cl::CommandQueue createCommandQueue(cl::Context &context, cl::Device &device);
-		cl::Program buildProgram(cl::Context &context, const std::vector<std::wstring> &sourceFiles);
+		cl::Context createContext(const std::vector<cl::Device> &devices);
+		cl::CommandQueue createCommandQueue(const cl::Context &context, const cl::Device &device);
+		cl::Program buildProgram(const cl::Context &context, const std::vector<std::wstring> &sourceFiles);
 
 	friend class OpenCLManager;
 	private:
