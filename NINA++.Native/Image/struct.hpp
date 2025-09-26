@@ -8,7 +8,7 @@ struct Point_ {
     float X;
     float Y;
 };
-typedef struct Point_ Point;
+typedef struct Point_ CppPoint;
 
 struct Rectangle_ {
     int32_t X;
@@ -16,4 +16,4 @@ struct Rectangle_ {
     int32_t Width;
     int32_t Height;
 };
-typedef struct Rectangle_ Rectangle;
+typedef struct Rectangle_ CppRectangle;

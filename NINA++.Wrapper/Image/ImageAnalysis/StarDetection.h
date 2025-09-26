@@ -20,11 +20,11 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 					cpixelData.push_back(pd);
 				}
 
-				auto pos = ::Point();
+				auto pos = CppPoint();
 				pos.X = _Position.X;
 				pos.Y = _Position.Y;
 
-				auto rec = ::Rectangle();
+				auto rec = CppRectangle();
 				rec.X = _Rectangle.X;
 				rec.Y = _Rectangle.Y;
 				rec.Width = _Rectangle.Width;

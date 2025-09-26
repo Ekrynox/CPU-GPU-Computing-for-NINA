@@ -57,6 +57,8 @@ namespace LucasAlias::NINA::NinaPP {
 
 		NINAPP_API size_t createCommandQueue(size_t platform, size_t device, size_t context);
 
+		NINAPP_API size_t buildProgram(size_t platform, size_t device, size_t context, const std::wstring &sourceFile);
+
 	private:
 		std::unique_ptr<Impl> _impl;
 	};

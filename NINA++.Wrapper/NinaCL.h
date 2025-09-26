@@ -1,6 +1,9 @@
 #pragma once
 #include "ninacl.hpp"
 
+#include <msclr/marshal.h>
+#include <msclr/marshal_cppstd.h>
+
 
 
 namespace LucasAlias::NINA::NinaPP::OpenCL {
@@ -116,6 +119,15 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 		System::UInt32 CreateCommandQueue(System::UInt32 platform, System::UInt32 device, System::UInt32 context) {
 			try {
 				return _native->createCommandQueue(platform, device, context);
+			}
+			catch (const std::exception& e) {
+				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
+			}
+		}
+
+		System::UInt32 BuildProgram(System::UInt32 platform, System::UInt32 device, System::UInt32 context, System::String^ sourceFile) {
+			try {
+				return _native->buildProgram(platform, device, context, msclr::interop::marshal_as<std::wstring>(sourceFile));
 			}
 			catch (const std::exception& e) {
 				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));

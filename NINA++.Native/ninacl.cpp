@@ -126,16 +126,12 @@ namespace LucasAlias::NINA::NinaPP {
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while creating the OpenCL command queue!");
 		return command;
 	}
-	cl::Program OpenCLManager::Impl::buildProgram(const cl::Context &context, const std::vector<std::wstring> &sourceFiles) {
-		auto sources = cl::Program::Sources();
-		for (const auto &sf : sourceFiles) {
-			auto sourceStream = std::ifstream(sf);
-			auto sourceCode = std::string(std::istreambuf_iterator<char>(sourceStream), (std::istreambuf_iterator<char>()));
-			sources.push_back(sourceCode);
-		}
+	cl::Program OpenCLManager::Impl::buildProgram(const cl::Context &context, const std::wstring &sourceFile) {
+		auto sourceStream = std::ifstream(sourceFile);
+		auto sourceCode = std::string(std::istreambuf_iterator<char>(sourceStream), (std::istreambuf_iterator<char>()));
 
 		cl_int err = CL_SUCCESS;
-		auto program = cl::Program(context, sources, &err);
+		auto program = cl::Program(context, sourceCode, true, &err);
 		if (err != CL_SUCCESS) throw std::runtime_error("Error while building the OpenCL program!");
 		return program;
 	}
@@ -168,5 +164,11 @@ namespace LucasAlias::NINA::NinaPP {
 		if (!this->_impl->commandQ.contains(std::pair(d, c))) this->_impl->commandQ[std::pair(d, c)] = std::vector<cl::CommandQueue>();
 		this->_impl->commandQ[std::pair(d, c)].push_back(q);
 		return this->_impl->commandQ[std::pair(d, c)].size() - 1;
+	}
+
+	size_t OpenCLManager::buildProgram(size_t platform, size_t device, size_t context, const std::wstring &sourceFile) {
+		auto& c = this->_impl->getContext(this->_impl->getDevice(platform, device), context);
+		auto p = this->_impl->buildProgram(c, sourceFile);
+		return 0; //TEMP
 	}
 }

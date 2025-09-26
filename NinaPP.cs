@@ -2,10 +2,10 @@
 using LucasAlias.NINA.NinaPP.Properties;
 using NINA.Core.Model;
 using NINA.Core.Utility;
+using NINA.Core.Utility.Notification;
 using NINA.Image.ImageData;
 using NINA.Plugin;
 using NINA.Plugin.Interfaces;
-using NINA.Core.Utility.Notification;
 using NINA.Profile;
 using NINA.Profile.Interfaces;
 using NINA.WPF.Base.Interfaces.Mediator;
@@ -14,7 +14,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +53,7 @@ namespace LucasAlias.NINA.NinaPP {
 
             var context = opcl.CreateContext(1, 0);
             var queue = opcl.CreateCommandQueue(1, 0, context);
+            opcl.BuildProgram(1, 0, context, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "square.cl"));
         }
 
         public override Task Teardown() {
