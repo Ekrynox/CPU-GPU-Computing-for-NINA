@@ -72,8 +72,11 @@ jobs:
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Wrapper.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Wrapper.pdb" -Force
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Native.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Native.dll" -Force
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Native.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Native.pdb" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/OpenCL.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/OpenCL.dll" -Force
           Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/0Harmony.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/0Harmony.dll" -Force
-          Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/0Harmony.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/0Harmony.pdb" -Force          
+          Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/0Harmony.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/0Harmony.pdb" -Force  
+          
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/BayerFilter16bpp.cl" "packages/${{ env.PLUGIN_NAME }}/BayerFilter16bpp.cl" -Force
           
       - name: Create Plugin archives and manifests
         run: |
