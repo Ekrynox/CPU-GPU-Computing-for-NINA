@@ -41,17 +41,17 @@ namespace LucasAlias.NINA.NinaPP {
             this._harmony = new Harmony("com.example.patch");
             PatchAll();
 
-            var opcl = new OpenCL.Manager();
+            NinaPPMediator.RegisterOpenCLManager(new OpenCL.Manager());
             string devices = "";
-            for (uint p = 0; p < opcl.GetCLPlatformNumber(); p++) {
-                for (uint d = 0; d < opcl.GetCLDeviceNumber(p); d++) {
-                    var info = opcl.GetDeviceInfo(p, d);
+            for (uint p = 0; p < NinaPPMediator.OpenCLManager.GetCLPlatformNumber(); p++) {
+                for (uint d = 0; d < NinaPPMediator.OpenCLManager.GetCLDeviceNumber(p); d++) {
+                    var info = NinaPPMediator.OpenCLManager.GetDeviceInfo(p, d);
                     devices += $"{p}:{d} -> {info.vendor} {info.name}\n";
                 }
             }
-            Notification.ShowSuccess($"Plateforms Number: {opcl.GetCLPlatformNumber()}\nDevices Number: {opcl.GetCLDeviceNumber()}\n{devices}");
+            //Notification.ShowSuccess($"Plateforms Number: {NinaPPMediator.OpenCLManager.GetCLPlatformNumber()}\nDevices Number: {NinaPPMediator.OpenCLManager.GetCLDeviceNumber()}\n{devices}");
 
-            opcl.CreateExecutionContext(1, 0, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
+            var ctx = NinaPPMediator.OpenCLManager.CreateExecutionContext(1, 0, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
         }
 
         public override Task Teardown() {

@@ -15,6 +15,8 @@
 
 #include "BayerFilter16bpp.hpp"
 
+#include "../../ninacl_internal.hpp"
+
 #include <cmath>
 #include <algorithm>
 #include <execution>
@@ -38,7 +40,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         }
     }
 
-    void debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
+    void debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -656,7 +658,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         }
     }
 
-    void debayerPatternRGB(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
+    void debayerPatternRGB(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -1255,7 +1257,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
     }
 
-    void debayerPatternL(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Larr, const bool __MT) {
+    void debayerPatternL(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Larr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -1822,4 +1824,43 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
     }
 
+
+    void debayerPatternOpenCL(OpenCLManager& opCLM, size_t context, const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint16_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * (3 * width + dstOffset) * sizeof(uint16_t));
+        auto bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, 2 * 2 * sizeof(int32_t));
+
+        auto RarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
+        auto GarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
+        auto BarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
+        auto LarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint16_t), src);
+        exctx.commandQ.enqueueWriteBuffer(bayerBuffer, CL_FALSE, 0, 2 * 2 * sizeof(int32_t), BayerPattern);
+
+        auto kernel = cl::Kernel(exctx.programs[L"BayerFilter16bpp.cl"], "debayerPattern");
+        kernel.setArg(0, width);
+        kernel.setArg(1, height);
+        kernel.setArg(2, srcBuffer);
+        kernel.setArg(3, dstBuffer);
+        kernel.setArg(4, srcStride);
+        kernel.setArg(5, srcOffset);
+        kernel.setArg(6, dstOffset);
+        kernel.setArg(7, bayerBuffer);
+        kernel.setArg(8, RarrBuffer);
+        kernel.setArg(9, GarrBuffer);
+        kernel.setArg(10, BarrBuffer);
+        kernel.setArg(11, LarrBuffer);
+
+        cl::NDRange global(height, width);
+        //cl::NDRange local(256);
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst);
+        exctx.commandQ.enqueueReadBuffer(RarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Rarr);
+        exctx.commandQ.enqueueReadBuffer(GarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Garr);
+        exctx.commandQ.enqueueReadBuffer(BarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Barr);
+        exctx.commandQ.enqueueReadBuffer(LarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Larr);
+    }
 }

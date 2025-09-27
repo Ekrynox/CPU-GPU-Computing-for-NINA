@@ -29,7 +29,7 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 		}
 		~Manager() { this->!Manager(); }
 
-		const OpenCLManager& GetNative() { return *_native; }
+		OpenCLManager& GetNative() { return *_native; }
 
 
 		void RefreshPlatformList() {

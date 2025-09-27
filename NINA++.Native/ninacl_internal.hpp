@@ -34,6 +34,7 @@ namespace LucasAlias::NINA::NinaPP {
 			std::map<std::wstring, cl::Program> programs;
 		};
 		typedef struct executionContext_ executionContext;
+		executionContext getExecutionContext(size_t executionContext);
 
 	friend class OpenCLManager;
 	private:
@@ -46,7 +47,6 @@ namespace LucasAlias::NINA::NinaPP {
 		cl::Device& getDevice(size_t platform, size_t device);
 
 		std::map<size_t, executionContext> executionContexts;
-		executionContext getExecutionContext(size_t executionContext);
 	};
 
 }
