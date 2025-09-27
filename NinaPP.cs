@@ -125,11 +125,11 @@ namespace LucasAlias.NINA.NinaPP {
         }
         public OpenCL.DeviceInfo? NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL {
             get {
-                var i = OpenCLAvailableGpus.First(e => $"{e.Vendor} -> {e.Name}" == Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL);
-                return i != null ? (i.Name == "" && i.Vendor == "" ? null : i) : null;
+                var i = OpenCLAvailableGpus.Where(e => $"{e.Vendor} -> {e.Name}" == Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL);
+                return i.Count() > 0 ? (i.First().Name == "" && i.First().Vendor == "" ? null : i.First()) : null;
             }
             set {
-                Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL = value != null ? $"{value.Vendor} -> {value.Name}" : "";
+                Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL = (value != null) ? $"{value.Vendor} -> {value.Name}" : "";
                 CoreUtil.SaveSettings(Settings.Default);
                 RaisePropertyChanged();
             }
