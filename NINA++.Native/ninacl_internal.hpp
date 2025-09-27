@@ -46,6 +46,7 @@ namespace LucasAlias::NINA::NinaPP {
 		cl::Device& getDevice(size_t platform, size_t device);
 
 		std::map<size_t, executionContext> executionContexts;
+		executionContext getExecutionContext(size_t executionContext);
 	};
 
 }

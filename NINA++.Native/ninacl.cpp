@@ -140,4 +140,8 @@ namespace LucasAlias::NINA::NinaPP {
 		this->_impl->executionContexts[nextId] = exctx;
 		return nextId;
 	}
+	OpenCLManager::Impl::executionContext OpenCLManager::Impl::getExecutionContext(size_t executionContext) {
+		if (!this->executionContexts.contains(executionContext)) throw OpenCLContextNotFound();
+		return this->executionContexts[executionContext];
+	}
 }
