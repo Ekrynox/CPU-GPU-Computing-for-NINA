@@ -42,6 +42,11 @@ jobs:
         
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
+        
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+            vcpkgJsonGlob: '**/vcpkg.json'
 
       - name: Restore NuGet packages
         run: nuget restore "${{ env.PLUGIN_SLN_NAME }}.sln"
