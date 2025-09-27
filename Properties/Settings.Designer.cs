@@ -202,5 +202,17 @@ namespace LucasAlias.NINA.NinaPP.Properties {
                 this["Accord_Imaging_Filters_Convolution__MT"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL {
+            get {
+                return ((string)(this["NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL"]));
+            }
+            set {
+                this["NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL"] = value;
+            }
+        }
     }
 }

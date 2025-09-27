@@ -15,9 +15,12 @@
 
 #include "BayerFilter16bpp.hpp"
 
+#include "../../ninacl_internal.hpp"
+
 #include <cmath>
 #include <algorithm>
 #include <execution>
+#include <ranges>
 
 
 
@@ -38,7 +41,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         }
     }
 
-    void debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
+    void debayerPattern(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -534,9 +537,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         // Main part of picture
         if (__MT) {
             if (heightM1 >= 2) {
-                std::vector<int32_t> indices(heightM1 - 1);
-                std::iota(indices.begin(), indices.end(), 1);
-                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr, &Larr](int32_t y) {
+                auto view = std::views::iota(1, heightM1);
+                std::for_each(std::execution::par_unseq, view.begin(), view.end(), [src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr, &Larr](int32_t y) {
                     uint32_t rgbValues[3];
                     uint32_t rgbCounters[3];
 
@@ -656,7 +658,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         }
     }
 
-    void debayerPatternRGB(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
+    void debayerPatternRGB(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -1134,9 +1136,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         // Main part of picture
         if (__MT) {
             if (heightM1 >= 2) {
-                std::vector<int32_t> indices(heightM1 - 1);
-                std::iota(indices.begin(), indices.end(), 1);
-                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr](int32_t y) {
+                auto view = std::views::iota(1, heightM1);
+                std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr](int32_t y) {
                     uint32_t rgbValues[3];
                     uint32_t rgbCounters[3];
 
@@ -1255,7 +1256,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 
     }
 
-    void debayerPatternL(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, const int32_t dstStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Larr, const bool __MT) {
+    void debayerPatternL(const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, const int32_t BPCols, uint16_t* Larr, const bool __MT) {
         int32_t widthM1 = width - 1;
         int32_t heightM1 = height - 1;
 
@@ -1706,9 +1707,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         // Main part of picture
         if (__MT) {
             if (heightM1 >= 2) {
-                std::vector<int32_t> indices(heightM1 - 1);
-                std::iota(indices.begin(), indices.end(), 1);
-                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Larr](int32_t y) {
+                auto view = std::views::iota(1, heightM1);
+                std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Larr](int32_t y) {
                     uint32_t rgbValues[3];
                     uint32_t rgbCounters[3];
 
@@ -1820,6 +1820,138 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
             }
         }
 
+    }
+
+
+    void debayerPatternOpenCL(OpenCLManager& opCLM, size_t context, const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint16_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * (3 * width + dstOffset) * sizeof(uint16_t));
+        auto bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, 2 * 2 * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint16_t), src);
+        exctx.commandQ.enqueueWriteBuffer(bayerBuffer, CL_FALSE, 0, 2 * 2 * sizeof(int32_t), BayerPattern);
+
+        int localX = 16, localY = 16;
+        size_t globalX = ((width + localX - 1) / localX) * localX;
+        size_t globalY = ((height + localY - 1) / localY) * localY;
+        cl::NDRange global(globalY, globalX);
+        cl::NDRange local(localY, localX);
+
+        auto kernel = cl::Kernel(exctx.programs[L"BayerFilter16bpp.cl"], "debayerPattern");
+        int arg = 0;
+        kernel.setArg(arg++, width);
+        kernel.setArg(arg++, height);
+        kernel.setArg(arg++, localX);
+        kernel.setArg(arg++, localY);
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, (localX + 2) * (localY + 2) * sizeof(uint16_t), nullptr);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, srcOffset);
+        kernel.setArg(arg++, dstOffset);
+        kernel.setArg(arg++, bayerBuffer);
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst);
+    }
+
+    void rgblArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
+        if (__MT) {
+            auto view = std::views::iota(0, height);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [=](int32_t y) {
+                size_t counter = y * width;
+                uint16_t* tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            });
+        }
+        else {
+            size_t counter = 0;
+            uint16_t* tmpdst;
+            for (size_t y = 0; y < height; y++) {
+                tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            }
+        }
+    }
+
+    void rgbArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
+        if (__MT) {
+            auto view = std::views::iota(0, height);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [=, &dst, &Rarr, &Garr, &Barr](int32_t y) {
+                size_t counter = y * width;
+                uint16_t* tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+
+                    counter++;
+                    tmpdst += 3;
+                }
+                });
+        }
+        else {
+            size_t counter = 0;
+            uint16_t* tmpdst;
+            for (size_t y = 0; y < height; y++) {
+                tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            }
+        }
+    }
+
+    void lArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Larr, const bool __MT) {
+        if (__MT) {
+            auto view = std::views::iota(0, height);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [=, &dst, &Larr](int32_t y) {
+                size_t counter = y * width;
+                uint16_t* tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+                });
+        }
+        else {
+            size_t counter = 0;
+            uint16_t* tmpdst;
+            for (size_t y = 0; y < height; y++) {
+                tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            }
+        }
     }
 
 }

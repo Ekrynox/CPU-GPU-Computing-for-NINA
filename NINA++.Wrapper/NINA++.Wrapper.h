@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NinaCL.h"
+
 #include "Accord/Imaging/BlobCounter.h"
 #include "Accord/Imaging/BlobCounterBase.h"
 #include "Accord/Imaging/Filters/BinaryDilation3x3.h"

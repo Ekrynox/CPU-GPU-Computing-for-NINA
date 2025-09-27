@@ -99,3 +99,4 @@ orleans.codegen.cs
 /NINA/Resources/StaticResources/ArrowLeft.xaml
 Accord.dll.config
 *.zip
+/NINA++.Native/vcpkg_installed

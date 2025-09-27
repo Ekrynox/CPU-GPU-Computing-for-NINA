@@ -1,5 +1,9 @@
 ﻿# NINA++
 
+## 0.5.0.0
+- Implement OpenCL debayering
+- Optimize loops management for multithreaded function
+
 ## 0.4.0.0
 - Add Settings to enable/disable functions patch
 - Add Settings to toggle Multithreaded variants

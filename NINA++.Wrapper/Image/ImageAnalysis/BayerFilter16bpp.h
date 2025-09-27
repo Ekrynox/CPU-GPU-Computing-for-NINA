@@ -22,6 +22,7 @@ using namespace Accord::Imaging::Filters;
 
 
 #include "Image/ImageAnalysis/BayerFilter16bpp.hpp"
+#include "NinaCL.h"
 
 
 
@@ -63,10 +64,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 			pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
 
 			int32_t srcStride = sourceData->Stride / 2;
-			int32_t dstStride = destinationData->Stride;
-
 			int32_t srcOffset = (srcStride - width) / 2;
-			int32_t dstOffset = (dstStride - width * 6) / 6;
+			int32_t dstOffset = (destinationData->Stride - width * 6) / 6;
 
 			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
 
@@ -75,17 +74,72 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 			}
 			else {
 				if (SaveColorChannels && SaveLumChannel) {
-					debayerPattern(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr, *__MT);
+					debayerPattern(width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, Larr, *__MT);
 				}
 				else if (!SaveColorChannels && SaveLumChannel) {
-					debayerPatternL(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Larr, *__MT);
+					debayerPatternL(width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Larr, *__MT);
 				}
 				else if (SaveColorChannels && !SaveLumChannel) {
-					debayerPatternRGB(width, height, src, dst, srcStride, dstStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, *__MT);
+					debayerPatternRGB(width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1), Rarr, Garr, Barr, *__MT);
 				}
 			}
 		}
 
+
+		static void ProcessFilterOpenCL(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing, bool^ __MT, OpenCL::Manager^ OpCLM, System::UInt32 context) {
+			int32_t width = sourceData->Width;
+			int32_t height = sourceData->Height;
+
+
+			pin_ptr<uint16_t> Rarr = nullptr;
+			pin_ptr<uint16_t> Garr = nullptr;
+			pin_ptr<uint16_t> Barr = nullptr;
+			pin_ptr<uint16_t> Larr = nullptr;
+			if (SaveColorChannels && SaveLumChannel) {
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
+				Rarr = &LRGBArrays->Red[0];
+				Garr = &LRGBArrays->Green[0];
+				Barr = &LRGBArrays->Blue[0];
+				Larr = &LRGBArrays->Lum[0];
+			}
+			else if (!SaveColorChannels && SaveLumChannel) {
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(0));
+				Larr = &LRGBArrays->Lum[0];
+			}
+			else if (SaveColorChannels && !SaveLumChannel) {
+				LRGBArrays = gcnew ::NINA::Image::ImageData::LRGBArrays(gcnew array<System::UInt16>(0), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height), gcnew array<System::UInt16>(width * height));
+				Rarr = &LRGBArrays->Red[0];
+				Garr = &LRGBArrays->Green[0];
+				Barr = &LRGBArrays->Blue[0];
+			}
+
+
+			pin_ptr<uint16_t> src = (uint16_t*)sourceData->ImageData.ToPointer();
+			pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
+
+			int32_t srcStride = sourceData->Stride / 2;
+			int32_t srcOffset = (srcStride - width) / 2;
+			int32_t dstOffset = (destinationData->Stride - width * 6) / 6;
+
+			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
+
+			if (!PerformDemosaicing) {
+				copyImage(width, height, src, dst, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1));
+			}
+			else {
+				debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern);
+
+				if (SaveColorChannels && SaveLumChannel) {
+					rgblArrCopy(width, height, dst, dstOffset, Rarr, Garr, Barr, Larr, *__MT);
+				}
+				else if (!SaveColorChannels && SaveLumChannel) {
+					rgbArrCopy(width, height, dst, dstOffset, Rarr, Garr, Barr, *__MT);
+				}
+				else if (SaveColorChannels && !SaveLumChannel) {
+					lArrCopy(width, height, dst, dstOffset, Larr, *__MT);
+				}
+			}
+		}
 	};
 
 }

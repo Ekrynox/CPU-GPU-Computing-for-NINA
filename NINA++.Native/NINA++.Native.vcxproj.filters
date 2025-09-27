@@ -78,17 +78,23 @@
     <ClInclude Include="Accord\Imaging\Filters\Convolution.hpp">
       <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
-    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.hpp">
+    <ClInclude Include="ninacl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.hpp">
+    <ClInclude Include="ninacl_internal.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
     <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.hpp">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.hpp">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -113,22 +119,33 @@
     <ClCompile Include="Accord\Imaging\Filters\Convolution.cpp">
       <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </ClCompile>
-    <ClCompile Include="Accord\Imaging\Filters\ResizeBicubic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Accord\Imaging\Filters\SISThreshold.cpp">
+    <ClCompile Include="ninacl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Accord\Imaging\Filters\BinaryDilation3x3.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </ClCompile>
     <ClCompile Include="Accord\Imaging\Filters\CannyEdgeDetector.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Accord\Imaging\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\Filters\ResizeBicubic.cpp">
+      <Filter>Source Files\Accord\Imaging\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Accord\Imaging\Filters\SISThreshold.cpp">
+      <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NINA++.Native.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Image\ImageAnalysis\BayerFilter16bpp.cl">
+      <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

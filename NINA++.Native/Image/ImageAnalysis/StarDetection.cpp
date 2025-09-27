@@ -24,7 +24,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis::CPPStarDetection {
             return (pow(x - centerX, 2) + pow(y - centerY, 2) <= pow(radius, 2));
         }
 
-        void Calculate(const std::vector<PixelData>& pixelData, Point& _Position, const Rectangle& _Rectangle, double& _Average, double& _HFR, const double _Radius, const double _SurroundingMean) {
+        void Calculate(const std::vector<PixelData>& pixelData, CppPoint& _Position, const CppRectangle& _Rectangle, double& _Average, double& _HFR, const double _Radius, const double _SurroundingMean) {
             double hfr = 0.0;
             if (pixelData.size() > 0) {
                 double outerRadius = _Radius * 1.2;
@@ -60,7 +60,7 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis::CPPStarDetection {
                     // Update the centroid
                     double centroidX = sumValX / sum;
                     double centroidY = sumValY / sum;
-                    _Position = Point();
+                    _Position = CppPoint();
                     _Position.X = (float)centroidX + _Rectangle.X;
                     _Position.Y = (float)centroidY + _Rectangle.Y;
                 }

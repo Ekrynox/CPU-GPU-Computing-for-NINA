@@ -19,6 +19,6 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis::CPPStarDetection {
 	typedef struct PixelData_ PixelData;
 
 	namespace CPPStar {
-		NINAPP_API void Calculate(const std::vector<PixelData>& pixelData, ::Point& _Position, const ::Rectangle& _Rectangle, double& _Average, double& _HFR, const double _Radius, const double _SurroundingMean);
+		NINAPP_API void Calculate(const std::vector<PixelData>& pixelData, CppPoint& _Position, const CppRectangle& _Rectangle, double& _Average, double& _HFR, const double _Radius, const double _SurroundingMean);
 	}
 }

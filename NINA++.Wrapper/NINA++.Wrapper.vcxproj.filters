@@ -75,6 +75,9 @@
     <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h">
       <Filter>Header Files\Accord\Imaging\Filters</Filter>
     </ClInclude>
+    <ClInclude Include="NinaCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NINA++.Wrapper.cpp">
