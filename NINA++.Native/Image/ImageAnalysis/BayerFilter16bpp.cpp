@@ -20,6 +20,7 @@
 #include <cmath>
 #include <algorithm>
 #include <execution>
+#include <ranges>
 
 
 
@@ -536,9 +537,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         // Main part of picture
         if (__MT) {
             if (heightM1 >= 2) {
-                std::vector<int32_t> indices(heightM1 - 1);
-                std::iota(indices.begin(), indices.end(), 1);
-                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr, &Larr](int32_t y) {
+                auto view = std::views::iota(1, heightM1);
+                std::for_each(std::execution::par_unseq, view.begin(), view.end(), [src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr, &Larr](int32_t y) {
                     uint32_t rgbValues[3];
                     uint32_t rgbCounters[3];
 
@@ -1136,9 +1136,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         // Main part of picture
         if (__MT) {
             if (heightM1 >= 2) {
-                std::vector<int32_t> indices(heightM1 - 1);
-                std::iota(indices.begin(), indices.end(), 1);
-                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr](int32_t y) {
+                auto view = std::views::iota(1, heightM1);
+                std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Rarr, &Garr, &Barr](int32_t y) {
                     uint32_t rgbValues[3];
                     uint32_t rgbCounters[3];
 
@@ -1708,9 +1707,8 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         // Main part of picture
         if (__MT) {
             if (heightM1 >= 2) {
-                std::vector<int32_t> indices(heightM1 - 1);
-                std::iota(indices.begin(), indices.end(), 1);
-                std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Larr](int32_t y) {
+                auto view = std::views::iota(1, heightM1);
+                std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&src, width, widthM1, srcOffset, srcStride, &dst, dstOffset, &BayerPattern, BPCols, &Larr](int32_t y) {
                     uint32_t rgbValues[3];
                     uint32_t rgbCounters[3];
 
@@ -1825,17 +1823,12 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
     }
 
 
-    void debayerPatternOpenCL(OpenCLManager& opCLM, size_t context, const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr) {
+    void debayerPatternOpenCL(OpenCLManager& opCLM, size_t context, const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern) {
         auto exctx = opCLM.GetImpl().getExecutionContext(context);
 
         auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint16_t));
         auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * (3 * width + dstOffset) * sizeof(uint16_t));
         auto bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, 2 * 2 * sizeof(int32_t));
-
-        auto RarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
-        auto GarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
-        auto BarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
-        auto LarrBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * width * sizeof(uint16_t));
 
         exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint16_t), src);
         exctx.commandQ.enqueueWriteBuffer(bayerBuffer, CL_FALSE, 0, 2 * 2 * sizeof(int32_t), BayerPattern);
@@ -1859,22 +1852,106 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         kernel.setArg(arg++, srcOffset);
         kernel.setArg(arg++, dstOffset);
         kernel.setArg(arg++, bayerBuffer);
-        kernel.setArg(arg++, RarrBuffer);
-        kernel.setArg(arg++, GarrBuffer);
-        kernel.setArg(arg++, BarrBuffer);
-        kernel.setArg(arg++, LarrBuffer);
 
         exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
-
-        std::vector<cl::Event> readEvents;
-        cl::Event e1, e2, e3, e4, e5;
-        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_FALSE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst, nullptr, &e1);
-        exctx.commandQ.enqueueReadBuffer(RarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Rarr, nullptr, &e2);
-        exctx.commandQ.enqueueReadBuffer(GarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Garr, nullptr, &e3);
-        exctx.commandQ.enqueueReadBuffer(BarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Barr, nullptr, &e4);
-        exctx.commandQ.enqueueReadBuffer(LarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Larr, nullptr, &e5);
-        readEvents = { e1, e2, e3, e4, e5 };
-        cl::Event::waitForEvents(readEvents);
-
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst);
     }
+
+    void rgblArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
+        if (__MT) {
+            auto view = std::views::iota(0, height);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [=](int32_t y) {
+                size_t counter = y * width;
+                uint16_t* tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            });
+        }
+        else {
+            size_t counter = 0;
+            uint16_t* tmpdst;
+            for (size_t y = 0; y < height; y++) {
+                tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            }
+        }
+    }
+
+    void rgbArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, const bool __MT) {
+        if (__MT) {
+            auto view = std::views::iota(0, height);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [=, &dst, &Rarr, &Garr, &Barr](int32_t y) {
+                size_t counter = y * width;
+                uint16_t* tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+
+                    counter++;
+                    tmpdst += 3;
+                }
+                });
+        }
+        else {
+            size_t counter = 0;
+            uint16_t* tmpdst;
+            for (size_t y = 0; y < height; y++) {
+                tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Rarr[counter] = tmpdst[RGB::B];
+                    Garr[counter] = tmpdst[RGB::G];
+                    Barr[counter] = tmpdst[RGB::R];
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            }
+        }
+    }
+
+    void lArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Larr, const bool __MT) {
+        if (__MT) {
+            auto view = std::views::iota(0, height);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [=, &dst, &Larr](int32_t y) {
+                size_t counter = y * width;
+                uint16_t* tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+                });
+        }
+        else {
+            size_t counter = 0;
+            uint16_t* tmpdst;
+            for (size_t y = 0; y < height; y++) {
+                tmpdst = dst + y * (3 * width + dstOffset);
+                for (size_t x = 0; x < width; x++) {
+                    Larr[counter] = (uint16_t)std::floor(((uint32_t)tmpdst[RGB::R] + (uint32_t)tmpdst[RGB::G] + (uint32_t)tmpdst[RGB::B]) / 3.0);
+
+                    counter++;
+                    tmpdst += 3;
+                }
+            }
+        }
+    }
+
 }

@@ -2,7 +2,7 @@
 #define RGB_G 1
 #define RGB_B 0
 
-__kernel void debayerPattern(const int width, const int height, const int LOCAL_X, const int LOCAL_Y, __global unsigned short* src, __global unsigned short* dst, __local unsigned short* tile, const int srcStride, const int srcOffset, const int dstOffset, __constant int* BayerPattern, __global unsigned short* Rarr, __global unsigned short* Garr, __global unsigned short* Barr, __global unsigned short* Larr) {
+__kernel void debayerPattern(const int width, const int height, const int LOCAL_X, const int LOCAL_Y, __global unsigned short* src, __global unsigned short* dst, __local unsigned short* tile, const int srcStride, const int srcOffset, const int dstOffset, __constant int* BayerPattern) {
 	int y = get_global_id(0);
 	int x = get_global_id(1);
 
@@ -149,16 +149,8 @@ __kernel void debayerPattern(const int width, const int height, const int LOCAL_
         }
     }
 
-    rgbValues[RGB_R] = (unsigned short)(rgbValues[RGB_R] / rgbCounters[RGB_R]);
-    rgbValues[RGB_G] = (unsigned short)(rgbValues[RGB_G] / rgbCounters[RGB_G]);
-    rgbValues[RGB_B] = (unsigned short)(rgbValues[RGB_B] / rgbCounters[RGB_B]);
+    tmpdst[RGB_R] = (unsigned short)(rgbValues[RGB_R] / rgbCounters[RGB_R]);
+    tmpdst[RGB_G] = (unsigned short)(rgbValues[RGB_G] / rgbCounters[RGB_G]);
+    tmpdst[RGB_B] = (unsigned short)(rgbValues[RGB_B] / rgbCounters[RGB_B]);
 
-    tmpdst[RGB_R] = (unsigned short)rgbValues[RGB_R];
-    tmpdst[RGB_G] = (unsigned short)rgbValues[RGB_G];
-    tmpdst[RGB_B] = (unsigned short)rgbValues[RGB_B];
-
-    Rarr[counter] = (unsigned short)rgbValues[RGB_B];
-    Garr[counter] = (unsigned short)rgbValues[RGB_G];
-    Barr[counter] = (unsigned short)rgbValues[RGB_R];
-    Larr[counter] = (unsigned short)((rgbValues[RGB_R] + rgbValues[RGB_G] + rgbValues[RGB_B]) / 3u);
 }

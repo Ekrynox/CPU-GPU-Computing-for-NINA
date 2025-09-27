@@ -86,18 +86,10 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 		}
 
 
-		static void ProcessFilterOpenCL(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing, OpenCL::Manager^ OpCLM, System::UInt32 context) {
+		static void ProcessFilterOpenCL(UnmanagedImage^% sourceData, UnmanagedImage^% destinationData, ::NINA::Image::ImageData::LRGBArrays^% LRGBArrays, array<int, 2>^ BayerPattern, bool^ SaveColorChannels, bool^ SaveLumChannel, bool^ PerformDemosaicing, bool^ __MT, OpenCL::Manager^ OpCLM, System::UInt32 context) {
 			int32_t width = sourceData->Width;
 			int32_t height = sourceData->Height;
 
-			pin_ptr<uint16_t> src = (uint16_t*)sourceData->ImageData.ToPointer();
-			pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
-
-			int32_t srcStride = sourceData->Stride / 2;
-			int32_t srcOffset = (srcStride - width) / 2;
-			int32_t dstOffset = (destinationData->Stride - width * 6) / 6;
-
-			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
 
 			pin_ptr<uint16_t> Rarr = nullptr;
 			pin_ptr<uint16_t> Garr = nullptr;
@@ -121,7 +113,32 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
 				Barr = &LRGBArrays->Blue[0];
 			}
 
-			debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern, Rarr, Garr, Barr, Larr);
+
+			pin_ptr<uint16_t> src = (uint16_t*)sourceData->ImageData.ToPointer();
+			pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
+
+			int32_t srcStride = sourceData->Stride / 2;
+			int32_t srcOffset = (srcStride - width) / 2;
+			int32_t dstOffset = (destinationData->Stride - width * 6) / 6;
+
+			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
+
+			if (!PerformDemosaicing) {
+				copyImage(width, height, src, dst, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1));
+			}
+			else {
+				debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern);
+
+				if (SaveColorChannels && SaveLumChannel) {
+					rgblArrCopy(width, height, dst, dstOffset, Rarr, Garr, Barr, Larr, *__MT);
+				}
+				else if (!SaveColorChannels && SaveLumChannel) {
+					rgbArrCopy(width, height, dst, dstOffset, Rarr, Garr, Barr, *__MT);
+				}
+				else if (SaveColorChannels && !SaveLumChannel) {
+					lArrCopy(width, height, dst, dstOffset, Larr, *__MT);
+				}
+			}
 		}
 	};
 
