@@ -30,7 +30,7 @@
   </ItemGroup>
   <ItemGroup>
 	  <PackageReference Include="Lib.Harmony" Version="2.4.1" GeneratePathProperty="true" />
-    <PackageReference Include="NINA.Plugin" Version="3.2.0.2001-beta" />
+    <PackageReference Include="NINA.Plugin" Version="3.2.0.3001-rc" />
   </ItemGroup>
 	<Target Name="CopyHarmony" AfterTargets="Build">
 		<Copy SourceFiles="$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.dll" DestinationFolder="$(OutputPath)" />
