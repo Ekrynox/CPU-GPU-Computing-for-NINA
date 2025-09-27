@@ -24,12 +24,20 @@ namespace LucasAlias::NINA::NinaPP {
 		cl::CommandQueue createCommandQueue(const cl::Device& device, const cl::Context &context);
 		cl::Program buildProgram(const cl::Context& context, const std::wstring& sourceFile);
 
+
+		struct executionContext_ {
+			cl::Platform platform;
+			cl::Device device;
+
+			cl::Context context;
+			cl::CommandQueue commandQ;
+			std::map<std::wstring, cl::Program> programs;
+		};
+		typedef struct executionContext_ executionContext;
+
 	friend class OpenCLManager;
 	private:
 		struct PlatformCompare { bool operator()(const cl::Platform& a, const cl::Platform& b) const noexcept { return a() < b(); } };
-		struct DeviceCompare { bool operator()(const cl::Device& a, const cl::Device& b) const noexcept { return a() < b(); } };
-		struct ContextCompare { bool operator()(const cl::Context& a, const cl::Context& b) const noexcept { return a() < b(); } };
-		struct DeviceContextCompare { bool operator()(const std::pair<cl::Device, cl::Context>& a, const std::pair<cl::Device, cl::Context>& b) const noexcept { return a.first() == b.first() ? a.second() < b.second() : a.first() < b.first(); } };
 
 		std::vector<cl::Platform> platforms;
 		std::map<cl::Platform, std::vector<cl::Device>, PlatformCompare> devices;
@@ -37,12 +45,7 @@ namespace LucasAlias::NINA::NinaPP {
 		cl::Device& getDevice(const cl::Platform& platform, size_t device);
 		cl::Device& getDevice(size_t platform, size_t device);
 
-		std::map<cl::Device, std::vector<cl::Context>, DeviceCompare> contexts;
-		std::map<std::pair<cl::Device, cl::Context>, std::vector<cl::CommandQueue>, DeviceContextCompare> commandQ;
-		std::map<cl::Context, std::vector<cl::Program>, DeviceCompare> programs;
-		cl::Context& getContext(const cl::Device& device, size_t context);
-		cl::Context& getContext(const cl::Platform& platform, size_t device, size_t context);
-		cl::Context& getContext(size_t platform, size_t device, size_t context);
+		std::map<size_t, executionContext> executionContexts;
 	};
 
 }

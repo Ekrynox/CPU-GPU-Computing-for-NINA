@@ -29,6 +29,7 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 		}
 		~Manager() { this->!Manager(); }
 
+		const OpenCLManager& GetNative() { return *_native; }
 
 
 		void RefreshPlatformList() {
@@ -93,41 +94,13 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 		}
 
 
-		System::Collections::Generic::List<System::UInt32>^ CreateContext(System::Collections::Generic::List<System::Tuple<System::UInt32, System::UInt32>^>^ platforms_devices) {
-			auto d = std::vector<std::pair<size_t, size_t>>();
-			for each (const auto %i in platforms_devices) d.push_back(std::pair(i->Item1, i->Item2));
-
+		System::UInt32 CreateExecutionContext(System::UInt32 platform, System::UInt32 device, System::String^ sourcePath, System::Collections::Generic::List<System::String^>^ sourceFiles) {
+			auto sfs = std::vector<std::wstring>();
+			for each (const auto sf in sourceFiles) {
+				sfs.push_back(msclr::interop::marshal_as<std::wstring, System::String^>(sf));
+			}
 			try {
-				auto c = _native->createContext(d);
-				auto res = gcnew System::Collections::Generic::List<System::UInt32>(0);
-				for (const auto& i : c) res->Add(i);
-				return res;
-			}
-			catch (const std::exception& e) {
-				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
-			}
-		}
-		System::UInt32 CreateContext(System::UInt32 platform, System::UInt32 device) {
-			try {
-				return _native->createContext(platform, device);
-			}
-			catch (const std::exception& e) {
-				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
-			}
-		}
-
-		System::UInt32 CreateCommandQueue(System::UInt32 platform, System::UInt32 device, System::UInt32 context) {
-			try {
-				return _native->createCommandQueue(platform, device, context);
-			}
-			catch (const std::exception& e) {
-				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
-			}
-		}
-
-		System::UInt32 BuildProgram(System::UInt32 platform, System::UInt32 device, System::UInt32 context, System::String^ sourceFile) {
-			try {
-				return _native->buildProgram(platform, device, context, msclr::interop::marshal_as<std::wstring>(sourceFile));
+				return this->_native->createExecutionContext(platform, device, msclr::interop::marshal_as<std::wstring, System::String^>(sourcePath), sfs);
 			}
 			catch (const std::exception& e) {
 				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));

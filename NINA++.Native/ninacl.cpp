@@ -1,5 +1,6 @@
 #include "ninacl_internal.hpp"
 
+#include <filesystem>
 #include <fstream>
 
 
@@ -10,9 +11,7 @@ namespace LucasAlias::NINA::NinaPP {
 		refreshPlatformList();
 	}
 	OpenCLManager::~OpenCLManager() {
-		//this->_impl->programs.clear();
-		this->_impl->commandQ.clear();
-		this->_impl->contexts.clear();
+		this->_impl->executionContexts.clear();
 
 		this->_impl->devices.clear();
 		this->_impl->platforms.clear();
@@ -100,20 +99,6 @@ namespace LucasAlias::NINA::NinaPP {
 	}
 
 
-
-	cl::Context& OpenCLManager::Impl::getContext(const cl::Device& device, size_t context) {
-		if (!this->contexts.contains(device)) throw OpenCLContextNotFound();
-		if (context >= this->contexts[device].size()) throw OpenCLContextNotFound();
-		return this->contexts[device][context];
-	}
-	cl::Context& OpenCLManager::Impl::getContext(const cl::Platform& platform, size_t device, size_t context) {
-		return this->getContext(this->getDevice(platform, device), context);
-	}
-	cl::Context& OpenCLManager::Impl::getContext(size_t platform, size_t device, size_t context) {
-		return this->getContext(this->getDevice(platform, device), context);
-	}
-
-
 	cl::Context OpenCLManager::Impl::createContext(const std::vector<cl::Device>& devices) {
 		cl_int err = CL_SUCCESS;
 		auto context = cl::Context(devices, nullptr, nullptr, nullptr, &err);
@@ -136,39 +121,23 @@ namespace LucasAlias::NINA::NinaPP {
 		return program;
 	}
 
-	std::vector<size_t> OpenCLManager::createContext(const std::vector<std::pair<size_t, size_t>>& platforms_devices) {
-		auto d = std::vector<cl::Device>();
-		for (const auto& i : platforms_devices) {
-			d.push_back(this->_impl->getDevice(i.first, i.second));
+
+	size_t OpenCLManager::createExecutionContext(size_t platform, size_t device, const std::wstring& sourcePath, const std::vector<std::wstring>& sourceFiles) {
+		Impl::executionContext exctx;
+		exctx.platform = this->_impl->getPlatform(platform);
+		exctx.device = this->_impl->getDevice(exctx.platform, device);
+
+		exctx.context = this->_impl->createContext(std::vector({ exctx.device }));
+		exctx.commandQ = this->_impl->createCommandQueue(exctx.device, exctx.context);
+
+		exctx.programs = std::map<std::wstring, cl::Program>();
+		auto sp = std::filesystem::path(sourcePath);
+		for (const auto& sf : sourceFiles) {
+			exctx.programs[sf] = this->_impl->buildProgram(exctx.context, sp / std::filesystem::path(sf));
 		}
 
-		auto c = this->_impl->createContext(d);
-		auto cl = std::vector<size_t>();
-		for (const auto& i : d) {
-			if (!this->_impl->contexts.contains(i)) this->_impl->contexts[i] = std::vector<cl::Context>();
-			this->_impl->contexts[i].push_back(c);
-			cl.push_back(this->_impl->contexts[i].size() - 1);
-		}
-
-		return cl;
-	}
-	size_t OpenCLManager::createContext(size_t platform, size_t device) {
-		return createContext(std::vector({ std::pair(platform, device) }))[0];
-	}
-
-	size_t OpenCLManager::createCommandQueue(size_t platform, size_t device, size_t context) {
-		auto& d = this->_impl->getDevice(platform, device);
-		auto& c = this->_impl->getContext(d, context);
-		auto q = this->_impl->createCommandQueue(d, c);
-		
-		if (!this->_impl->commandQ.contains(std::pair(d, c))) this->_impl->commandQ[std::pair(d, c)] = std::vector<cl::CommandQueue>();
-		this->_impl->commandQ[std::pair(d, c)].push_back(q);
-		return this->_impl->commandQ[std::pair(d, c)].size() - 1;
-	}
-
-	size_t OpenCLManager::buildProgram(size_t platform, size_t device, size_t context, const std::wstring &sourceFile) {
-		auto& c = this->_impl->getContext(this->_impl->getDevice(platform, device), context);
-		auto p = this->_impl->buildProgram(c, sourceFile);
-		return 0; //TEMP
+		size_t nextId = this->_impl->executionContexts.empty() ? 0 : std::prev(this->_impl->executionContexts.end())->first + 1;
+		this->_impl->executionContexts[nextId] = exctx;
+		return nextId;
 	}
 }

@@ -51,9 +51,7 @@ namespace LucasAlias.NINA.NinaPP {
             }
             Notification.ShowSuccess($"Plateforms Number: {opcl.GetCLPlatformNumber()}\nDevices Number: {opcl.GetCLDeviceNumber()}\n{devices}");
 
-            var context = opcl.CreateContext(1, 0);
-            var queue = opcl.CreateCommandQueue(1, 0, context);
-            opcl.BuildProgram(1, 0, context, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "square.cl"));
+            opcl.CreateExecutionContext(1, 0, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
         }
 
         public override Task Teardown() {

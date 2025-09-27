@@ -47,6 +47,10 @@
     <ResourceCompile Include="NINA++.Native.rc" />
   </ItemGroup>
   <ItemGroup>
+    <CopyFileToFolders Include="Image\ImageAnalysis\BayerFilter16bpp.cl">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
     <None Include="vcpkg.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
