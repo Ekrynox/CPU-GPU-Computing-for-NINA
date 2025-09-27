@@ -1,6 +1,7 @@
 #pragma once
 #include "ninacl.hpp"
 
+#define NOMINMAX
 #include <msclr/marshal.h>
 #include <msclr/marshal_cppstd.h>
 
@@ -8,12 +9,24 @@
 
 namespace LucasAlias::NINA::NinaPP::OpenCL {
 	public ref struct DeviceInfo {
-		System::String^ name;
-		System::String^ vendor;
+		property System::String^ Name;
+		property System::String^ Vendor;
+
+		property System::UInt32 PlatformId;
+		property System::UInt32 DeviceId;
 
 		DeviceInfo(const OpenCLDeviceInfo& di) {
-			name = gcnew System::String(di.name.c_str());
-			vendor = gcnew System::String(di.vendor.c_str());
+			Name = gcnew System::String(di.name.c_str());
+			Vendor = gcnew System::String(di.vendor.c_str());
+
+			PlatformId = (System::UInt32)di.platformId;
+			DeviceId = (System::UInt32)di.deviceId;
+		}
+		DeviceInfo() {
+			Name = "";
+			Vendor = "";
+			PlatformId = std::numeric_limits<System::UInt32>::max();
+			DeviceId = std::numeric_limits<System::UInt32>::max();
 		}
 	};
 
@@ -105,6 +118,10 @@ namespace LucasAlias::NINA::NinaPP::OpenCL {
 			catch (const std::exception& e) {
 				throw gcnew System::InvalidOperationException(gcnew System::String(e.what()));
 			}
+		}
+
+		void ClearExecutionContextList() {
+			this->_native->clearExecutionContextList();
 		}
 
 

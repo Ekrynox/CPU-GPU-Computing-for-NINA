@@ -29,6 +29,9 @@ namespace LucasAlias::NINA::NinaPP {
 	struct OpenCLDeviceInfo_ {
 		std::string name = "";
 		std::string vendor = "";
+
+		size_t platformId = std::numeric_limits<size_t>::max();
+		size_t deviceId = std::numeric_limits<size_t>::max();
 	};
 	typedef struct OpenCLDeviceInfo_ OpenCLDeviceInfo;
 
@@ -55,6 +58,7 @@ namespace LucasAlias::NINA::NinaPP {
 		NINAPP_API std::vector<size_t> createContext(const std::vector<std::pair<size_t, size_t>>& platforms_devices);
 
 		NINAPP_API size_t createExecutionContext(size_t platform, size_t device, const std::wstring& sourcePath, const std::vector<std::wstring>& sourceFiles);
+		NINAPP_API void clearExecutionContextList();
 
 	private:
 		std::unique_ptr<Impl> _impl;

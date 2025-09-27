@@ -47,5 +47,8 @@
     <Setting Name="Accord_Imaging_Filters_Convolution__MT" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

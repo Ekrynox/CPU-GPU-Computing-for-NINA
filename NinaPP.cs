@@ -12,6 +12,7 @@ using NINA.WPF.Base.Interfaces.Mediator;
 using NINA.WPF.Base.Interfaces.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -37,21 +38,17 @@ namespace LucasAlias.NINA.NinaPP {
             this.profileService = profileService;
 
             NinaPPMediator.RegisterPlugin(this);
+            NinaPPMediator.RegisterOpenCLManager(new OpenCL.Manager());
+
+            OpenCLAvailableGpus.Add(new OpenCL.DeviceInfo());
+            for (uint p = 0; p < NinaPPMediator.OpenCLManager.GetCLPlatformNumber(); p++) {
+                for (uint d = 0; d < NinaPPMediator.OpenCLManager.GetCLDeviceNumber(p); d++) {
+                    OpenCLAvailableGpus.Add(NinaPPMediator.OpenCLManager.GetDeviceInfo(p, d));
+                }
+            }
 
             this._harmony = new Harmony("com.example.patch");
             PatchAll();
-
-            NinaPPMediator.RegisterOpenCLManager(new OpenCL.Manager());
-            string devices = "";
-            for (uint p = 0; p < NinaPPMediator.OpenCLManager.GetCLPlatformNumber(); p++) {
-                for (uint d = 0; d < NinaPPMediator.OpenCLManager.GetCLDeviceNumber(p); d++) {
-                    var info = NinaPPMediator.OpenCLManager.GetDeviceInfo(p, d);
-                    devices += $"{p}:{d} -> {info.vendor} {info.name}\n";
-                }
-            }
-            //Notification.ShowSuccess($"Plateforms Number: {NinaPPMediator.OpenCLManager.GetCLPlatformNumber()}\nDevices Number: {NinaPPMediator.OpenCLManager.GetCLDeviceNumber()}\n{devices}");
-
-            var ctx = NinaPPMediator.OpenCLManager.CreateExecutionContext(1, 0, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
         }
 
         public override Task Teardown() {
@@ -68,11 +65,17 @@ namespace LucasAlias.NINA.NinaPP {
         private void ProfileService_ProfileChanged(object sender, EventArgs e) {}
 
 
+        public ObservableCollection<OpenCL.DeviceInfo> OpenCLAvailableGpus { get; } = new ObservableCollection<OpenCL.DeviceInfo>();
+
         private void PatchAll() {
             lock (this._harmonyLock) {
                 this._harmony.UnpatchAll(this._harmony.Id);
 
-                if (NINA_Image_ImageAnalysis_BayerFilter16bpp) _harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
+                if (NINA_Image_ImageAnalysis_BayerFilter16bpp) { 
+                    _harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
+                    var info = NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL;
+                    if (info != null) NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = NinaPPMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
+                }
                 if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) _harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
                 if (NINA_Image_ImageAnalysis_FastGaussianBlur) _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
                 if (NINA_Image_ImageAnalysis_StarDetection) _harmony.PatchCategory("NINA_Image_ImageAnalysis_StarDetection");
@@ -95,8 +98,13 @@ namespace LucasAlias.NINA.NinaPP {
         private void UnPatchAll() {
             lock (this._harmonyLock) {
                 this._harmony.UnpatchAll(this._harmony.Id);
+
+                NinaPPMediator.OpenCLManager.ClearExecutionContextList();
+                NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = 0;
             }
         }
+
+
 
 
         public bool NINA_Image_ImageAnalysis_BayerFilter16bpp {
@@ -115,6 +123,19 @@ namespace LucasAlias.NINA.NinaPP {
                 RaisePropertyChanged();
             }
         }
+        public OpenCL.DeviceInfo? NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL {
+            get {
+                var i = OpenCLAvailableGpus.First(e => $"{e.Vendor} -> {e.Name}" == Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL);
+                return i != null ? (i.Name == "" && i.Vendor == "" ? null : i) : null;
+            }
+            set {
+                Settings.Default.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL = value != null ? $"{value.Vendor} -> {value.Name}" : "";
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+        public uint? NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = null;
+
         public bool NINA_Image_ImageAnalysis_ColorRemappingGeneral {
             get => Settings.Default.NINA_Image_ImageAnalysis_ColorRemappingGeneral;
             set {

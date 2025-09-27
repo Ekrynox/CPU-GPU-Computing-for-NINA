@@ -11,15 +11,19 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="assets\**" />
     <Compile Remove="NINA++.Native\**" />
     <Compile Remove="NINA++.Wrapper\**" />
     <Compile Remove="x64\**" />
+    <EmbeddedResource Remove="assets\**" />
     <EmbeddedResource Remove="NINA++.Native\**" />
     <EmbeddedResource Remove="NINA++.Wrapper\**" />
     <EmbeddedResource Remove="x64\**" />
+    <None Remove="assets\**" />
     <None Remove="NINA++.Native\**" />
     <None Remove="NINA++.Wrapper\**" />
     <None Remove="x64\**" />
+    <Page Remove="assets\**" />
     <Page Remove="NINA++.Native\**" />
     <Page Remove="NINA++.Wrapper\**" />
     <Page Remove="x64\**" />

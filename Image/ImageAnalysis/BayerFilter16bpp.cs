@@ -22,8 +22,9 @@ namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             for (var i = 0; i < 100; i++) {
-                //Patch_BayerFilter16bpp.ProcessFilter(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing, NinaPPMediator.Plugin.NINA_Image_ImageAnalysis_BayerFilter16bpp__MT);
-                Patch_BayerFilter16bpp.ProcessFilterOpenCL(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing, NinaPPMediator.OpenCLManager, 0);
+                if (NinaPPMediator.Plugin.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL != null && NinaPPMediator.Plugin.NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context is uint context) {
+                    Patch_BayerFilter16bpp.ProcessFilterOpenCL(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing, NinaPPMediator.OpenCLManager, context);
+                } else Patch_BayerFilter16bpp.ProcessFilter(ref sourceData, ref destinationData, ref arr, __instance.BayerPattern, __instance.SaveColorChannels, __instance.SaveLumChannel, __instance.PerformDemosaicing, NinaPPMediator.Plugin.NINA_Image_ImageAnalysis_BayerFilter16bpp__MT);
             }
             stopWatch.Stop();
             Notification.ShowInformation($"Avg Time (ms): {stopWatch.Elapsed.TotalMilliseconds / 100.0}");

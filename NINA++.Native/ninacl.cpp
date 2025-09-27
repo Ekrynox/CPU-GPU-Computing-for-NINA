@@ -88,6 +88,16 @@ namespace LucasAlias::NINA::NinaPP {
 		deviceInfo.name = device.getInfo<CL_DEVICE_NAME>();
 		deviceInfo.vendor = device.getInfo<CL_DEVICE_VENDOR>();
 
+		for (auto p = 0; p < this->platforms.size(); p++) {
+			for (auto d = 0; d < this->devices[this->platforms[p]].size(); d++) {
+				if (this->devices[this->platforms[p]][d] == device) {
+					deviceInfo.platformId = p;
+					deviceInfo.deviceId = d;
+					return deviceInfo;
+				}
+			}
+		}
+
 		return deviceInfo;
 	}
 
@@ -143,5 +153,9 @@ namespace LucasAlias::NINA::NinaPP {
 	OpenCLManager::Impl::executionContext OpenCLManager::Impl::getExecutionContext(size_t executionContext) {
 		if (!this->executionContexts.contains(executionContext)) throw OpenCLContextNotFound();
 		return this->executionContexts[executionContext];
+	}
+
+	void OpenCLManager::clearExecutionContextList() {
+		this->_impl->executionContexts.clear();
 	}
 }
