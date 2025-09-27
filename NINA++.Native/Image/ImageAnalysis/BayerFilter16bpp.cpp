@@ -1854,13 +1854,25 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         kernel.setArg(10, BarrBuffer);
         kernel.setArg(11, LarrBuffer);
 
+        /*size_t localX = 16, localY = 16;
+        size_t globalX = ((width + localX - 1) / localX) * localX;
+        size_t globalY = ((height + localY - 1) / localY) * localY;
+        cl::NDRange global(globalY, globalX);
+        cl::NDRange local(localY, localX);
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);*/
+
         cl::NDRange global(height, width);
-        //cl::NDRange local(256);
         exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
-        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst);
-        exctx.commandQ.enqueueReadBuffer(RarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Rarr);
-        exctx.commandQ.enqueueReadBuffer(GarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Garr);
-        exctx.commandQ.enqueueReadBuffer(BarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Barr);
-        exctx.commandQ.enqueueReadBuffer(LarrBuffer, CL_TRUE, 0, height * width * sizeof(uint16_t), Larr);
+
+        std::vector<cl::Event> readEvents;
+        cl::Event e1, e2, e3, e4, e5;
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_FALSE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst, nullptr, &e1);
+        exctx.commandQ.enqueueReadBuffer(RarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Rarr, nullptr, &e2);
+        exctx.commandQ.enqueueReadBuffer(GarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Garr, nullptr, &e3);
+        exctx.commandQ.enqueueReadBuffer(BarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Barr, nullptr, &e4);
+        exctx.commandQ.enqueueReadBuffer(LarrBuffer, CL_FALSE, 0, height * width * sizeof(uint16_t), Larr, nullptr, &e5);
+        readEvents = { e1, e2, e3, e4, e5 };
+        cl::Event::waitForEvents(readEvents);
+
     }
 }

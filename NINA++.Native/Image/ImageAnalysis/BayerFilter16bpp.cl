@@ -110,12 +110,16 @@ __kernel void debayerPattern(const int width, const int height, __global unsigne
         }
     }
 
-    tmpdst[RGB_R] = (unsigned short)(rgbValues[RGB_R] / rgbCounters[RGB_R]);
-    tmpdst[RGB_G] = (unsigned short)(rgbValues[RGB_G] / rgbCounters[RGB_G]);
-    tmpdst[RGB_B] = (unsigned short)(rgbValues[RGB_B] / rgbCounters[RGB_B]);
+    rgbValues[RGB_R] = (unsigned short)(rgbValues[RGB_R] / rgbCounters[RGB_R]);
+    rgbValues[RGB_G] = (unsigned short)(rgbValues[RGB_G] / rgbCounters[RGB_G]);
+    rgbValues[RGB_B] = (unsigned short)(rgbValues[RGB_B] / rgbCounters[RGB_B]);
 
-    Rarr[counter] = tmpdst[RGB_B];
-    Garr[counter] = tmpdst[RGB_G];
-    Barr[counter] = tmpdst[RGB_R];
-    Larr[counter] = (unsigned short)floor(((unsigned int)tmpdst[RGB_R] + (unsigned int)tmpdst[RGB_G] + (unsigned int)tmpdst[RGB_B]) / 3.0);
+    tmpdst[RGB_R] = (unsigned short)rgbValues[RGB_R];
+    tmpdst[RGB_G] = (unsigned short)rgbValues[RGB_G];
+    tmpdst[RGB_B] = (unsigned short)rgbValues[RGB_B];
+
+    Rarr[counter] = (unsigned short)rgbValues[RGB_B];
+    Garr[counter] = (unsigned short)rgbValues[RGB_G];
+    Barr[counter] = (unsigned short)rgbValues[RGB_R];
+    Larr[counter] = (unsigned short)floor((rgbValues[RGB_R] + rgbValues[RGB_G] + rgbValues[RGB_B]) / 3.0);
 }
