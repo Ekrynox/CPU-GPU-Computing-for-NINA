@@ -25,7 +25,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
     template <typename T> NINAPP_API void Process1CImage(T* baseSrc, T* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernel, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges, const bool __MT) {
         int32_t radius = size >> 1;
         int32_t kernelSize = size * size;
-
+        
         if (__MT) {
             auto view = std::views::iota(startY, stopY);
             std::for_each(std::execution::par_unseq, view.begin(), view.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
@@ -95,7 +95,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                 T* dst = baseDst + y * dstStride;
 
                 // for each pixel
-                for (int32_t x = startX; x < stopX; x++, baseSrc++, baseDst++) {
+                for (int32_t x = startX; x < stopX; x++, src++, dst++) {
                     g = div = processedKernelSize = 0;
 
                     // for each kernel row
@@ -119,7 +119,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                                 k = kernel[i * size + j];
 
                                 div += k;
-                                g += k * baseSrc[ir * srcStride + jr];
+                                g += k * src[ir * srcStride + jr];
                                 processedKernelSize++;
                             }
                         }
@@ -138,7 +138,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                     // check divider
                     if (div != 0) g /= div;
                     g += threshold;
-                    *baseDst = (T)((g > std::numeric_limits<T>::max()) ? std::numeric_limits<T>::max() : ((g < std::numeric_limits<T>::lowest()) ? std::numeric_limits<T>::lowest() : g));
+                    *dst = (T)((g > std::numeric_limits<T>::max()) ? std::numeric_limits<T>::max() : ((g < std::numeric_limits<T>::lowest()) ? std::numeric_limits<T>::lowest() : g));
                 }
             }
         }
