@@ -3,6 +3,7 @@
 ## 0.5.0.0
 - Implement OpenCL debayering
 - Optimize loops management for multithreaded function
+- Fix Settings error on 3.2RC7
 
 ## 0.4.0.0
 - Add Settings to enable/disable functions patch
