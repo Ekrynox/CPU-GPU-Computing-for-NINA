@@ -1840,29 +1840,31 @@ namespace LucasAlias::NINA::NinaPP::Image::ImageAnalysis {
         exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint16_t), src);
         exctx.commandQ.enqueueWriteBuffer(bayerBuffer, CL_FALSE, 0, 2 * 2 * sizeof(int32_t), BayerPattern);
 
-        auto kernel = cl::Kernel(exctx.programs[L"BayerFilter16bpp.cl"], "debayerPattern");
-        kernel.setArg(0, width);
-        kernel.setArg(1, height);
-        kernel.setArg(2, srcBuffer);
-        kernel.setArg(3, dstBuffer);
-        kernel.setArg(4, srcStride);
-        kernel.setArg(5, srcOffset);
-        kernel.setArg(6, dstOffset);
-        kernel.setArg(7, bayerBuffer);
-        kernel.setArg(8, RarrBuffer);
-        kernel.setArg(9, GarrBuffer);
-        kernel.setArg(10, BarrBuffer);
-        kernel.setArg(11, LarrBuffer);
-
-        /*size_t localX = 16, localY = 16;
+        int localX = 16, localY = 16;
         size_t globalX = ((width + localX - 1) / localX) * localX;
         size_t globalY = ((height + localY - 1) / localY) * localY;
         cl::NDRange global(globalY, globalX);
         cl::NDRange local(localY, localX);
-        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);*/
 
-        cl::NDRange global(height, width);
-        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
+        auto kernel = cl::Kernel(exctx.programs[L"BayerFilter16bpp.cl"], "debayerPattern");
+        int arg = 0;
+        kernel.setArg(arg++, width);
+        kernel.setArg(arg++, height);
+        kernel.setArg(arg++, localX);
+        kernel.setArg(arg++, localY);
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, (localX + 2) * (localY + 2) * sizeof(uint16_t), nullptr);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, srcOffset);
+        kernel.setArg(arg++, dstOffset);
+        kernel.setArg(arg++, bayerBuffer);
+        kernel.setArg(arg++, RarrBuffer);
+        kernel.setArg(arg++, GarrBuffer);
+        kernel.setArg(arg++, BarrBuffer);
+        kernel.setArg(arg++, LarrBuffer);
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
 
         std::vector<cl::Event> readEvents;
         cl::Event e1, e2, e3, e4, e5;
