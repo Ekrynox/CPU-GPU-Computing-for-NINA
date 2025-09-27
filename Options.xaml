@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ninactrl="clr-namespace:NINA.CustomControlLibrary;assembly=NINA.CustomControlLibrary">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate x:Key="NINA++ - You gotta go fast!_Options">
         <StackPanel Grid.IsSharedSizeScope="True" Orientation="Vertical">
 
