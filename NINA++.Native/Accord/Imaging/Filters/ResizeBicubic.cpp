@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <execution>
+#include <ranges>
 
 #include "ResizeBicubic.hpp"
 
@@ -61,9 +62,8 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         int32_t xmax = width - 1;
 
         if (__MT) {
-            std::vector<int32_t> indices(newHeight);
-            std::iota(indices.begin(), indices.end(), 0);
-            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
+            auto view = std::views::iota(0, newHeight);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
                 // Y coordinates
                 uint8_t* dst = baseDst + y * dstStride;
 
@@ -154,9 +154,8 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         int32_t xmax = width - 1;
         
         if (__MT) {
-            std::vector<int32_t> indices(newHeight);
-            std::iota(indices.begin(), indices.end(), 0);
-            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
+            auto view = std::views::iota(0, newHeight);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
                 // Y coordinates
                 uint8_t* dst = baseDst + y * dstStride;
 
@@ -267,9 +266,8 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         int32_t xmax = width - 1;
 
         if (__MT) {
-            std::vector<int32_t> indices(newHeight);
-            std::iota(indices.begin(), indices.end(), 0);
-            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
+            auto view = std::views::iota(0, newHeight);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [src, width, height, srcStride, baseDst, newWidth, newHeight, dstStride, dstOffset, xFactor, yFactor, xmax, ymax](int32_t y) {
                 // Y coordinates
                 uint8_t* dst = baseDst + y * dstStride;
 

@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <execution>
 #include <limits>
+#include <ranges>
 
 
 
@@ -26,9 +27,8 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         int32_t kernelSize = size * size;
 
         if (__MT) {
-            std::vector<int32_t> indices(stopY - startY);
-            std::iota(indices.begin(), indices.end(), startY);
-            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
+            auto view = std::views::iota(startY, stopY);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
                 int32_t i, j, t, k, ir, jr;
                 int64_t g, div;
                 int32_t processedKernelSize;
@@ -153,9 +153,8 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         int32_t kernelSize = size * size;
 
         if (__MT) {
-            std::vector<int32_t> indices(stopY - startY);
-            std::iota(indices.begin(), indices.end(), startY);
-            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
+            auto view = std::views::iota(startY, stopY);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
                 int32_t i, j, t, k, ir, jr;
                 int64_t r, g, b, div;
                 int32_t processedKernelSize;
@@ -314,9 +313,8 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         int32_t kernelSize = size * size;
 
         if (__MT) {
-            std::vector<int32_t> indices(stopY - startY);
-            std::iota(indices.begin(), indices.end(), startY);
-            std::for_each(std::execution::par_unseq, indices.begin(), indices.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
+            auto view = std::views::iota(startY, stopY);
+            std::for_each(std::execution::par_unseq, view.begin(), view.end(), [baseSrc, baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel, divisor, threshold, size, dynamicDivisorForEdges, radius, kernelSize](int32_t y) {
                 int32_t i, j, t, k, ir, jr;
                 int64_t r, g, b, a, div;
                 int32_t processedKernelSize;
