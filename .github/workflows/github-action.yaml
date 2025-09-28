@@ -47,6 +47,9 @@ jobs:
         uses: lukka/run-vcpkg@v11
         with:
             vcpkgJsonGlob: '**/vcpkg.json'
+            
+      - name: Integrate vcpkg
+        run: vcpkg integrate install
 
       - name: Restore NuGet packages
         run: nuget restore "${{ env.PLUGIN_SLN_NAME }}.sln"
