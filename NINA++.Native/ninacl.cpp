@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 
 
 
@@ -126,8 +127,32 @@ namespace LucasAlias::NINA::NinaPP {
 		auto sourceCode = std::string(std::istreambuf_iterator<char>(sourceStream), (std::istreambuf_iterator<char>()));
 
 		cl_int err = CL_SUCCESS;
-		auto program = cl::Program(context, sourceCode, true, &err);
-		if (err != CL_SUCCESS) throw std::runtime_error("Error while building the OpenCL program!");
+		auto program = cl::Program(context, sourceCode, false, &err);
+
+		auto devices = context.getInfo<CL_CONTEXT_DEVICES>();
+
+		try {
+			program.build(devices);
+		}
+		catch (cl::Error& e) {
+			if (e.err() == CL_BUILD_PROGRAM_FAILURE) {
+				for (auto& dev : devices) {
+					std::string devName = dev.getInfo<CL_DEVICE_NAME>();
+					std::string buildLog = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(dev);
+					/*std::cerr << "Build log for " << devName
+						<< " (" << std::string(sourceFile.begin(), sourceFile.end()) << "):\n"
+						<< buildLog << std::endl;*/
+					auto st = std::stringstream();
+					st << "Build log for " << devName
+						<< " (" << std::string(sourceFile.begin(), sourceFile.end()) << "):\n"
+						<< buildLog << std::endl;
+					throw std::runtime_error(st.str());
+				}
+			}
+			throw;
+		}
+
+
 		return program;
 	}
 
