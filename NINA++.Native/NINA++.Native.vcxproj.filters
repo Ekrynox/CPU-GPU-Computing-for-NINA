@@ -144,7 +144,7 @@
     <CopyFileToFolders Include="Image\ImageAnalysis\BayerFilter16bpp.cl">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="ResizeBicubic.cl">
+    <CopyFileToFolders Include="Accord\Imaging\Filters\ResizeBicubic.cl">
       <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </CopyFileToFolders>
   </ItemGroup>
