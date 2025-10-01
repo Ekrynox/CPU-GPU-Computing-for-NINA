@@ -141,11 +141,11 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vcpkg.json" />
-  </ItemGroup>
-  <ItemGroup>
     <CopyFileToFolders Include="Image\ImageAnalysis\BayerFilter16bpp.cl">
       <Filter>Source Files\Image\ImageAnalysis</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ResizeBicubic.cl">
+      <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </CopyFileToFolders>
   </ItemGroup>
 </Project>

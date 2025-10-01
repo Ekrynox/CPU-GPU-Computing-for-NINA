@@ -50,5 +50,8 @@
     <Setting Name="NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="Accord_Imaging_Filters_ResizeBicubic__OpCL" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

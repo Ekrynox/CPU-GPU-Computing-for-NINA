@@ -3,7 +3,6 @@ using HarmonyLib;
 using NINA.CustomControlLibrary;
 using NINA.Image.ImageAnalysis;
 using NINA.Image.ImageData;
-using NINA.Core.Utility.Notification;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

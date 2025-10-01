@@ -33,11 +33,13 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 
+#include "ResizeBicubic.hpp"
+
+#include "../../../ninacl_internal.hpp"
+
 #include <algorithm>
 #include <execution>
 #include <ranges>
-
-#include "ResizeBicubic.hpp"
 
 
 
@@ -375,4 +377,30 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         }
     }
 
+
+    void ResizeBicubicGrayScaleOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint8_t), src);
+
+        cl::NDRange global(newHeight, newWidth);
+
+        auto kernel = cl::Kernel(exctx.programs[L"ResizeBicubic.cl"], "ResizeBicubicGrayScale");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, width);
+        kernel.setArg(arg++, height);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, newWidth);
+        kernel.setArg(arg++, newHeight);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, dstOffset);
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst);
+    }
 }

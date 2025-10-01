@@ -85,7 +85,11 @@ namespace LucasAlias.NINA.NinaPP {
                 if (Accord_Imaging_Filters_CannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_CannyEdgeDetector");
                 if (Accord_Imaging_Filters_Convolution) _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
                 if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
-                if (Accord_Imaging_Filters_ResizeBicubic) _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
+                if (Accord_Imaging_Filters_ResizeBicubic) {
+                    _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
+                    var info = Accord_Imaging_Filters_ResizeBicubic__OpCL;
+                    if (info != null) Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = NinaPPMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["ResizeBicubic.cl"]));
+                }
                 if (Accord_Imaging_Filters_SISThreshold) _harmony.PatchCategory("Accord_Imaging_Filters_SISThreshold");
 
                 if (Accord_Imaging_BlobCounter) _harmony.PatchCategory("Accord_Imaging_BlobCounter");
@@ -202,6 +206,7 @@ namespace LucasAlias.NINA.NinaPP {
                 RaisePropertyChanged();
             }
         }
+
         public bool Accord_Imaging_Filters_ResizeBicubic {
             get => Settings.Default.Accord_Imaging_Filters_ResizeBicubic;
             set {
@@ -218,6 +223,19 @@ namespace LucasAlias.NINA.NinaPP {
                 RaisePropertyChanged();
             }
         }
+        public OpenCL.DeviceInfo? Accord_Imaging_Filters_ResizeBicubic__OpCL {
+            get {
+                var i = OpenCLAvailableGpus.Where(e => $"{e.Vendor} -> {e.Name}" == Settings.Default.Accord_Imaging_Filters_ResizeBicubic__OpCL);
+                return i.Count() > 0 ? (i.First().Name == "" && i.First().Vendor == "" ? null : i.First()) : null;
+            }
+            set {
+                Settings.Default.Accord_Imaging_Filters_ResizeBicubic__OpCL = (value != null) ? $"{value.Vendor} -> {value.Name}" : "";
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+        public uint? Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = null;
+
         public bool Accord_Imaging_Filters_SISThreshold {
             get => Settings.Default.Accord_Imaging_Filters_SISThreshold;
             set {
@@ -226,6 +244,7 @@ namespace LucasAlias.NINA.NinaPP {
                 RaisePropertyChanged();
             }
         }
+
 
         public bool Accord_Imaging_BlobCounter {
             get => Settings.Default.Accord_Imaging_BlobCounter;
