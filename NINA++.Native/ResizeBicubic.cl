@@ -49,5 +49,5 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
             g += k2 * src[oy2 * srcStride + ox2];
         }
     }
-    dst[y * dstStride + x] = clamp((uchar)g, (uchar)0, (uchar)255);
+    dst[y * dstStride + x] = (uchar)clamp(g, 0.0f, 255.0f);
 }

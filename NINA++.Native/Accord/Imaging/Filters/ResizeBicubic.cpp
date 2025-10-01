@@ -102,7 +102,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                             g += k2 * src[oy2 * srcStride + ox2];
                         }
                     }
-                    *dst = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                    *dst = (uint8_t)std::max(0.0, std::min(255.0, g));
                 }
                 });
         }
@@ -141,7 +141,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                             g += k2 * src[oy2 * srcStride + ox2];
                         }
                     }
-                    *baseDst = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
+                    *baseDst = (uint8_t)std::max(0.0, std::min(255.0, g));
                 }
                 baseDst += dstOffset;
             }
@@ -202,9 +202,9 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                         }
                     }
 
-                    dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                    dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                    dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                    dst[RGB::R] = (uint8_t)std::max(0.0, std::min(255.0, r));
+                    dst[RGB::G] = (uint8_t)std::max(0.0, std::min(255.0, g));
+                    dst[RGB::B] = (uint8_t)std::max(0.0, std::min(255.0, b));
                 }
                 });
         }
@@ -251,9 +251,9 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                         }
                     }
 
-                    baseDst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                    baseDst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                    baseDst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                    baseDst[RGB::R] = (uint8_t)std::max(0.0, std::min(255.0, r));
+                    baseDst[RGB::G] = (uint8_t)std::max(0.0, std::min(255.0, g));
+                    baseDst[RGB::B] = (uint8_t)std::max(0.0, std::min(255.0, b));
                 }
                 baseDst += dstOffset;
             }
@@ -315,10 +315,10 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                         }
                     }
 
-                    dst[RGB::A] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)a));
-                    dst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                    dst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                    dst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                    dst[RGB::A] = (uint8_t)std::max(0.0, std::min(255.0, a));
+                    dst[RGB::R] = (uint8_t)std::max(0.0, std::min(255.0, r));
+                    dst[RGB::G] = (uint8_t)std::max(0.0, std::min(255.0, g));
+                    dst[RGB::B] = (uint8_t)std::max(0.0, std::min(255.0, b));
                 }
                 });
         }
@@ -367,10 +367,10 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
                         }
                     }
 
-                    baseDst[RGB::A] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)a));
-                    baseDst[RGB::R] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)r));
-                    baseDst[RGB::G] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)g));
-                    baseDst[RGB::B] = std::max((uint8_t)0, std::min((uint8_t)255, (uint8_t)b));
+                    baseDst[RGB::A] = (uint8_t)std::max(0.0, std::min(255.0, a));
+                    baseDst[RGB::R] = (uint8_t)std::max(0.0, std::min(255.0, r));
+                    baseDst[RGB::G] = (uint8_t)std::max(0.0, std::min(255.0, g));
+                    baseDst[RGB::B] = (uint8_t)std::max(0.0, std::min(255.0, b));
                 }
                 baseDst += dstOffset;
             }
@@ -384,7 +384,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
         auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
 
-        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint8_t), src);
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
 
         cl::NDRange global(newHeight, newWidth);
 
