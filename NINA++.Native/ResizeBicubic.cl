@@ -5,12 +5,7 @@
 
 float BiCubicKernel(float x) {
     x = fabs(x);
-
-    float biCoef = 0;
-    if (x <= 1) biCoef = (1.5 * x - 2.5) * x * x + 1;
-    else if (x < 2) biCoef = ((-0.5 * x + 2.5) * x - 4) * x + 2;
-
-    return biCoef;
+    return (x <= 1) * ((1.5 * x - 2.5) * x * x + 1) + (x > 1) * (x < 2) * (((-0.5 * x + 2.5) * x - 4) * x + 2);
 }
 
 
@@ -43,17 +38,13 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
         // get Y cooefficient
         float k1 = BiCubicKernel(dy - (float)n);
 
-        int oy2 = oy1 + n;
-        if (oy2 < 0) oy2 = 0;
-        if (oy2 > ymax)  oy2 = ymax;
+        int oy2 = clamp(oy1 + n, 0, ymax);
 
         for (int m = -1; m < 3; m++) {
             // get X cooefficient
             float k2 = k1 * BiCubicKernel((float)m - dx);
 
-            int ox2 = ox1 + m;
-            if (ox2 < 0) ox2 = 0;
-            if (ox2 > xmax) ox2 = xmax;
+            int ox2 = clamp(ox1 + m, 0, xmax);
 
             g += k2 * src[oy2 * srcStride + ox2];
         }
