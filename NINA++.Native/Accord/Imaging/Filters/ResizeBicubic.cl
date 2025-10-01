@@ -3,9 +3,14 @@
 #define RGB_B 0
 
 
-float BiCubicKernel(float x) {
+static inline float BiCubicKernel(float x) {
     x = fabs(x);
-    return (x <= 1) * ((1.5 * x - 2.5) * x * x + 1) + (x > 1) * (x < 2) * (((-0.5 * x + 2.5) * x - 4) * x + 2);
+
+    float biCoef = 0;
+    if (x <= 1) biCoef = (1.5 * x - 2.5) * x * x + 1;
+    else if (x < 2) biCoef = ((-0.5 * x + 2.5) * x - 4) * x + 2;
+
+    return biCoef;
 }
 
 

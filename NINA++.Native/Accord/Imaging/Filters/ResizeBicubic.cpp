@@ -386,7 +386,26 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
 
         exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
 
-        cl::NDRange global(newHeight, newWidth);
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange(newHeight, newWidth);
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = ((newWidth + localX - 1) / localX) * localX;
+            size_t globalY = ((newHeight + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
 
         auto kernel = cl::Kernel(exctx.programs[L"ResizeBicubic.cl"], "ResizeBicubicGrayScale");
         int arg = 0;
@@ -400,7 +419,7 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
         kernel.setArg(arg++, dstStride);
         kernel.setArg(arg++, dstOffset);
 
-        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
         exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst);
     }
 }
