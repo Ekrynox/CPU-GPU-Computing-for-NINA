@@ -37,10 +37,10 @@ namespace LucasAlias::NINA::NinaPP::Accord::Imaging::Filters {
 				ResizeBicubicGrayScaleOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
 			}
 			else if (sourceData->PixelSize == 3) {
-				//ResizeBicubicRGB(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset, __MT);
+				ResizeBicubicRGBOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
 			}
 			else if (sourceData->PixelSize == 4) {
-				//ResizeBicubicARGB(src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset, __MT);
+				ResizeBicubicARGBOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
 			}
 			else {
 				throw gcnew System::InvalidOperationException("Execution should never reach here.");

@@ -1,6 +1,7 @@
 #define RGB_R 2
 #define RGB_G 1
 #define RGB_B 0
+#define RGB_A 3
 
 
 static inline float BiCubicKernel(float x) {
@@ -55,4 +56,117 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
         }
     }
     dst[y * dstStride + x] = (uchar)clamp(g, 0.0f, 255.0f);
+}
+
+
+__kernel void ResizeBicubicRGB(__global uchar* src, const int width, const int height, const int srcStride, __global uchar* dst, const int newWidth, const int newHeight, const int dstStride, const int dstOffset) {
+    int y = get_global_id(0);
+    int x = get_global_id(1);
+
+    float xFactor = (float)width / newWidth;
+    float yFactor = (float)height / newHeight;
+
+    int ymax = height - 1;
+    int xmax = width - 1;
+
+    if (y >= newHeight || x >= newWidth) return;
+
+    // Y coordinates
+    float oy = (float)y * yFactor - 0.5;
+    int oy1 = (int)oy;
+    float dy = oy - (float)oy1;
+
+    // X coordinates
+    float ox = (float)x * xFactor - 0.5f;
+    int ox1 = (int)ox;
+    float dx = ox - (float)ox1;
+
+    // initial pixel value
+    float r = 0;
+    float g = 0;
+    float b = 0;
+
+    for (int n = -1; n < 3; n++) {
+        // get Y cooefficient
+        float k1 = BiCubicKernel(dy - (float)n);
+
+        int oy2 = clamp(oy1 + n, 0, ymax);
+
+        for (int m = -1; m < 3; m++) {
+            // get X cooefficient
+            float k2 = k1 * BiCubicKernel((float)m - dx);
+
+            int ox2 = clamp(ox1 + m, 0, xmax);
+
+            // get pixel of original image
+            __global uchar* p = src + oy2 * srcStride + ox2 * 3;
+
+            r += k2 * p[RGB_R];
+            g += k2 * p[RGB_G];
+            b += k2 * p[RGB_B];
+        }
+    }
+
+    __global uchar* p = dst + y * dstStride + x;
+    p[RGB_R] = (uchar)clamp(r, 0.0f, 255.0f);
+    p[RGB_G] = (uchar)clamp(g, 0.0f, 255.0f);
+    p[RGB_B] = (uchar)clamp(b, 0.0f, 255.0f);
+}
+
+
+__kernel void ResizeBicubicARGB(__global uchar* src, const int width, const int height, const int srcStride, __global uchar* dst, const int newWidth, const int newHeight, const int dstStride, const int dstOffset) {
+    int y = get_global_id(0);
+    int x = get_global_id(1);
+
+    float xFactor = (float)width / newWidth;
+    float yFactor = (float)height / newHeight;
+
+    int ymax = height - 1;
+    int xmax = width - 1;
+
+    if (y >= newHeight || x >= newWidth) return;
+
+    // Y coordinates
+    float oy = (float)y * yFactor - 0.5;
+    int oy1 = (int)oy;
+    float dy = oy - (float)oy1;
+
+    // X coordinates
+    float ox = (float)x * xFactor - 0.5f;
+    int ox1 = (int)ox;
+    float dx = ox - (float)ox1;
+
+    // initial pixel value
+    float r = 0;
+    float g = 0;
+    float b = 0;
+    float a = 0;
+
+    for (int n = -1; n < 3; n++) {
+        // get Y cooefficient
+        float k1 = BiCubicKernel(dy - (float)n);
+
+        int oy2 = clamp(oy1 + n, 0, ymax);
+
+        for (int m = -1; m < 3; m++) {
+            // get X cooefficient
+            float k2 = k1 * BiCubicKernel((float)m - dx);
+
+            int ox2 = clamp(ox1 + m, 0, xmax);
+
+            // get pixel of original image
+            __global uchar* p = src + oy2 * srcStride + ox2 * 4;
+
+            r += k2 * p[RGB_R];
+            g += k2 * p[RGB_G];
+            b += k2 * p[RGB_B];
+            a += k2 * p[RGB_A];
+        }
+    }
+
+    __global uchar* p = dst + y * dstStride + x;
+    p[RGB_R] = (uchar)clamp(r, 0.0f, 255.0f);
+    p[RGB_G] = (uchar)clamp(g, 0.0f, 255.0f);
+    p[RGB_B] = (uchar)clamp(b, 0.0f, 255.0f);
+    p[RGB_A] = (uchar)clamp(a, 0.0f, 255.0f);
 }

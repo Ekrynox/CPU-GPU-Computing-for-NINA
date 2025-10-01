@@ -16,14 +16,9 @@ namespace LucasAlias.NINA.NinaPP.Accord.Imaging.Filters {
     [HarmonyPatch(typeof(ResizeBicubic), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(UnmanagedImage) })]
     internal class Patch_ResizeBicubic_ProcessFilter {
         static bool Prefix(UnmanagedImage sourceData, UnmanagedImage destinationData) {
-            Stopwatch sw = Stopwatch.StartNew();
-            for (int i = 0; i < 100; i++) {
-                if (NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__OpCL != null && NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__OpCL_Context is uint context) {
-                    Patch_ResizeBicubic.ProcessFilterOpenCL(ref sourceData, ref destinationData, NinaPPMediator.OpenCLManager, context);
-                } else Patch_ResizeBicubic.ProcessFilter(ref sourceData, ref destinationData, NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__MT);
-            }
-            sw.Stop();
-            Notification.ShowInformation($"Average time (ms): {sw.Elapsed.TotalMilliseconds / 100}");
+            if (NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__OpCL != null && NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__OpCL_Context is uint context) {
+                Patch_ResizeBicubic.ProcessFilterOpenCL(ref sourceData, ref destinationData, NinaPPMediator.OpenCLManager, context);
+            } else Patch_ResizeBicubic.ProcessFilter(ref sourceData, ref destinationData, NinaPPMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__MT);
             return false;
         }
     }
