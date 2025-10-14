@@ -19,13 +19,13 @@ permissions:
 
 env:
   # Adjust this to your plugin title
-  PLUGIN_NAME: "NINA++"
+  PLUGIN_NAME: "CGPUNINA"
   # Your solution name
-  PLUGIN_SLN_NAME: "NINA++"
+  PLUGIN_SLN_NAME: "CGPUNINA"
   # The name of the resulting dll file
-  PLUGIN_DLL_NAME: "LucasAlias.NINA.NinaPP"
+  PLUGIN_DLL_NAME: "LucasAlias.NINA.CGPUNINA"
   # The relative path to your manifest folder inside the manifest repository
-  PLUGIN_MANIFEST_PATH: "n/NINA++"
+  PLUGIN_MANIFEST_PATH: "c/CGPUNINA"
   # Compilation parameters
   BUILD_CONFIGURATION: Release
   PLATFORM: x64
@@ -76,15 +76,16 @@ jobs:
           Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/${{ env.PLUGIN_DLL_NAME }}.dll" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_DLL_NAME }}.dll" -Force
           Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/${{ env.PLUGIN_DLL_NAME }}.pdb" "packages/${{ env.PLUGIN_NAME }}/${{ env.PLUGIN_DLL_NAME }}.pdb" -Force       
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/Ijwhost.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/Ijwhost.dll" -Force
-          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Wrapper.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Wrapper.dll" -Force
-          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Wrapper.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Wrapper.pdb" -Force
-          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Native.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Native.dll" -Force
-          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/NINA++.Native.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/NINA++.Native.pdb" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/CGPUNINA.Wrapper.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/CGPUNINA.Wrapper.dll" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/CGPUNINA.Wrapper.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/CGPUNINA.Wrapper.pdb" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/CGPUNINA.Native.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/CGPUNINA.Native.dll" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/CGPUNINA.Native.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/CGPUNINA.Native.pdb" -Force
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/OpenCL.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/OpenCL.dll" -Force
           Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/0Harmony.dll" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/0Harmony.dll" -Force
           Copy-Item "bin/${{ env.BUILD_CONFIGURATION }}/0Harmony.pdb" "packages/${{ env.PLUGIN_NAME }}/runtimes/win-${{env.PLATFORM}}/native/0Harmony.pdb" -Force  
           
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/BayerFilter16bpp.cl" "packages/${{ env.PLUGIN_NAME }}/BayerFilter16bpp.cl" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/ResizeBicubic.cl" "packages/${{ env.PLUGIN_NAME }}/ResizeBicubic.cl" -Force
           
       - name: Create Plugin archives and manifests
         run: |

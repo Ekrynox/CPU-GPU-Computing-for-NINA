@@ -1,5 +1,9 @@
 ﻿# NINA++
 
+## 0.5.1.0
+- Implement OpenCL Accord: Filters: ResizeBicubic
+- Rename project
+
 ## 0.5.0.0
 - Implement OpenCL debayering
 - Optimize loops management for multithreaded function
