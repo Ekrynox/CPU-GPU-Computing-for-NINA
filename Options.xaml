@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary
-    x:Class="LucasAlias.NINA.NinaPP.Options"
+    x:Class="LucasAlias.NINA.CGPUNINA.Options"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ninactrl="clr-namespace:NINA.CustomControlLibrary;assembly=NINA.CustomControlLibrary">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    <DataTemplate x:Key="NINA++ - You gotta go fast!_Options">
+    <DataTemplate x:Key="CPU\GPU Computing for NINA_Options">
         <StackPanel Grid.IsSharedSizeScope="True" Orientation="Vertical">
 
             <Grid>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LucasAlias.NINA.NinaPP.Properties {
+namespace LucasAlias.NINA.CGPUNINA.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

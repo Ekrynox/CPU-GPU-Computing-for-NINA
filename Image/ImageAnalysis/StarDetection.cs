@@ -1,6 +1,6 @@
 ﻿using Accord.Imaging;
 using HarmonyLib;
-using LucasAlias.NINA.NinaPP.Image.ImageAnalysis.CPPStarDetection;
+using LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis.CPPStarDetection;
 using NINA.Image.ImageAnalysis;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static NINA.Image.ImageAnalysis.StarDetection;
 
-namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
+namespace LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis {
 
     [HarmonyPatchCategory("NINA_Image_ImageAnalysis_StarDetection")]
     [HarmonyPatch(typeof(StarDetection.Star), nameof(StarDetection.Star.Calculate), new Type[] { typeof(List<PixelData>) })]

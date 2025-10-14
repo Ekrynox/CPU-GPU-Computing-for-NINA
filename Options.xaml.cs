@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace LucasAlias.NINA.NinaPP {
+namespace LucasAlias.NINA.CGPUNINA {
     [Export(typeof(ResourceDictionary))]
     partial class Options : ResourceDictionary {
 

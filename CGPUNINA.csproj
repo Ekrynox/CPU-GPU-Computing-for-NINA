@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <NormalizedTFM>$([System.String]::Copy($(TargetFramework)).Replace("-windows", ""))</NormalizedTFM>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LucasAlias.NINA.CGPUNINA</RootNamespace>
+    <AssemblyName>LucasAlias.NINA.CGPUNINA</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="assets\**" />
+    <Compile Remove="CGPUNINA.Native\**" />
+    <Compile Remove="CGPUNINA.Wrapper\**" />
+    <Compile Remove="x64\**" />
+    <EmbeddedResource Remove="assets\**" />
+    <EmbeddedResource Remove="CGPUNINA.Native\**" />
+    <EmbeddedResource Remove="CGPUNINA.Wrapper\**" />
+    <EmbeddedResource Remove="x64\**" />
+    <None Remove="assets\**" />
+    <None Remove="CGPUNINA.Native\**" />
+    <None Remove="CGPUNINA.Wrapper\**" />
+    <None Remove="x64\**" />
+    <Page Remove="assets\**" />
+    <Page Remove="CGPUNINA.Native\**" />
+    <Page Remove="CGPUNINA.Wrapper\**" />
+    <Page Remove="x64\**" />
+  </ItemGroup>
+  <ItemGroup>
+	  <PackageReference Include="Lib.Harmony" Version="2.4.1" GeneratePathProperty="true" />
+    <PackageReference Include="NINA.Plugin" Version="3.2.0.3001-rc" />
+  </ItemGroup>
+	<Target Name="CopyHarmony" AfterTargets="Build">
+		<Copy SourceFiles="$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.dll" DestinationFolder="$(OutputPath)" />
+		<Copy SourceFiles="$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.pdb" DestinationFolder="$(OutputPath)" Condition="Exists('$(PkgLib_Harmony)\lib\$(NormalizedTFM)\0Harmony.pdb')" />
+	</Target>
+	<ItemGroup>
+    <ProjectReference Include="CGPUNINA.Wrapper\CGPUNINA.Wrapper.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.Settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.Settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <PropertyGroup />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xD;&#xA;  echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xD;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xD;&#xA;)&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; (&#xD;&#xA;  echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xD;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; /h/i/c/k/e/r/y&#xD;&#xA;  " />
+  </Target>
+</Project>

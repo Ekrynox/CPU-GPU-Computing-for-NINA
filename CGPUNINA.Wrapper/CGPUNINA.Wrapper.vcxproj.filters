@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Image">
+      <UniqueIdentifier>{666effd7-fe97-49a0-8e81-2efdda2cd187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Image\ImageAnalysis">
+      <UniqueIdentifier>{a6a6f833-3ab6-495b-b3d3-5bf705ba16f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Accord">
+      <UniqueIdentifier>{9d09ba35-e2c3-4ee4-b3ff-dae057941e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Accord\Imaging">
+      <UniqueIdentifier>{bda57f04-5931-4911-9209-0f202f07d27e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Accord\Imaging\Filters">
+      <UniqueIdentifier>{4003c7cb-7904-4561-8919-49f62336eab0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CGPUNINA.Wrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\BayerFilter16bpp.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\ColorRemappingGeneral.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\FastGaussianBlur.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Image\ImageAnalysis\StarDetection.h">
+      <Filter>Header Files\Image\ImageAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounter.h">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\BlobCounterBase.h">
+      <Filter>Header Files\Accord\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\Convolution.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\BinaryDilation3x3.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\CannyEdgeDetector.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\NoBlurCannyEdgeDetector.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\ResizeBicubic.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Accord\Imaging\Filters\SISThreshold.h">
+      <Filter>Header Files\Accord\Imaging\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="NinaCL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CGPUNINA.Wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

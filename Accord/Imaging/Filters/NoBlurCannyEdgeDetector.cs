@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LucasAlias.NINA.NinaPP.Accord.Imaging.Filters {
+namespace LucasAlias.NINA.CGPUNINA.Accord.Imaging.Filters {
     [HarmonyPatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector")]
     [HarmonyPatch(typeof(NoBlurCannyEdgeDetector), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(UnmanagedImage), typeof(Rectangle) })]
     internal class Patch_NoBlurCannyEdgeDetector_ProcessFilter {
