@@ -105,10 +105,10 @@
             </Grid>
             <Grid Visibility="{Binding Accord_Imaging_Filters_Convolution, Converter={StaticResource BooleanToVisibilityConverter }}" Margin="0,7,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Accord_Imaging_Filters_Convolution_Labels" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="↳ Multithreaded" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <TextBlock Text="↳ Multithreaded" FontStyle="Italic" VerticalAlignment="Center">
                     <TextBlock.LayoutTransform>
                         <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
                     </TextBlock.LayoutTransform>
