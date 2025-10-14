@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LucasAlias.NINA.NinaPP.Properties {
+namespace LucasAlias.NINA.CGPUNINA.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -212,6 +212,18 @@ namespace LucasAlias.NINA.NinaPP.Properties {
             }
             set {
                 this["NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Accord_Imaging_Filters_ResizeBicubic__OpCL {
+            get {
+                return ((string)(this["Accord_Imaging_Filters_ResizeBicubic__OpCL"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_ResizeBicubic__OpCL"] = value;
             }
         }
     }

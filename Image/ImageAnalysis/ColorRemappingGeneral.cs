@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
+namespace LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis {
 
     [HarmonyPatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral")]
     [HarmonyPatch(typeof(ColorRemappingGeneral), "ProcessFilter", new Type[] { typeof(UnmanagedImage), typeof(System.Drawing.Rectangle) })]

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "NINA++": {
+    "CGPUNINA": {
       "commandName": "Project",
       "nativeDebugging": true
     },

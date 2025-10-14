@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LucasAlias.NINA.NinaPP.Image.ImageAnalysis {
+namespace LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis {
 
     [HarmonyPatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur")]
     [HarmonyPatch(typeof(FastGaussianBlur), "gaussBlur_4", new Type[] { typeof(byte[]), typeof(byte[]), typeof(int) })]
