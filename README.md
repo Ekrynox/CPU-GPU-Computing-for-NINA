@@ -1,10 +1,11 @@
-﻿# NINA++
-NINA++ is a [N.I.N.A.](https://github.com/isbeorn/nina) plugin that aims to move performance-hungry functions to a compiled C++ code.
+﻿# CPU\GPU Computing for NINA
+This is a [N.I.N.A.](https://github.com/isbeorn/nina) plugin that aims to move performance-hungry functions to a compiled C++ code.
 
 It works by injecting C# replacement functions that link to C++ code, with [Harmony](https://harmony.pardeike.net/).
 
-Almost all the source code of this plugin originates from N.I.N.A and Accord Framework.
+Several files of source code of this plugin originates from N.I.N.A and Accord Framework.
 I only copied it from C# to C++, did the few needed adjustements, and make the code to inject the new native functions inside N.I.N.A with Harmony.
+Now, this plugin also offer an GPU Implementation of some functions with OpenCL.
 
 Hence almost all files from this project remains under the licenses of their sources. A updated copy of the different licenses is available at the top of concerned files.
 
