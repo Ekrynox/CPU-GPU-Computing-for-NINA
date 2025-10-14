@@ -7,7 +7,7 @@ Several files of source code of this plugin originates from N.I.N.A and Accord F
 I only copied it from C# to C++, did the few needed adjustements, and make the code to inject the new native functions inside N.I.N.A with Harmony.
 Now, this plugin also offer an GPU Implementation of some functions with OpenCL.
 
-Hence almost all files from this project remains under the licenses of their sources. A updated copy of the different licenses is available at the top of concerned files.
+Hence multiples files from this project remains under the licenses of their sources. A updated copy of the different licenses is available at the top of concerned files.
 
 This plugin allow great performance gains on smaller configurations, with no impact on results.
 
