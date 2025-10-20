@@ -483,10 +483,30 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
         exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint8_t), baseSrc + startY * srcStride * sizeof(uint8_t));
         exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
 
-        //auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
-        cl::NDRange global = cl::NDRange((stopY - startY), (stopX - startX));
+        
+        
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
 
-        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process1CImage8bpp");
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process1CImage8bpp_GLOBAL");
         int arg = 0;
         kernel.setArg(arg++, srcBuffer);
         kernel.setArg(arg++, dstBuffer);
@@ -503,7 +523,7 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
         kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
 
 
-        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
+        exctx.commandQ.enqueueNDRangeKernel(kernel, local, global);
         exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint8_t), baseDst + startY * dstStride * sizeof(uint8_t));
     }
 }
