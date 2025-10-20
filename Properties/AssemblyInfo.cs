@@ -52,11 +52,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 //[Optional] An in-depth description of your plugin
 [assembly: AssemblyMetadata("LongDescription", @"
-Almost all the source code of this plugin originates from N.I.N.A and Accord Framework.
-I only copied it from C# to C++, did the few needed adjustements, and make the code to inject the new native functions inside N.I.N.A with Harmony.
-Now, i also translated the some function to OpenCL to allow GPU computing.
+# CPU\GPU Computing for N.I.N.A
+This is a [N.I.N.A.](https://github.com/isbeorn/nina) plugin that aims to move performance-hungry functions to a compiled C++ code.
 
-Hence multiple files from this project remains under the licenses of their sources. A updated copy of the different licenses is available at the top of concerned files.
+It works by injecting C# replacement functions that link to C++ code, with [Harmony](https://harmony.pardeike.net/).
+
+My work on this plugin mainly consists of the Injection scripts, OpenCL Management, and some Optimizations.
+A large portion of the code is just an translation of the original N.I.N.A and Accord.NET algorithms. Hence those C++ translation remains under the licenses of their sources. A updated copy of the different licenses is available at the top of concerned files.
 
 This plugin allow great performance gains on smaller configurations, with no impact on results.
 
