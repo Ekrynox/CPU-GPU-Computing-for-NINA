@@ -119,6 +119,22 @@
                     </CheckBox.LayoutTransform>
                 </CheckBox>
             </Grid>
+            <Grid Visibility="{Binding Accord_Imaging_Filters_Convolution, Converter={StaticResource BooleanToVisibilityConverter }}" Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Accord_Imaging_Filters_Convolution_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="↳ OpenCL" FontStyle="Italic" VerticalAlignment="Center">
+                    <TextBlock.LayoutTransform>
+                        <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                <ComboBox ItemsSource="{Binding OpenCLAvailableGpus}" SelectedItem="{Binding Accord_Imaging_Filters_Convolution__OpCL, Mode=TwoWay}" DisplayMemberPath="Name"  IsEnabled="{Binding Accord_Imaging_Filters_Convolution}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
+                    <ComboBox.LayoutTransform>
+                        <ScaleTransform ScaleX="0.75" ScaleY="0.75"/>
+                    </ComboBox.LayoutTransform>
+                </ComboBox>
+            </Grid>
 
             <Grid Margin="0,7,0,0">
                 <Grid.ColumnDefinitions>

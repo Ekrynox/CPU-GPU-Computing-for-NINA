@@ -13,6 +13,8 @@
 
 #include "Convolution.hpp"
 
+#include "../../../ninacl_internal.hpp"
+
 #include <algorithm>
 #include <execution>
 #include <limits>
@@ -469,4 +471,39 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
     template CGPUNINA_API void Process4CImage<uint8_t>(uint8_t*, uint8_t*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t*, int32_t, int32_t, int32_t, bool, const bool);
     template CGPUNINA_API void Process4CImage<uint16_t>(uint16_t*, uint16_t*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t*, int32_t, int32_t, int32_t, bool, const bool);
 
+
+
+    void Process1CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint8_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint8_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint8_t), baseSrc + startY * srcStride * sizeof(uint8_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+
+        //auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global = cl::NDRange((stopY - startY), (stopX - startX));
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process1CImage8bpp");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint8_t), baseDst + startY * dstStride * sizeof(uint8_t));
+    }
 }

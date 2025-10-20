@@ -108,7 +108,11 @@ namespace LucasAlias.NINA.CGPUNINA {
 
                     if (Accord_Imaging_Filters_BinaryDilation3x3) _harmony.PatchCategory("Accord_Imaging_Filters_BinaryDilation3x3");
                     if (Accord_Imaging_Filters_CannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_CannyEdgeDetector");
-                    if (Accord_Imaging_Filters_Convolution) _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
+                    if (Accord_Imaging_Filters_Convolution) {
+                        _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
+                        var info = Accord_Imaging_Filters_Convolution__OpCL;
+                        if (info != null) Accord_Imaging_Filters_Convolution__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["Convolution.cl"]));
+                    }
                     if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
                     if (Accord_Imaging_Filters_ResizeBicubic) {
                         _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
@@ -136,8 +140,8 @@ namespace LucasAlias.NINA.CGPUNINA {
                 this._harmony.UnpatchAll(this._harmony.Id);
 
                 CGPUNINAMediator.OpenCLManager.ClearExecutionContextList();
-                NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = 0;
-                Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = 0;
+                NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = null;
+                Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = null;
             }
         }
 
@@ -215,6 +219,7 @@ namespace LucasAlias.NINA.CGPUNINA {
                 RaisePropertyChanged();
             }
         }
+
         public bool Accord_Imaging_Filters_Convolution {
             get => Settings.Default.Accord_Imaging_Filters_Convolution;
             set {
@@ -231,6 +236,19 @@ namespace LucasAlias.NINA.CGPUNINA {
                 RaisePropertyChanged();
             }
         }
+        public OpenCL.DeviceInfo? Accord_Imaging_Filters_Convolution__OpCL {
+            get {
+                var i = OpenCLAvailableGpus.Where(e => $"{e.Vendor} -> {e.Name}" == Settings.Default.Accord_Imaging_Filters_Convolution__OpCL);
+                return i.Count() > 0 ? (i.First().Name == "" && i.First().Vendor == "" ? null : i.First()) : null;
+            }
+            set {
+                Settings.Default.Accord_Imaging_Filters_Convolution__OpCL = (value != null) ? $"{value.Vendor} -> {value.Name}" : "";
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+        public uint? Accord_Imaging_Filters_Convolution__OpCL_Context = null;
+
         public bool Accord_Imaging_Filters_NoBlurCannyEdgeDetector {
             get => Settings.Default.Accord_Imaging_Filters_NoBlurCannyEdgeDetector;
             set {
