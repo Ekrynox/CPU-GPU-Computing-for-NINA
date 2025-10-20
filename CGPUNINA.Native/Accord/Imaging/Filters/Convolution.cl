@@ -5,55 +5,41 @@ __kernel void Process1CImage8bpp(__global unsigned char* baseSrc, __global unsig
     int x = get_global_id(1) + startX;
     
     int radius = size >> 1;
-    int kernelSize = size * size;
 
     __global unsigned char* src = baseSrc + y * srcStride + x;
     __global unsigned char* dst = baseDst + y * dstStride + x;
         
-    int i, j, t, k, ir, jr;
+    int i, j, k, ir, jr;
     long g = 0;
     long div = 0;
     int processedKernelSize = 0;
 
-    // for each kernel row
-    for (i = 0; i < size; i++) {
-        ir = i - radius;
-        t = y + ir;
+    int imin = max(0, startY - y + radius);
+    int imax = min(size, stopY - y + radius);
+    int jmin = max(0, startX - x + radius);
+    int jmax = min(size, stopX - x + radius);
 
-        // skip row or break
-        if (t < startY) continue;
-        if (t >= stopY) break;
+    // for each kernel row
+    for (i = imin; i < imax; i++) {
+        ir = i - radius;
 
         // for each kernel column
-        for (j = 0; j < size; j++) {
+        for (j = jmin; j < jmax; j++) {
             jr = j - radius;
-            t = x + jr;
 
-            // skip column
-            if (t < startX) continue;
+            k = kernelMat[i * size + j];
 
-            if (t < stopX) {
-                k = kernelMat[i * size + j];
-
-                div += k;
-                g += k * src[ir * srcStride + jr];
-                processedKernelSize++;
-            }
+            div += k;
+            g += k * src[ir * srcStride + jr];
+            processedKernelSize++;
         }
     }
 
-    // check if all kernel elements were processed
-    if (processedKernelSize == kernelSize) {
-        // all kernel elements are processed - we are not on the edge
-        div = divisor;
+    if ((processedKernelSize == size * size) || !dynamicDivisorForEdges) { //Not on Edge or no dynamic divisor
+        g /= divisor;
     }
-    else {
-        // we are on edge. do we need to use dynamic divisor or not?
-        if (!dynamicDivisorForEdges) div = divisor;
-    }
+    else if (div != 0) g /= div;
 
-    // check divider
-    if (div != 0) g /= div;
     g += threshold;
     *dst = (unsigned char)((g > 255) ? 255 : ((g < 0) ? 0 : g));
 }
