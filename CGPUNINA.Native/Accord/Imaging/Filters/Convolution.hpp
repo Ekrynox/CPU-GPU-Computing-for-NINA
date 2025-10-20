@@ -16,4 +16,10 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
 
 
 	CGPUNINA_API void Process1CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges);
+	CGPUNINA_API void Process1CImage16bppOpenCL(OpenCLManager& opCLM, size_t context, uint16_t* baseSrc, uint16_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges);
+	CGPUNINA_API void Process3CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t pixelSize, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges);
+	CGPUNINA_API void Process3CImage16bppOpenCL(OpenCLManager& opCLM, size_t context, uint16_t* baseSrc, uint16_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t pixelSize, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges);
+	CGPUNINA_API void Process4CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges);
+	CGPUNINA_API void Process4CImage16bppOpenCL(OpenCLManager& opCLM, size_t context, uint16_t* baseSrc, uint16_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges);
+
 }

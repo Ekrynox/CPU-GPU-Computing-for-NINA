@@ -40,10 +40,6 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 pin_ptr<uint8_t> src = (uint8_t*)sourceData->ImageData.ToPointer();
                 pin_ptr<uint8_t> dst = (uint8_t*)destinationData->ImageData.ToPointer();
 
-                // allign pointers to the first pixel to process
-                src += (startY * srcStride + startX * pixelSize);
-                dst += (startY * dstStride + startX * pixelSize);
-
                 // do the processing job
                 if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
                     // grayscale image
@@ -66,24 +62,20 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 int32_t srcStride = sourceData->Stride / 2;
 
                 // base pointers
-                pin_ptr<uint16_t> baseSrc = (uint16_t*)sourceData->ImageData.ToPointer();
-                pin_ptr<uint16_t> baseDst = (uint16_t*)destinationData->ImageData.ToPointer();
-
-                // allign pointers by X
-                baseSrc += (startX * pixelSize);
-                baseDst += (startX * pixelSize);
+                pin_ptr<uint16_t> src = (uint16_t*)sourceData->ImageData.ToPointer();
+                pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
 
                 if (sourceData->PixelFormat == PixelFormat::Format16bppGrayScale) {
                     // 16 bpp grayscale image
-                    Process1CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                    Process1CImage((uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                 }
                 else {
                     // RGB image
                     if ((pixelSize == 3) || (!processAlpha)) {
-                        Process3CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process3CImage((uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                     }
                     else {
-                        Process4CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process4CImage((uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
                     }
                 }
             }
@@ -112,10 +104,6 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 pin_ptr<uint8_t> src = (uint8_t*)sourceData->ImageData.ToPointer();
                 pin_ptr<uint8_t> dst = (uint8_t*)destinationData->ImageData.ToPointer();
 
-                // allign pointers to the first pixel to process
-                src += (startY * srcStride + startX * pixelSize);
-                dst += (startY * dstStride + startX * pixelSize);
-
                 // do the processing job
                 if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
                     // grayscale image
@@ -124,10 +112,10 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 else {
                     // RGB image
                     if ((pixelSize == 3) || (!processAlpha)) {
-                        Process3CImage((uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process3CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                     }
                     else {
-                        Process4CImage((uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process4CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                     }
                 }
             }
@@ -138,24 +126,20 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 int32_t srcStride = sourceData->Stride / 2;
 
                 // base pointers
-                pin_ptr<uint16_t> baseSrc = (uint16_t*)sourceData->ImageData.ToPointer();
-                pin_ptr<uint16_t> baseDst = (uint16_t*)destinationData->ImageData.ToPointer();
-
-                // allign pointers by X
-                baseSrc += (startX * pixelSize);
-                baseDst += (startX * pixelSize);
+                pin_ptr<uint16_t> src = (uint16_t*)sourceData->ImageData.ToPointer();
+                pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
 
                 if (sourceData->PixelFormat == PixelFormat::Format16bppGrayScale) {
                     // 16 bpp grayscale image
-                    Process1CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                    Process1CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                 }
                 else {
                     // RGB image
                     if ((pixelSize == 3) || (!processAlpha)) {
-                        Process3CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process3CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                     }
                     else {
-                        Process4CImage((uint16_t*)baseSrc, (uint16_t*)baseDst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges, __MT);
+                        Process4CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                     }
                 }
             }
