@@ -50,7 +50,7 @@ namespace LucasAlias.NINA.CGPUNINA {
             }
 
             this._harmony = new Harmony("com.example.patch");
-            PatchAll();
+            this.PatchAllExecute();
         }
 
         public override Task Teardown() {
@@ -93,39 +93,7 @@ namespace LucasAlias.NINA.CGPUNINA {
             if (token.IsCancellationRequested) return;
 
             try {
-                this.UnPatchAll();
-
-                lock (this._harmonyLock) {
-                    if (NINA_Image_ImageAnalysis_BayerFilter16bpp) {
-                        _harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
-                        var info = NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL;
-                        if (info != null) NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
-                    }
-                    if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) _harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
-                    if (NINA_Image_ImageAnalysis_FastGaussianBlur) _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
-                    if (NINA_Image_ImageAnalysis_StarDetection) _harmony.PatchCategory("NINA_Image_ImageAnalysis_StarDetection");
-
-
-                    if (Accord_Imaging_Filters_BinaryDilation3x3) _harmony.PatchCategory("Accord_Imaging_Filters_BinaryDilation3x3");
-                    if (Accord_Imaging_Filters_CannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_CannyEdgeDetector");
-                    if (Accord_Imaging_Filters_Convolution) {
-                        _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
-                        var info = Accord_Imaging_Filters_Convolution__OpCL;
-                        if (info != null) Accord_Imaging_Filters_Convolution__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["Convolution.cl"]));
-                    }
-                    if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
-                    if (Accord_Imaging_Filters_ResizeBicubic) {
-                        _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
-                        var info = Accord_Imaging_Filters_ResizeBicubic__OpCL;
-                        if (info != null) Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["ResizeBicubic.cl"]));
-                    }
-                    if (Accord_Imaging_Filters_SISThreshold) _harmony.PatchCategory("Accord_Imaging_Filters_SISThreshold");
-
-                    if (Accord_Imaging_BlobCounter) _harmony.PatchCategory("Accord_Imaging_BlobCounter");
-                    if (Accord_Imaging_BlobCounterBase) _harmony.PatchCategory("Accord_Imaging_BlobCounterBase");
-
-                    this._harmony.PatchAllUncategorized();
-                }
+                this.PatchAllExecute();
 
                 Notification.ShowSuccess("CPU\\GPU Computing: Settings have been applied.");
             } 
@@ -133,6 +101,41 @@ namespace LucasAlias.NINA.CGPUNINA {
             catch (Exception ex) {
                 Notification.ShowError("CPU\\GPU Computing: Failed to apply settings !");
                 Logger.Error(ex);
+            }
+        }
+        private void PatchAllExecute() {
+            this.UnPatchAll();
+
+            lock (this._harmonyLock) {
+                if (NINA_Image_ImageAnalysis_BayerFilter16bpp) {
+                    _harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
+                    var info = NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL;
+                    if (info != null) NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
+                }
+                if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) _harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
+                if (NINA_Image_ImageAnalysis_FastGaussianBlur) _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
+                if (NINA_Image_ImageAnalysis_StarDetection) _harmony.PatchCategory("NINA_Image_ImageAnalysis_StarDetection");
+
+
+                if (Accord_Imaging_Filters_BinaryDilation3x3) _harmony.PatchCategory("Accord_Imaging_Filters_BinaryDilation3x3");
+                if (Accord_Imaging_Filters_CannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_CannyEdgeDetector");
+                if (Accord_Imaging_Filters_Convolution) {
+                    _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
+                    var info = Accord_Imaging_Filters_Convolution__OpCL;
+                    if (info != null) Accord_Imaging_Filters_Convolution__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["Convolution.cl"]));
+                }
+                if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
+                if (Accord_Imaging_Filters_ResizeBicubic) {
+                    _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
+                    var info = Accord_Imaging_Filters_ResizeBicubic__OpCL;
+                    if (info != null) Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["ResizeBicubic.cl"]));
+                }
+                if (Accord_Imaging_Filters_SISThreshold) _harmony.PatchCategory("Accord_Imaging_Filters_SISThreshold");
+
+                if (Accord_Imaging_BlobCounter) _harmony.PatchCategory("Accord_Imaging_BlobCounter");
+                if (Accord_Imaging_BlobCounterBase) _harmony.PatchCategory("Accord_Imaging_BlobCounterBase");
+
+                this._harmony.PatchAllUncategorized();
             }
         }
         private void UnPatchAll() {
