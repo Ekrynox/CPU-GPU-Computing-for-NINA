@@ -52,7 +52,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 //[Optional] An in-depth description of your plugin
 [assembly: AssemblyMetadata("LongDescription", @"
-# CPU\GPU Computing for N.I.N.A
 This is a [N.I.N.A.](https://github.com/isbeorn/nina) plugin that aims to move performance-hungry functions to a compiled C++ code.
 
 It works by injecting C# replacement functions that link to C++ code, with [Harmony](https://harmony.pardeike.net/).
