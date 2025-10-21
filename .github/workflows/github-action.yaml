@@ -86,6 +86,7 @@ jobs:
           
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/BayerFilter16bpp.cl" "packages/${{ env.PLUGIN_NAME }}/BayerFilter16bpp.cl" -Force
           Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/ResizeBicubic.cl" "packages/${{ env.PLUGIN_NAME }}/ResizeBicubic.cl" -Force
+          Copy-Item "${{env.PLATFORM}}/${{ env.BUILD_CONFIGURATION }}/Convolution.cl" "packages/${{ env.PLUGIN_NAME }}/Convolution.cl" -Force
           
       - name: Create Plugin archives and manifests
         run: |
