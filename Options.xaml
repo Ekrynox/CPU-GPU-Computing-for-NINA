@@ -6,8 +6,21 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate x:Key="CPU\GPU Computing for NINA_Options">
         <StackPanel Grid.IsSharedSizeScope="True" Orientation="Vertical">
+            <TextBlock TextWrapping="Wrap">
+                With the followings settings, you have the ability to enable the injection of specific functions and control some of their internal working: Multithreading, GPU computing (OpenCL), ...<LineBreak/>
+                <Bold>Main On/Off toogles:</Bold> enables the injection of Native code code for the function (default: enabled).<LineBreak/>
+                &#160;<Bold><Italic>↳ Multithreaded:</Italic></Bold> enables CPU multithreading for the function (default: disabled).<LineBreak/>
+                &#160;<Bold><Italic>↳ OpenCL:</Italic></Bold> selects the GPU to use for the function (if empty, the function is exclusively executed on CPU) (default: empty).<LineBreak/>
+                <LineBreak/>
+                
+                <Bold>Guidelines:</Bold><LineBreak/>
+                &#160;&#x2022;&#160;By default only the main toogles are enabled as they should guarantee performance gains.<LineBreak/>
+                &#160;&#x2022;&#160;Systems with <Bold>low cores/threads count</Bold> may not work well with Multithreading: Multithreading overheads, Freezes in other processes, ...<LineBreak/>
+                &#160;&#x2022;&#160;Systems with <Bold>strong CPU</Bold> might not benefit from GPU computing on some functions: Data transfert bottlenecks, GPU memory bottlenecks, ...<LineBreak/>
+                &#160;&#x2022;&#160;Systems with <Bold>IGPU and dedicated GPU</Bold> might have better performance on the lower power IGPU: Data transfert bottlnecks, ...<LineBreak/>
+            </TextBlock>
 
-            <Grid>
+            <Grid Margin="0,7,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="NINAAccord_Labels" />
                     <ColumnDefinition />
