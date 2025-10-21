@@ -226,5 +226,17 @@ namespace LucasAlias.NINA.CGPUNINA.Properties {
                 this["Accord_Imaging_Filters_ResizeBicubic__OpCL"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Accord_Imaging_Filters_Convolution__OpCL {
+            get {
+                return ((string)(this["Accord_Imaging_Filters_Convolution__OpCL"]));
+            }
+            set {
+                this["Accord_Imaging_Filters_Convolution__OpCL"] = value;
+            }
+        }
     }
 }

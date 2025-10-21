@@ -13,6 +13,8 @@
 
 #include "Convolution.hpp"
 
+#include "../../../ninacl_internal.hpp"
+
 #include <algorithm>
 #include <execution>
 #include <limits>
@@ -33,8 +35,8 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 int64_t g, div;
                 int32_t processedKernelSize;
 
-                T* src = baseSrc + y * srcStride;
-                T* dst = baseDst + y * dstStride;
+                T* src = baseSrc + y * srcStride + startX;
+                T* dst = baseDst + y * dstStride + startX;
 
                 // for each pixel
                 for (int32_t x = startX; x < stopX; x++, src++, dst++) {
@@ -91,8 +93,8 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
 
             // for each line
             for (int32_t y = startY; y < stopY; y++) {
-                T* src = baseSrc + y * srcStride;
-                T* dst = baseDst + y * dstStride;
+                T* src = baseSrc + y * srcStride + startX;
+                T* dst = baseDst + y * dstStride + startX;
 
                 // for each pixel
                 for (int32_t x = startX; x < stopX; x++, src++, dst++) {
@@ -160,8 +162,8 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 int32_t processedKernelSize;
                 T* p;
 
-                T* src = baseSrc + y * srcStride;
-                T* dst = baseDst + y * dstStride;
+                T* src = baseSrc + y * srcStride + startX * pixelSize;
+                T* dst = baseDst + y * dstStride + startX * pixelSize;
 
                 // for each pixel
                 for (int32_t x = startX; x < stopX; x++, src += pixelSize, dst += pixelSize) {
@@ -235,8 +237,8 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
 
             // for each line
             for (int32_t y = startY; y < stopY; y++) {
-                T* src = baseSrc + y * srcStride;
-                T* dst = baseDst + y * dstStride;
+                T* src = baseSrc + y * srcStride + startX * pixelSize;
+                T* dst = baseDst + y * dstStride + startX * pixelSize;
 
                 // for each pixel
                 for (int32_t x = startX; x < stopX; x++, src += pixelSize, dst += pixelSize) {
@@ -320,8 +322,8 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 int32_t processedKernelSize;
                 T* p;
 
-                T* src = baseSrc + y * srcStride;
-                T* dst = baseDst + y * dstStride;
+                T* src = baseSrc + y * srcStride + startX * 4;
+                T* dst = baseDst + y * dstStride + startX * 4;
 
                 // for each pixel
                 for (int32_t x = startX; x < stopX; x++, src += 4, dst += 4) {
@@ -396,8 +398,8 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
 
             // for each line
             for (int32_t y = startY; y < stopY; y++) {
-                T* src = baseSrc + y * srcStride;
-                T* dst = baseDst + y * dstStride;
+                T* src = baseSrc + y * srcStride + startX * 4;
+                T* dst = baseDst + y * dstStride + startX * 4;
 
                 // for each pixel
                 for (int32_t x = startX; x < stopX; x++, src += 4, dst += 4) {
@@ -468,5 +470,321 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
 
     template CGPUNINA_API void Process4CImage<uint8_t>(uint8_t*, uint8_t*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t*, int32_t, int32_t, int32_t, bool, const bool);
     template CGPUNINA_API void Process4CImage<uint16_t>(uint16_t*, uint16_t*, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t*, int32_t, int32_t, int32_t, bool, const bool);
+
+
+
+    void Process1CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint8_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint8_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint8_t), baseSrc + startY * srcStride * sizeof(uint8_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+        
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process1CImage8bpp_GLOBAL");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint8_t), baseDst + startY * dstStride * sizeof(uint8_t));
+    }
+
+    void Process1CImage16bppOpenCL(OpenCLManager& opCLM, size_t context, uint16_t* baseSrc, uint16_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint16_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint16_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint16_t), baseSrc + startY * srcStride * sizeof(uint16_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process1CImage8bpp_GLOBAL");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint16_t), baseDst + startY * dstStride * sizeof(uint16_t));
+    }
+
+    void Process3CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t pixelSize, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint8_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint8_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint8_t), baseSrc + startY * srcStride * sizeof(uint8_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process3CImage8bpp_GLOBAL");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, pixelSize);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint8_t), baseDst + startY * dstStride * sizeof(uint8_t));
+    }
+
+    void Process3CImage16bppOpenCL(OpenCLManager& opCLM, size_t context, uint16_t* baseSrc, uint16_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t pixelSize, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint16_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint16_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint16_t), baseSrc + startY * srcStride * sizeof(uint16_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process3CImage8bpp_GLOBAL");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, pixelSize);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint16_t), baseDst + startY * dstStride * sizeof(uint16_t));
+    }
+
+    void Process4CImage8bppOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* baseSrc, uint8_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint8_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint8_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint8_t), baseSrc + startY * srcStride * sizeof(uint8_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process3CImage8bpp_GLOBAL");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint8_t), baseDst + startY * dstStride * sizeof(uint8_t));
+    }
+
+    void Process4CImage16bppOpenCL(OpenCLManager& opCLM, size_t context, uint16_t* baseSrc, uint16_t* baseDst, int32_t srcStride, int32_t dstStride, int32_t startX, int32_t startY, int32_t stopX, int32_t stopY, int32_t* kernelPattern, int32_t divisor, int32_t threshold, int32_t size, bool dynamicDivisorForEdges) {
+        auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, (stopY - startY) * srcStride * sizeof(uint16_t));
+        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, (stopY - startY) * dstStride * sizeof(uint16_t));
+        auto kernelBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, size * size * sizeof(int32_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, (stopY - startY) * srcStride * sizeof(uint16_t), baseSrc + startY * srcStride * sizeof(uint16_t));
+        exctx.commandQ.enqueueWriteBuffer(kernelBuffer, CL_FALSE, 0, size * size * sizeof(int32_t), kernelPattern);
+
+        auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+        cl::NDRange global;
+        cl::NDRange local;
+
+        if (vendor == 0x8086) { //Intel
+            global = cl::NDRange((stopY - startY), (stopX - startX));
+            local = cl::NullRange;
+        }
+        else {
+            auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+            int localX, localY;
+            if (maxWg >= 256) localX = 16, localY = 16;
+            else localX = 8, localY = 8;
+
+            size_t globalX = (((stopX - startX) + localX - 1) / localX) * localX;
+            size_t globalY = (((stopY - startY) + localY - 1) / localY) * localY;
+            global = cl::NDRange(globalY, globalX);
+            local = cl::NDRange(localY, localX);
+        }
+
+        auto kernel = cl::Kernel(exctx.programs[L"Convolution.cl"], "Process3CImage8bpp_GLOBAL");
+        int arg = 0;
+        kernel.setArg(arg++, srcBuffer);
+        kernel.setArg(arg++, dstBuffer);
+        kernel.setArg(arg++, srcStride);
+        kernel.setArg(arg++, dstStride);
+        kernel.setArg(arg++, startX);
+        kernel.setArg(arg++, startY);
+        kernel.setArg(arg++, stopX);
+        kernel.setArg(arg++, stopY);
+        kernel.setArg(arg++, kernelBuffer);
+        kernel.setArg(arg++, divisor);
+        kernel.setArg(arg++, threshold);
+        kernel.setArg(arg++, size);
+        kernel.setArg(arg++, dynamicDivisorForEdges ? (char)1 : (char)0);
+
+
+        exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, (stopY - startY) * dstStride * sizeof(uint16_t), baseDst + startY * dstStride * sizeof(uint16_t));
+    }
 
 }

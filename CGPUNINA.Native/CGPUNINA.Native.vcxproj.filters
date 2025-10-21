@@ -147,5 +147,8 @@
     <CopyFileToFolders Include="Accord\Imaging\Filters\ResizeBicubic.cl">
       <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="Accord\Imaging\Filters\Convolution.cl">
+      <Filter>Source Files\Accord\Imaging\Filters</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
