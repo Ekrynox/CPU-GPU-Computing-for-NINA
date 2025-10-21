@@ -96,8 +96,7 @@ namespace LucasAlias.NINA.CGPUNINA {
                 this.PatchAllExecute();
 
                 Notification.ShowSuccess("CPU\\GPU Computing: Settings have been applied.");
-            } 
-            catch (OperationCanceledException) { } 
+            }
             catch (Exception ex) {
                 Notification.ShowError("CPU\\GPU Computing: Failed to apply settings !");
                 Logger.Error(ex);
