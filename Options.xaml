@@ -13,6 +13,9 @@
                 &#160;<Bold><Italic>↳ OpenCL:</Italic></Bold> selects the GPU to use for the function (if empty, the function is exclusively executed on CPU) (default: empty).<LineBreak/>
                 <LineBreak/>
                 
+                After changing settings, the plugin will <Bold>wait 5 seconds</Bold> before applying the new settings!<LineBreak/>
+                <LineBreak/>
+                
                 <Bold>Guidelines:</Bold><LineBreak/>
                 &#160;&#x2022;&#160;By default only the main toogles are enabled as they should guarantee performance gains.<LineBreak/>
                 &#160;&#x2022;&#160;Systems with <Bold>low cores/threads count</Bold> may not work well with Multithreading: Multithreading overheads, Freezes in other processes, ...<LineBreak/>
