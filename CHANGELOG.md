@@ -1,5 +1,10 @@
 ﻿# NINA++
 
+## 0.5.2.0
+- Update description and add small guidelines to the setting UI
+- Implement OpenCL Accord: Filters: Convolution
+- Fix on OpenCL Accord: Filters: Convolution, when startX/stopX are not 0
+
 ## 0.5.1.0
 - Implement OpenCL Accord: Filters: ResizeBicubic
 - Rename project
