@@ -140,10 +140,12 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Accord_Imaging_Filters_Convolution_Labels" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="↳ OpenCL" FontStyle="Italic" VerticalAlignment="Center">
+                <TextBlock FontStyle="Italic" VerticalAlignment="Center">
                     <TextBlock.LayoutTransform>
                         <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
                     </TextBlock.LayoutTransform>
+                    ↳ OpenCL<LineBreak />
+                    (Ignore Multithreading)
                 </TextBlock>
                 <ComboBox ItemsSource="{Binding OpenCLAvailableGpus}" SelectedItem="{Binding Accord_Imaging_Filters_Convolution__OpCL, Mode=TwoWay}" DisplayMemberPath="Name"  IsEnabled="{Binding Accord_Imaging_Filters_Convolution}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
                     <ComboBox.LayoutTransform>
@@ -190,10 +192,12 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Accord_Imaging_Filters_ResizeBicubic_Labels" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="↳ OpenCL" FontStyle="Italic" VerticalAlignment="Center">
+                <TextBlock FontStyle="Italic" VerticalAlignment="Center">
                     <TextBlock.LayoutTransform>
                         <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
                     </TextBlock.LayoutTransform>
+                    ↳ OpenCL<LineBreak />
+                    (Ignore Multithreading)
                 </TextBlock>
                 <ComboBox ItemsSource="{Binding OpenCLAvailableGpus}" SelectedItem="{Binding Accord_Imaging_Filters_ResizeBicubic__OpCL, Mode=TwoWay}" DisplayMemberPath="Name"  IsEnabled="{Binding Accord_Imaging_Filters_ResizeBicubic}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
                     <ComboBox.LayoutTransform>
