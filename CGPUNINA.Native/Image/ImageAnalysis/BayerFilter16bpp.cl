@@ -30,37 +30,20 @@ __kernel void debayerPattern(const int width, const int height, __global unsigne
         rgbValues[bayerIndex] += *tmpsrc;
         rgbCounters[bayerIndex]++;
 
+        //LEFT & RIGHT
         bayerIndex = BayerPattern[yParity * 2 + xParityInv];
-        rgbValues[bayerIndex] += tmpsrc[-1];
-        rgbCounters[bayerIndex]++;
+        rgbValues[bayerIndex] += tmpsrc[-1] + tmpsrc[1];
+        rgbCounters[bayerIndex] += 2;
 
-        bayerIndex = BayerPattern[yParity * 2 + xParityInv];
-        rgbValues[bayerIndex] += tmpsrc[1];
-        rgbCounters[bayerIndex]++;
-
+        //UP & DOWN
         bayerIndex = BayerPattern[yParityInv * 2 + xParity];
-        rgbValues[bayerIndex] += tmpsrc[-srcStride];
-        rgbCounters[bayerIndex]++;
+        rgbValues[bayerIndex] += tmpsrc[-srcStride] + tmpsrc[srcStride];
+        rgbCounters[bayerIndex] += 2;
 
+        //CORNERS
         bayerIndex = BayerPattern[yParityInv * 2 + xParityInv];
-        rgbValues[bayerIndex] += tmpsrc[-srcStride - 1];
-        rgbCounters[bayerIndex]++;
-
-        bayerIndex = BayerPattern[yParityInv * 2 + xParityInv];
-        rgbValues[bayerIndex] += tmpsrc[-srcStride + 1];
-        rgbCounters[bayerIndex]++;
-
-        bayerIndex = BayerPattern[yParityInv * 2 + xParity];
-        rgbValues[bayerIndex] += tmpsrc[srcStride];
-        rgbCounters[bayerIndex]++;
-
-        bayerIndex = BayerPattern[yParityInv * 2 + xParityInv];
-        rgbValues[bayerIndex] += tmpsrc[srcStride - 1];
-        rgbCounters[bayerIndex]++;
-
-        bayerIndex = BayerPattern[yParityInv * 2 + xParityInv];
-        rgbValues[bayerIndex] += tmpsrc[srcStride + 1];
-        rgbCounters[bayerIndex]++;
+        rgbValues[bayerIndex] += tmpsrc[-srcStride - 1] + tmpsrc[-srcStride + 1] + tmpsrc[srcStride - 1] + tmpsrc[srcStride + 1];
+        rgbCounters[bayerIndex] += 4;
     }
     else {
         bayerIndex = BayerPattern[yParity * 2 + xParity];
@@ -119,5 +102,4 @@ __kernel void debayerPattern(const int width, const int height, __global unsigne
     tmpdst[RGB_R] = (unsigned short)(rgbValues[RGB_R] / rgbCounters[RGB_R]);
     tmpdst[RGB_G] = (unsigned short)(rgbValues[RGB_G] / rgbCounters[RGB_G]);
     tmpdst[RGB_B] = (unsigned short)(rgbValues[RGB_B] / rgbCounters[RGB_B]);
-
 }
