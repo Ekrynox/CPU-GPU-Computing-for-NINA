@@ -1826,12 +1826,9 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
     void debayerPatternOpenCL(OpenCLManager& opCLM, size_t context, const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern) {
         auto exctx = opCLM.GetImpl().getExecutionContext(context);
 
-        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint16_t));
+        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, height * srcStride * sizeof(uint16_t), src, nullptr);
         auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * (3 * width + dstOffset) * sizeof(uint16_t));
-        auto bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, 2 * 2 * sizeof(int32_t));
-
-        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint16_t), src);
-        exctx.commandQ.enqueueWriteBuffer(bayerBuffer, CL_FALSE, 0, 2 * 2 * sizeof(int32_t), BayerPattern);
+        auto bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 2 * 2 * sizeof(int32_t), BayerPattern, nullptr);
 
         int localX = 16, localY = 16;
         size_t globalX = ((width + localX - 1) / localX) * localX;
