@@ -1826,9 +1826,23 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
     void debayerPatternOpenCL(OpenCLManager& opCLM, size_t context, const int32_t width, const int32_t height, uint16_t* src, uint16_t* dst, const int32_t srcStride, int32_t srcOffset, int32_t dstOffset, int32_t* const BayerPattern) {
         auto exctx = opCLM.GetImpl().getExecutionContext(context);
 
-        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, height * srcStride * sizeof(uint16_t), src, nullptr);
-        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * (3 * width + dstOffset) * sizeof(uint16_t));
-        auto bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 2 * 2 * sizeof(int32_t), BayerPattern, nullptr);
+        cl_bool unifiedMemory = false;
+        exctx.device.getInfo(CL_DEVICE_HOST_UNIFIED_MEMORY, &unifiedMemory);
+
+        cl::Buffer srcBuffer, dstBuffer, bayerBuffer;
+        if (unifiedMemory) {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, height * srcStride * sizeof(uint16_t), src, nullptr);
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, height * (3 * width + dstOffset) * sizeof(uint16_t), dst, nullptr);
+            bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 2 * 2 * sizeof(int32_t), BayerPattern, nullptr);
+        }
+        else {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint16_t));
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, height * (3 * width + dstOffset) * sizeof(uint16_t));
+            bayerBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, 2 * 2 * sizeof(int32_t));
+
+            exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, height * srcStride * sizeof(uint16_t), src);
+            exctx.commandQ.enqueueWriteBuffer(bayerBuffer, CL_FALSE, 0, 2 * 2 * sizeof(int32_t), BayerPattern);
+        }
 
         auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
         cl::NDRange global;
@@ -1863,7 +1877,20 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
         kernel.setArg(arg++, bayerBuffer);
 
         exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
-        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst);
+
+        if (unifiedMemory) {
+            cl::Event dstEvent;
+            auto map = exctx.commandQ.enqueueMapBuffer(dstBuffer, CL_FALSE, CL_MAP_READ, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), nullptr, &dstEvent);
+
+            cl::WaitForEvents({ dstEvent });
+            exctx.commandQ.enqueueUnmapMemObject(dstBuffer, map);
+        }
+        else {
+            cl::Event dstEvent;
+            exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_FALSE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst, nullptr, &dstEvent);
+
+            cl::WaitForEvents({ dstEvent });
+        }
     }
 
     void rgblArrCopy(const int32_t width, const int32_t height, uint16_t* dst, int32_t dstOffset, uint16_t* Rarr, uint16_t* Garr, uint16_t* Barr, uint16_t* Larr, const bool __MT) {
