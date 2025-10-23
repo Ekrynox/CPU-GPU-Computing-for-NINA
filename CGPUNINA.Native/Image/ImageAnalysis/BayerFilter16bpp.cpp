@@ -1881,15 +1881,13 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
         if (unifiedMemory) {
             cl::Event dstEvent;
             auto map = exctx.commandQ.enqueueMapBuffer(dstBuffer, CL_FALSE, CL_MAP_READ, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), nullptr, &dstEvent);
-
-            cl::WaitForEvents({ dstEvent });
+            dstEvent.wait();
             exctx.commandQ.enqueueUnmapMemObject(dstBuffer, map);
         }
         else {
             cl::Event dstEvent;
             exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_FALSE, 0, height * (3 * width + dstOffset) * sizeof(uint16_t), dst, nullptr, &dstEvent);
-
-            cl::WaitForEvents({ dstEvent });
+            dstEvent.wait();
         }
     }
 
