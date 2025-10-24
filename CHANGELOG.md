@@ -2,7 +2,8 @@
 
 ## 0.5.3.0
 - Optimize data transfert to GPU for Debayering & ResizeBicubic
-- Optimize Algorithm for Debayering
+- Optimize GPU Algorithm for & ResizeBicubic
+- Optimize CPU & GPU Algorithm for Debayering
 
 ## 0.5.2.0
 - Update description and add small guidelines to the setting UI
