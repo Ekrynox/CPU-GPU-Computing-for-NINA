@@ -417,15 +417,18 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
             local = cl::NDRange(localY, localX);
         }
 
+        float xFactor = (float)width / (float)newWidth;
+        float yFactor = (float)height / (float)newHeight;
+
         auto kernel = cl::Kernel(exctx.programs[L"ResizeBicubic.cl"], "ResizeBicubicGrayScale");
         int arg = 0;
         kernel.setArg(arg++, srcBuffer);
-        kernel.setArg(arg++, width);
-        kernel.setArg(arg++, height);
+        kernel.setArg(arg++, width-1);
+        kernel.setArg(arg++, height-1);
         kernel.setArg(arg++, srcStride);
         kernel.setArg(arg++, dstBuffer);
-        kernel.setArg(arg++, newWidth);
-        kernel.setArg(arg++, newHeight);
+        kernel.setArg(arg++, xFactor);
+        kernel.setArg(arg++, yFactor);
         kernel.setArg(arg++, dstStride);
         kernel.setArg(arg++, dstOffset);
 
@@ -483,15 +486,18 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
             local = cl::NDRange(localY, localX);
         }
 
+        float xFactor = (float)width / (float)newWidth;
+        float yFactor = (float)height / (float)newHeight;
+
         auto kernel = cl::Kernel(exctx.programs[L"ResizeBicubic.cl"], "ResizeBicubicRGB");
         int arg = 0;
         kernel.setArg(arg++, srcBuffer);
-        kernel.setArg(arg++, width);
-        kernel.setArg(arg++, height);
+        kernel.setArg(arg++, width-1);
+        kernel.setArg(arg++, height-1);
         kernel.setArg(arg++, srcStride);
         kernel.setArg(arg++, dstBuffer);
-        kernel.setArg(arg++, newWidth);
-        kernel.setArg(arg++, newHeight);
+        kernel.setArg(arg++, xFactor);
+        kernel.setArg(arg++, yFactor);
         kernel.setArg(arg++, dstStride);
         kernel.setArg(arg++, dstOffset);
 
@@ -549,15 +555,18 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
             local = cl::NDRange(localY, localX);
         }
 
+        float xFactor = (float)width / (float)newWidth;
+        float yFactor = (float)height / (float)newHeight;
+
         auto kernel = cl::Kernel(exctx.programs[L"ResizeBicubic.cl"], "ResizeBicubicRGBA");
         int arg = 0;
         kernel.setArg(arg++, srcBuffer);
-        kernel.setArg(arg++, width);
-        kernel.setArg(arg++, height);
+        kernel.setArg(arg++, width-1);
+        kernel.setArg(arg++, height-1);
         kernel.setArg(arg++, srcStride);
         kernel.setArg(arg++, dstBuffer);
-        kernel.setArg(arg++, newWidth);
-        kernel.setArg(arg++, newHeight);
+        kernel.setArg(arg++, xFactor);
+        kernel.setArg(arg++, yFactor);
         kernel.setArg(arg++, dstStride);
         kernel.setArg(arg++, dstOffset);
 

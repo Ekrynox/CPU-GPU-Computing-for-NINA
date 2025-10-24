@@ -23,17 +23,11 @@ __constant int4 kernelOffsets = (int4)(-1, 0, 1, 2);
 __constant float4 kernelOffsetsf = (float4)(-1.0f, 0.0f, 1.0f, 2.0f);
 
 
-__kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const int height, const int srcStride, __global uchar* dst, const int newWidth, const int newHeight, const int dstStride, const int dstOffset) {
+__kernel void ResizeBicubicGrayScale(__global uchar* src, const int widthM1, const int heightM1, const int srcStride, __global uchar* dst, const float xFactor, const float yFactor, const int dstStride, const int dstOffset) {
     int y = get_global_id(0);
     int x = get_global_id(1);
 
-    float xFactor = (float)width / newWidth;
-    float yFactor = (float)height / newHeight;
-
-    int ymax = height - 1;
-    int xmax = width - 1;
-
-    if (y >= newHeight || x >= newWidth) return;
+    if (y > heightM1 || x > widthM1) return;
 
     // Y coordinates
     float oy = (float)y * yFactor - 0.5f;
@@ -51,8 +45,8 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
     float4 k1V = BiCubicKernelVec4(dy - kernelOffsetsf);
     float4 k2V = BiCubicKernelVec4(kernelOffsetsf - dx);
 
-    int4 oy2V = clamp(oy1 + kernelOffsets, 0, ymax) * srcStride;
-    int4 ox2V = clamp(ox1 + kernelOffsets, 0, xmax);
+    int4 oy2V = clamp(oy1 + kernelOffsets, 0, heightM1) * srcStride;
+    int4 ox2V = clamp(ox1 + kernelOffsets, 0, widthM1);
 
     for (int n = 0; n < 4; n++) {
         float4 k1 = k1V[n] * k2V;
@@ -66,17 +60,11 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
 }
 
 
-__kernel void ResizeBicubicRGB(__global uchar* src, const int width, const int height, const int srcStride, __global uchar* dst, const int newWidth, const int newHeight, const int dstStride, const int dstOffset) {
+__kernel void ResizeBicubicRGB(__global uchar* src, const int widthM1, const int heightM1, const int srcStride, __global uchar* dst, const float xFactor, const float yFactor, const int dstStride, const int dstOffset) {
     int y = get_global_id(0);
     int x = get_global_id(1);
 
-    float xFactor = (float)width / newWidth;
-    float yFactor = (float)height / newHeight;
-
-    int ymax = height - 1;
-    int xmax = width - 1;
-
-    if (y >= newHeight || x >= newWidth) return;
+    if (y > heightM1 || x > widthM1) return;
 
     // Y coordinates
     float oy = (float)y * yFactor - 0.5f;
@@ -96,8 +84,8 @@ __kernel void ResizeBicubicRGB(__global uchar* src, const int width, const int h
     float4 k1V = BiCubicKernelVec4(dy - kernelOffsetsf);
     float4 k2V = BiCubicKernelVec4(kernelOffsetsf - dx);
 
-    int4 oy2V = clamp(oy1 + kernelOffsets, 0, ymax) * srcStride;
-    int4 ox2V = clamp(ox1 + kernelOffsets, 0, xmax) * 3;
+    int4 oy2V = clamp(oy1 + kernelOffsets, 0, heightM1) * srcStride;
+    int4 ox2V = clamp(ox1 + kernelOffsets, 0, widthM1) * 3;
 
     for (int n = 0; n < 4; n++) {
         float4 k1 = k1V[n] * k2V;
@@ -120,17 +108,11 @@ __kernel void ResizeBicubicRGB(__global uchar* src, const int width, const int h
 }
 
 
-__kernel void ResizeBicubicARGB(__global uchar* src, const int width, const int height, const int srcStride, __global uchar* dst, const int newWidth, const int newHeight, const int dstStride, const int dstOffset) {
+__kernel void ResizeBicubicARGB(__global uchar* src, const int widthM1, const int heightM1, const int srcStride, __global uchar* dst, const float xFactor, const float yFactor, const int dstStride, const int dstOffset) {
     int y = get_global_id(0);
     int x = get_global_id(1);
 
-    float xFactor = (float)width / newWidth;
-    float yFactor = (float)height / newHeight;
-
-    int ymax = height - 1;
-    int xmax = width - 1;
-
-    if (y >= newHeight || x >= newWidth) return;
+    if (y > heightM1 || x > widthM1) return;
 
     // Y coordinates
     float oy = (float)y * yFactor - 0.5f;
@@ -151,8 +133,8 @@ __kernel void ResizeBicubicARGB(__global uchar* src, const int width, const int 
     float4 k1V = BiCubicKernelVec4(dy - kernelOffsetsf);
     float4 k2V = BiCubicKernelVec4(kernelOffsetsf - dx);
 
-    int4 oy2V = clamp(oy1 + kernelOffsets, 0, ymax) * srcStride;
-    int4 ox2V = clamp(ox1 + kernelOffsets, 0, xmax) * 4;
+    int4 oy2V = clamp(oy1 + kernelOffsets, 0, heightM1) * srcStride;
+    int4 ox2V = clamp(ox1 + kernelOffsets, 0, widthM1) * 4;
 
     for (int n = 0; n < 4; n++) {
         float4 k1 = k1V[n] * k2V;
