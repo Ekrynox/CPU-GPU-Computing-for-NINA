@@ -381,10 +381,20 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
     void ResizeBicubicGrayScaleOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
         auto exctx = opCLM.GetImpl().getExecutionContext(context);
 
-        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
-        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+        cl_bool unifiedMemory = false;
+        exctx.device.getInfo(CL_DEVICE_HOST_UNIFIED_MEMORY, &unifiedMemory);
 
-        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
+        cl::Buffer srcBuffer, dstBuffer;
+        if (unifiedMemory) {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, height * srcStride * sizeof(uint8_t), src);
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, newHeight * dstStride * sizeof(uint8_t), dst);
+        }
+        else {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+
+            exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
+        }
 
         auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
         cl::NDRange global;
@@ -420,16 +430,37 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
         kernel.setArg(arg++, dstOffset);
 
         exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
-        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst);
+
+        if (unifiedMemory) {
+            cl::Event dstEvent;
+            auto map = exctx.commandQ.enqueueMapBuffer(dstBuffer, CL_FALSE, CL_MAP_READ, 0, newHeight * dstStride * sizeof(uint8_t), nullptr, &dstEvent);
+            dstEvent.wait();
+            exctx.commandQ.enqueueUnmapMemObject(dstBuffer, map);
+        }
+        else {
+            cl::Event dstEvent;
+            exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst, nullptr, &dstEvent);
+            dstEvent.wait();
+        }
     }
 
     void ResizeBicubicRGBOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
         auto exctx = opCLM.GetImpl().getExecutionContext(context);
 
-        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
-        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+        cl_bool unifiedMemory = false;
+        exctx.device.getInfo(CL_DEVICE_HOST_UNIFIED_MEMORY, &unifiedMemory);
 
-        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
+        cl::Buffer srcBuffer, dstBuffer;
+        if (unifiedMemory) {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, height * srcStride * sizeof(uint8_t), src);
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, newHeight * dstStride * sizeof(uint8_t), dst);
+        }
+        else {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+
+            exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
+        }
 
         auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
         cl::NDRange global;
@@ -465,16 +496,37 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
         kernel.setArg(arg++, dstOffset);
 
         exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
-        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst);
+
+        if (unifiedMemory) {
+            cl::Event dstEvent;
+            auto map = exctx.commandQ.enqueueMapBuffer(dstBuffer, CL_FALSE, CL_MAP_READ, 0, newHeight * dstStride * sizeof(uint8_t), nullptr, &dstEvent);
+            dstEvent.wait();
+            exctx.commandQ.enqueueUnmapMemObject(dstBuffer, map);
+        }
+        else {
+            cl::Event dstEvent;
+            exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst, nullptr, &dstEvent);
+            dstEvent.wait();
+        }
     }
 
     void ResizeBicubicARGBOpenCL(OpenCLManager& opCLM, size_t context, uint8_t* src, const int32_t width, const int32_t height, const int32_t srcStride, uint8_t* dst, const int32_t newWidth, const int32_t newHeight, const int32_t dstStride, const int32_t dstOffset) {
         auto exctx = opCLM.GetImpl().getExecutionContext(context);
 
-        auto srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
-        auto dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+        cl_bool unifiedMemory = false;
+        exctx.device.getInfo(CL_DEVICE_HOST_UNIFIED_MEMORY, &unifiedMemory);
 
-        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
+        cl::Buffer srcBuffer, dstBuffer;
+        if (unifiedMemory) {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, height * srcStride * sizeof(uint8_t), src);
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, newHeight * dstStride * sizeof(uint8_t), dst);
+        }
+        else {
+            srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, height * srcStride * sizeof(uint8_t));
+            dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, newHeight * dstStride * sizeof(uint8_t));
+
+            exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_TRUE, 0, height * srcStride * sizeof(uint8_t), src);
+        }
 
         auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
         cl::NDRange global;
@@ -510,6 +562,17 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
         kernel.setArg(arg++, dstOffset);
 
         exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
-        exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst);
+
+        if (unifiedMemory) {
+            cl::Event dstEvent;
+            auto map = exctx.commandQ.enqueueMapBuffer(dstBuffer, CL_FALSE, CL_MAP_READ, 0, newHeight * dstStride * sizeof(uint8_t), nullptr, &dstEvent);
+            dstEvent.wait();
+            exctx.commandQ.enqueueUnmapMemObject(dstBuffer, map);
+        }
+        else {
+            cl::Event dstEvent;
+            exctx.commandQ.enqueueReadBuffer(dstBuffer, CL_TRUE, 0, newHeight * dstStride * sizeof(uint8_t), dst, nullptr, &dstEvent);
+            dstEvent.wait();
+        }
     }
 }
