@@ -15,29 +15,27 @@ __kernel void Process1CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     __global unsigned char* src = baseSrc + (y - startY) * srcStride + x;
     __global unsigned char* dst = baseDst + (y - startY) * dstStride + x;
         
-    int i, j, k, ir, jr;
+    int i, j, k, ir;
     long g = 0;
     long div = 0;
-    int processedKernelSize = 0;
 
     int imin = max(0, startY - y + radius);
     int imax = min(size, stopY - y + radius);
     int jmin = max(0, startX - x + radius);
     int jmax = min(size, stopX - x + radius);
 
+    int processedKernelSize = (imax - imin) * (jmax - jmin);
+
     // for each kernel row
     for (i = imin; i < imax; i++) {
-        ir = i - radius;
+        ir = (i - radius) * srcStride;
 
         // for each kernel column
         for (j = jmin; j < jmax; j++) {
-            jr = j - radius;
-
             k = kernelMat[i * size + j];
 
             div += k;
-            g += k * src[ir * srcStride + jr];
-            processedKernelSize++;
+            g += k * src[ir + j - radius];
         }
     }
 
@@ -47,11 +45,11 @@ __kernel void Process1CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     else if (div != 0) g /= div;
 
     g += threshold;
-    *dst = (unsigned char)((g > 255) ? 255 : ((g < 0) ? 0 : g));
+    *dst = (unsigned char)clamp(g, (long)0, (long)255);
 }
 
 //Not use as there are similar performance with the global version
-__kernel void Process1CImage8bpp_LOCAL(const int LOCAL_X, const int LOCAL_Y, __local unsigned char* tile, __global unsigned char* baseSrc, __global unsigned char* baseDst, const int srcStride, const int dstStride, const int startX, const int startY, const int stopX, const int stopY, __constant int* kernelMat, const int divisor, const int threshold, const int size, const char dynamicDivisorForEdges) {
+/*__kernel void Process1CImage8bpp_LOCAL(const int LOCAL_X, const int LOCAL_Y, __local unsigned char* tile, __global unsigned char* baseSrc, __global unsigned char* baseDst, const int srcStride, const int dstStride, const int startX, const int startY, const int stopX, const int stopY, __constant int* kernelMat, const int divisor, const int threshold, const int size, const char dynamicDivisorForEdges) {
     int y = get_global_id(0) + startY;
     int x = get_global_id(1) + startX;
 
@@ -158,8 +156,7 @@ __kernel void Process1CImage8bpp_LOCAL(const int LOCAL_X, const int LOCAL_Y, __l
 
     g += threshold;
     *dst = (unsigned char)((g > 255) ? 255 : ((g < 0) ? 0 : g));
-}
-
+}*/
 
 __kernel void Process1CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __global unsigned short* baseDst, const int srcStride, const int dstStride, const int startX, const int startY, const int stopX, const int stopY, __constant int* kernelMat, const int divisor, const int threshold, const int size, const char dynamicDivisorForEdges) {
     int y = get_global_id(0) + startY;
@@ -172,29 +169,27 @@ __kernel void Process1CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     __global unsigned short* src = baseSrc + (y - startY) * srcStride + x;
     __global unsigned short* dst = baseDst + (y - startY) * dstStride + x;
 
-    int i, j, k, ir, jr;
+    int i, j, k, ir;
     long g = 0;
     long div = 0;
-    int processedKernelSize = 0;
 
     int imin = max(0, startY - y + radius);
     int imax = min(size, stopY - y + radius);
     int jmin = max(0, startX - x + radius);
     int jmax = min(size, stopX - x + radius);
 
+    int processedKernelSize = (imax - imin) * (jmax - jmin);
+
     // for each kernel row
     for (i = imin; i < imax; i++) {
-        ir = i - radius;
+        ir = (i - radius) * srcStride;
 
         // for each kernel column
         for (j = jmin; j < jmax; j++) {
-            jr = j - radius;
-
             k = kernelMat[i * size + j];
 
             div += k;
-            g += k * src[ir * srcStride + jr];
-            processedKernelSize++;
+            g += k * src[ir + j - radius];
         }
     }
 
@@ -204,7 +199,7 @@ __kernel void Process1CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     else if (div != 0) g /= div;
 
     g += threshold;
-    *dst = (unsigned short)((g > 65535) ? 65535 : ((g < 0) ? 0 : g));
+    *dst = (unsigned short)clamp(g, (long)0, (long)65535);
 }
 
 
@@ -220,12 +215,11 @@ __kernel void Process3CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     __global unsigned char* src = baseSrc + (y - startY) * srcStride + x * pixelSize;
     __global unsigned char* dst = baseDst + (y - startY) * dstStride + x * pixelSize;
 
-    int i, j, k, ir, jr;
+    int i, j, k, ir;
     long r = 0;
     long g = 0;
     long b = 0;
     long div = 0;
-    int processedKernelSize = 0;
     __global unsigned char* p;
 
     int imin = max(0, startY - y + radius);
@@ -233,23 +227,22 @@ __kernel void Process3CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     int jmin = max(0, startX - x + radius);
     int jmax = min(size, stopX - x + radius);
 
+    int processedKernelSize = (imax - imin) * (jmax - jmin);
+
     // for each kernel row
     for (i = imin; i < imax; i++) {
-        ir = i - radius;
+        ir = (i - radius) * srcStride;
 
         // for each kernel column
         for (j = jmin; j < jmax; j++) {
-            jr = j - radius;
-
             k = kernelMat[i * size + j];
 
             div += k;
 
-            p = &src[ir * srcStride + jr * pixelSize];
+            p = &src[ir + (j - radius) * pixelSize];
             r += k * p[RGB_R];
             g += k * p[RGB_G];
             b += k * p[RGB_B];
-            processedKernelSize++;
         }
     }
 
@@ -268,9 +261,9 @@ __kernel void Process3CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     g += threshold;
     b += threshold;
 
-    dst[RGB_R] = (unsigned char)((r > 255) ? 255 : ((r < 0) ? 0 : r));
-    dst[RGB_G] = (unsigned char)((g > 255) ? 255 : ((g < 0) ? 0 : g));
-    dst[RGB_B] = (unsigned char)((b > 255) ? 255 : ((b < 0) ? 0 : b));
+    dst[RGB_R] = (unsigned char)clamp(r, (long)0, (long)255);
+    dst[RGB_G] = (unsigned char)clamp(g, (long)0, (long)255);
+    dst[RGB_B] = (unsigned char)clamp(b, (long)0, (long)255);
     if (pixelSize == 4) dst[RGB_A] = src[RGB_A];
 }
 
@@ -285,12 +278,11 @@ __kernel void Process3CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     __global unsigned short* src = baseSrc + (y - startY) * srcStride + x * pixelSize;
     __global unsigned short* dst = baseDst + (y - startY) * dstStride + x * pixelSize;
 
-    int i, j, k, ir, jr;
+    int i, j, k, ir;
     long r = 0;
     long g = 0;
     long b = 0;
     long div = 0;
-    int processedKernelSize = 0;
     __global unsigned short* p;
 
     int imin = max(0, startY - y + radius);
@@ -298,23 +290,22 @@ __kernel void Process3CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     int jmin = max(0, startX - x + radius);
     int jmax = min(size, stopX - x + radius);
 
+    int processedKernelSize = (imax - imin) * (jmax - jmin);
+
     // for each kernel row
     for (i = imin; i < imax; i++) {
-        ir = i - radius;
+        ir = (i - radius) * srcStride;
 
         // for each kernel column
         for (j = jmin; j < jmax; j++) {
-            jr = j - radius;
-
             k = kernelMat[i * size + j];
 
             div += k;
 
-            p = &src[ir * srcStride + jr * pixelSize];
+            p = &src[ir + (j - radius) * pixelSize];
             r += k * p[RGB_R];
             g += k * p[RGB_G];
             b += k * p[RGB_B];
-            processedKernelSize++;
         }
     }
 
@@ -333,9 +324,9 @@ __kernel void Process3CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     g += threshold;
     b += threshold;
 
-    dst[RGB_R] = (unsigned char)((r > 65535) ? 65535 : ((r < 0) ? 0 : r));
-    dst[RGB_G] = (unsigned char)((g > 65535) ? 65535 : ((g < 0) ? 0 : g));
-    dst[RGB_B] = (unsigned char)((b > 65535) ? 65535 : ((b < 0) ? 0 : b));
+    dst[RGB_R] = (unsigned short)clamp(r, (long)0, (long)65535);
+    dst[RGB_G] = (unsigned short)clamp(g, (long)0, (long)65535);
+    dst[RGB_B] = (unsigned short)clamp(b, (long)0, (long)65535);
     if (pixelSize == 4) dst[RGB_A] = src[RGB_A];
 }
 
@@ -352,13 +343,12 @@ __kernel void Process4CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     __global unsigned char* src = baseSrc + (y - startY) * srcStride + x * 4;
     __global unsigned char* dst = baseDst + (y - startY) * dstStride + x * 4;
 
-    int i, j, k, ir, jr;
+    int i, j, k, ir;
     long r = 0;
     long g = 0;
     long b = 0;
     long a = 0;
     long div = 0;
-    int processedKernelSize = 0;
     __global unsigned char* p;
 
     int imin = max(0, startY - y + radius);
@@ -366,24 +356,23 @@ __kernel void Process4CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     int jmin = max(0, startX - x + radius);
     int jmax = min(size, stopX - x + radius);
 
+    int processedKernelSize = (imax - imin) * (jmax - jmin);
+
     // for each kernel row
     for (i = imin; i < imax; i++) {
-        ir = i - radius;
+        ir = (i - radius) * srcStride;
 
         // for each kernel column
         for (j = jmin; j < jmax; j++) {
-            jr = j - radius;
-
             k = kernelMat[i * size + j];
 
             div += k;
 
-            p = &src[ir * srcStride + jr * 4];
+            p = &src[ir + (j - radius) * 4];
             r += k * p[RGB_R];
             g += k * p[RGB_G];
             b += k * p[RGB_B];
             a += k * p[RGB_A];
-            processedKernelSize++;
         }
     }
 
@@ -405,10 +394,10 @@ __kernel void Process4CImage8bpp_GLOBAL(__global unsigned char* baseSrc, __globa
     b += threshold;
     a += threshold;
 
-    dst[RGB_R] = (unsigned char)((r > 255) ? 255 : ((r < 0) ? 0 : r));
-    dst[RGB_G] = (unsigned char)((g > 255) ? 255 : ((g < 0) ? 0 : g));
-    dst[RGB_B] = (unsigned char)((b > 255) ? 255 : ((b < 0) ? 0 : b));
-    dst[RGB_A] = (unsigned char)((a > 255) ? 255 : ((a < 0) ? 0 : a));
+    dst[RGB_R] = (unsigned char)clamp(r, (long)0, (long)255);
+    dst[RGB_G] = (unsigned char)clamp(g, (long)0, (long)255);
+    dst[RGB_B] = (unsigned char)clamp(b, (long)0, (long)255);
+    dst[RGB_A] = (unsigned char)clamp(a, (long)0, (long)255);
 }
 
 __kernel void Process4CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __global unsigned short* baseDst, const int srcStride, const int dstStride, const int startX, const int startY, const int stopX, const int stopY, __constant int* kernelMat, const int divisor, const int threshold, const int size, const char dynamicDivisorForEdges) {
@@ -422,13 +411,12 @@ __kernel void Process4CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     __global unsigned short* src = baseSrc + (y - startY) * srcStride + x * 4;
     __global unsigned short* dst = baseDst + (y - startY) * dstStride + x * 4;
 
-    int i, j, k, ir, jr;
+    int i, j, k, ir;
     long r = 0;
     long g = 0;
     long b = 0;
     long a = 0;
     long div = 0;
-    int processedKernelSize = 0;
     __global unsigned short* p;
 
     int imin = max(0, startY - y + radius);
@@ -436,24 +424,23 @@ __kernel void Process4CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     int jmin = max(0, startX - x + radius);
     int jmax = min(size, stopX - x + radius);
 
+    int processedKernelSize = (imax - imin) * (jmax - jmin);
+
     // for each kernel row
     for (i = imin; i < imax; i++) {
-        ir = i - radius;
+        ir = (i - radius) * srcStride;
 
         // for each kernel column
         for (j = jmin; j < jmax; j++) {
-            jr = j - radius;
-
             k = kernelMat[i * size + j];
 
             div += k;
 
-            p = &src[ir * srcStride + jr * 4];
+            p = &src[ir + (j - radius) * 4];
             r += k * p[RGB_R];
             g += k * p[RGB_G];
             b += k * p[RGB_B];
             a += k * p[RGB_A];
-            processedKernelSize++;
         }
     }
 
@@ -475,8 +462,8 @@ __kernel void Process4CImage16bpp_GLOBAL(__global unsigned short* baseSrc, __glo
     b += threshold;
     a += threshold;
 
-    dst[RGB_R] = (unsigned short)((r > 65535) ? 65535 : ((r < 0) ? 0 : r));
-    dst[RGB_G] = (unsigned short)((g > 65535) ? 65535 : ((g < 0) ? 0 : g));
-    dst[RGB_B] = (unsigned short)((b > 65535) ? 65535 : ((b < 0) ? 0 : b));
-    dst[RGB_A] = (unsigned short)((a > 65535) ? 65535 : ((a < 0) ? 0 : a));
+    dst[RGB_R] = (unsigned short)clamp(r, (long)0, (long)65535);
+    dst[RGB_G] = (unsigned short)clamp(g, (long)0, (long)65535);
+    dst[RGB_B] = (unsigned short)clamp(b, (long)0, (long)65535);
+    dst[RGB_A] = (unsigned short)clamp(a, (long)0, (long)65535);
 }
