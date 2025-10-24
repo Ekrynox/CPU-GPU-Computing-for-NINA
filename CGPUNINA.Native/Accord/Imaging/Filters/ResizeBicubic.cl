@@ -4,15 +4,23 @@
 #define RGB_A 3
 
 
-static inline float BiCubicKernel(float x) {
+/*static inline float BiCubicKernel(float x) {
     x = fabs(x);
 
-    float biCoef = 0;
-    if (x <= 1) biCoef = (1.5 * x - 2.5) * x * x + 1;
-    else if (x < 2) biCoef = ((-0.5 * x + 2.5) * x - 4) * x + 2;
+    if (x <= 1.0f) return (1.5f * x - 2.5f) * x * x + 1.0f;
+    else if (x < 2.0f) return ((-0.5f * x + 2.5f) * x - 4.0f) * x + 2.0f;
+    else return 0.0f;
+}*/
 
-    return biCoef;
+static inline float4 BiCubicKernelVec4(float4 x) {
+    x = fabs(x);
+
+    return convert_float4(x <= 1.0f) * ((1.5f * x - 2.5f) * x * x + 1.0f) + convert_float4((x > 1.0f) & (x < 2.0f)) * (((-0.5f * x + 2.5f) * x - 4.0f) * x + 2.0f);
 }
+
+
+__constant int4 kernelOffsets = (int4)(-1, 0, 1, 2);
+__constant float4 kernelOffsetsf = (float4)(-1.0f, 0.0f, 1.0f, 2.0f);
 
 
 __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const int height, const int srcStride, __global uchar* dst, const int newWidth, const int newHeight, const int dstStride, const int dstOffset) {
@@ -28,7 +36,7 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
     if (y >= newHeight || x >= newWidth) return;
 
     // Y coordinates
-    float oy = (float)y * yFactor - 0.5;
+    float oy = (float)y * yFactor - 0.5f;
     int oy1 = (int)oy;
     float dy = oy - (float)oy1;
 
@@ -40,19 +48,18 @@ __kernel void ResizeBicubicGrayScale(__global uchar* src, const int width, const
     // initial pixel value
     float g = 0;
 
-    for (int n = -1; n < 3; n++) {
-        // get Y cooefficient
-        float k1 = BiCubicKernel(dy - (float)n);
+    float4 k1V = BiCubicKernelVec4(dy - kernelOffsetsf);
+    float4 k2V = BiCubicKernelVec4(kernelOffsetsf - dx);
 
-        int oy2 = clamp(oy1 + n, 0, ymax);
+    int4 oy2V = clamp(oy1 + kernelOffsets, 0, ymax) * srcStride;
+    int4 ox2V = clamp(ox1 + kernelOffsets, 0, xmax);
 
-        for (int m = -1; m < 3; m++) {
-            // get X cooefficient
-            float k2 = k1 * BiCubicKernel((float)m - dx);
+    for (int n = 0; n < 4; n++) {
+        float4 k1 = k1V[n] * k2V;
+        int4 oy2 = oy2V[n] + ox2V;
 
-            int ox2 = clamp(ox1 + m, 0, xmax);
-
-            g += k2 * src[oy2 * srcStride + ox2];
+        for (int m = 0; m < 4; m++) {
+            g += k1[m] * src[oy2[m]];
         }
     }
     dst[y * dstStride + x] = (uchar)clamp(g, 0.0f, 255.0f);
@@ -72,7 +79,7 @@ __kernel void ResizeBicubicRGB(__global uchar* src, const int width, const int h
     if (y >= newHeight || x >= newWidth) return;
 
     // Y coordinates
-    float oy = (float)y * yFactor - 0.5;
+    float oy = (float)y * yFactor - 0.5f;
     int oy1 = (int)oy;
     float dy = oy - (float)oy1;
 
@@ -86,20 +93,19 @@ __kernel void ResizeBicubicRGB(__global uchar* src, const int width, const int h
     float g = 0;
     float b = 0;
 
-    for (int n = -1; n < 3; n++) {
-        // get Y cooefficient
-        float k1 = BiCubicKernel(dy - (float)n);
+    float4 k1V = BiCubicKernelVec4(dy - kernelOffsetsf);
+    float4 k2V = BiCubicKernelVec4(kernelOffsetsf - dx);
 
-        int oy2 = clamp(oy1 + n, 0, ymax);
+    int4 oy2V = clamp(oy1 + kernelOffsets, 0, ymax) * srcStride;
+    int4 ox2V = clamp(ox1 + kernelOffsets, 0, xmax) * 3;
 
-        for (int m = -1; m < 3; m++) {
-            // get X cooefficient
-            float k2 = k1 * BiCubicKernel((float)m - dx);
+    for (int n = 0; n < 4; n++) {
+        float4 k1 = k1V[n] * k2V;
+        int4 oy2 = oy2V[n] + ox2V;
 
-            int ox2 = clamp(ox1 + m, 0, xmax);
-
-            // get pixel of original image
-            __global uchar* p = src + oy2 * srcStride + ox2 * 3;
+        for (int m = 0; m < 4; m++) {
+            float k2 = k1[m];
+            __global uchar* p = src + oy2[m];
 
             r += k2 * p[RGB_R];
             g += k2 * p[RGB_G];
@@ -127,7 +133,7 @@ __kernel void ResizeBicubicARGB(__global uchar* src, const int width, const int 
     if (y >= newHeight || x >= newWidth) return;
 
     // Y coordinates
-    float oy = (float)y * yFactor - 0.5;
+    float oy = (float)y * yFactor - 0.5f;
     int oy1 = (int)oy;
     float dy = oy - (float)oy1;
 
@@ -142,20 +148,19 @@ __kernel void ResizeBicubicARGB(__global uchar* src, const int width, const int 
     float b = 0;
     float a = 0;
 
-    for (int n = -1; n < 3; n++) {
-        // get Y cooefficient
-        float k1 = BiCubicKernel(dy - (float)n);
+    float4 k1V = BiCubicKernelVec4(dy - kernelOffsetsf);
+    float4 k2V = BiCubicKernelVec4(kernelOffsetsf - dx);
 
-        int oy2 = clamp(oy1 + n, 0, ymax);
+    int4 oy2V = clamp(oy1 + kernelOffsets, 0, ymax) * srcStride;
+    int4 ox2V = clamp(ox1 + kernelOffsets, 0, xmax) * 4;
 
-        for (int m = -1; m < 3; m++) {
-            // get X cooefficient
-            float k2 = k1 * BiCubicKernel((float)m - dx);
+    for (int n = 0; n < 4; n++) {
+        float4 k1 = k1V[n] * k2V;
+        int4 oy2 = oy2V[n] + ox2V;
 
-            int ox2 = clamp(ox1 + m, 0, xmax);
-
-            // get pixel of original image
-            __global uchar* p = src + oy2 * srcStride + ox2 * 4;
+        for (int m = 0; m < 4; m++) {
+            float k2 = k1[m];
+            __global uchar* p = src + oy2[m];
 
             r += k2 * p[RGB_R];
             g += k2 * p[RGB_G];
