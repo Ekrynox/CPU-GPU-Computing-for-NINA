@@ -119,7 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NINA.Plugin">
-      <Version>3.2.0.3001-rc</Version>
+      <Version>3.2.0.9001</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

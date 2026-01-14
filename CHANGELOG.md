@@ -1,5 +1,8 @@
 ﻿# NINA++
 
+## 0.5.3.1
+- Add the instruction to install VC Redist X64 in Description inside NINA
+
 ## 0.5.3.0
 - Optimize data transfert to GPU for Debayering & ResizeBicubic
 - Optimize GPU Algorithm for ResizeBicubic & Convolution

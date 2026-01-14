@@ -11,8 +11,10 @@ This plugin allow great performance gains on smaller configurations, with no imp
 Example: Ultrabook with an Intel I5 6200U (2c/4t) + 4Gb DDR4 => arround 2.5 times reduction on snashot pipeline (debayering & stars detections) => from arround 17s to 6s on a Nikon Z6II 24mp raw shot for 5000+ stars.
 
 ## Installation
-This plugin requires [VC Redist X64](https://aka.ms/vs/17/release/vc_redist.x64.exe).
-You can then install NINA++ through the Plugin section in N.I.N.A. or by extracting the archive from the Release in the plugin folder: %localappdata%\NINA\Plugins.
+This plugin requires [Microsoft Visual C++ Redistributable X64](https://aka.ms/vs/17/release/vc_redist.x64.exe).  
+If not installed, you will encounter a missing "CGPUNINA.Wrapper" or "CGPUNINA.Native" error.
+
+Then, you can install NINA++ through the Plugin section in N.I.N.A. or by extracting the archive from the Release in the plugin folder: %localappdata%\NINA\Plugins.
 
 ## Licensing
 This project includes modifications and translations of code from [N.I.N.A.](https://github.com/isbeorn/nina), which is licensed under the Mozilla Public License 2.0.

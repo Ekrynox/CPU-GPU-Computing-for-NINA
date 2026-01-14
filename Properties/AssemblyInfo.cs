@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 
 // [MANDATORY] The assembly versioning
 //Should be incremented for each new release build of a plugin
-[assembly: AssemblyVersion("0.5.3.0")]
-[assembly: AssemblyFileVersion("0.5.3.0")]
+[assembly: AssemblyVersion("0.5.3.1")]
+[assembly: AssemblyFileVersion("0.5.3.1")]
 
 // [MANDATORY] The name of your plugin
 [assembly: AssemblyTitle("CPU\\GPU Computing for NINA")]
@@ -21,10 +21,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("Lucas Alias")]
 // The product name that this plugin is part of
 [assembly: AssemblyProduct("CGPUNINA")]
-[assembly: AssemblyCopyright("Copyright © 2025 Lucas Alias")]
+[assembly: AssemblyCopyright("Copyright © 2025 - 2026 Lucas Alias")]
 
 // The minimum Version of N.I.N.A. that this plugin is compatible with
-[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.2.0.3011")]
+[assembly: AssemblyMetadata("MinimumApplicationVersion", "3.2.0.9001")]
 
 // The license your plugin code is using
 [assembly: AssemblyMetadata("License", "MPL-2.0")]
@@ -62,6 +62,10 @@ A large portion of the code is just an translation of the original N.I.N.A and A
 This plugin allow great performance gains on smaller configurations, with no impact on results.
 
 Example: Ultrabook with an Intel I5 6200U (2c/4t) + 4Gb DDR4 => arround 2.5 times reduction on snashot pipeline (debayering & stars detections) => from arround 17s to 6s on a Nikon Z6II 24mp raw shot for 5000+ stars.
+
+# Requirements:
+This plugin requires [Microsoft Visual C++ Redistributable X64](https://aka.ms/vs/17/release/vc_redist.x64.exe).  
+If not installed, you will encounter a missing ""CGPUNINA.Wrapper"" or ""CGPUNINA.Native"" error.
 ")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
