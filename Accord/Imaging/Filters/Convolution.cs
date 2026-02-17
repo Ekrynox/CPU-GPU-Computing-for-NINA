@@ -2,7 +2,10 @@
 using Accord.Imaging.Filters;
 using Accord.Statistics.Kernels;
 using HarmonyLib;
+using LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis;
+using NINA.Core.Utility;
 using NINA.Core.Utility.Notification;
+using NINA.CustomControlLibrary;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +23,13 @@ namespace LucasAlias.NINA.CGPUNINA.Accord.Imaging.Filters {
     internal class Patch_Convolution_ProcessFilter {
         static bool Prefix(Convolution __instance, UnmanagedImage sourceData, UnmanagedImage destinationData, Rectangle rect) {
             if (CGPUNINAMediator.Plugin.Accord_Imaging_Filters_Convolution__OpCL != null && CGPUNINAMediator.Plugin.Accord_Imaging_Filters_Convolution__OpCL_Context is uint context) {
-                Patch_Convolution.ProcessFilterOpenCL(ref sourceData, ref destinationData, ref rect, __instance.ProcessAlpha, __instance.Kernel, __instance.Divisor, __instance.Threshold, __instance.Kernel.GetLength(1), __instance.DynamicDivisorForEdges, CGPUNINAMediator.OpenCLManager, context);
+                try {
+                    Patch_Convolution.ProcessFilterOpenCL(ref sourceData, ref destinationData, ref rect, __instance.ProcessAlpha, __instance.Kernel, __instance.Divisor, __instance.Threshold, __instance.Kernel.GetLength(1), __instance.DynamicDivisorForEdges, CGPUNINAMediator.OpenCLManager, context);
+                } catch (Exception e) {
+                    Logger.Error($"CGPUNINA - Convolution - OpenCL execution error:\n{e.Message}");
+                    Notification.ShowWarning("CGPUNINA: Convolution execution failed. Fallback to CPU.");
+                    Patch_Convolution.ProcessFilter(ref sourceData, ref destinationData, ref rect, __instance.ProcessAlpha, __instance.Kernel, __instance.Divisor, __instance.Threshold, __instance.Kernel.GetLength(1), __instance.DynamicDivisorForEdges, CGPUNINAMediator.Plugin.Accord_Imaging_Filters_Convolution__MT);
+                }
             } else Patch_Convolution.ProcessFilter(ref sourceData, ref destinationData, ref rect, __instance.ProcessAlpha, __instance.Kernel, __instance.Divisor, __instance.Threshold, __instance.Kernel.GetLength(1), __instance.DynamicDivisorForEdges, CGPUNINAMediator.Plugin.Accord_Imaging_Filters_Convolution__MT);
             
             return false;

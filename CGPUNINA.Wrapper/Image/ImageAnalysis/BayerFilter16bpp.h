@@ -127,7 +127,13 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
 				copyImage(width, height, src, dst, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1));
 			}
 			else {
-				debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern);
+				try {
+					debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern);
+				}
+				catch (const std::exception& e) {
+					System::String^ msg = gcnew System::String(e.what());
+					throw gcnew System::Exception(msg);
+				}
 
 				if (SaveColorChannels && SaveLumChannel) {
 					rgblArrCopy(width, height, dst, dstOffset, Rarr, Garr, Barr, Larr, *__MT);

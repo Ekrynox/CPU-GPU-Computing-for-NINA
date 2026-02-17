@@ -2,6 +2,7 @@
 using Accord.Imaging.Filters;
 using HarmonyLib;
 using LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis;
+using NINA.Core.Utility;
 using NINA.Core.Utility.Notification;
 using NINA.CustomControlLibrary;
 using System;
@@ -10,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace LucasAlias.NINA.CGPUNINA.Accord.Imaging.Filters {
     [HarmonyPatchCategory("Accord_Imaging_Filters_ResizeBicubic")]
@@ -17,7 +19,13 @@ namespace LucasAlias.NINA.CGPUNINA.Accord.Imaging.Filters {
     internal class Patch_ResizeBicubic_ProcessFilter {
         static bool Prefix(UnmanagedImage sourceData, UnmanagedImage destinationData) {
             if (CGPUNINAMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__OpCL != null && CGPUNINAMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__OpCL_Context is uint context) {
-                Patch_ResizeBicubic.ProcessFilterOpenCL(ref sourceData, ref destinationData, CGPUNINAMediator.OpenCLManager, context);
+                try {
+                    Patch_ResizeBicubic.ProcessFilterOpenCL(ref sourceData, ref destinationData, CGPUNINAMediator.OpenCLManager, context);
+                } catch (Exception e) {
+                    Logger.Error($"CGPUNINA - Convolution - OpenCL execution error:\n{e.Message}");
+                    Notification.ShowWarning("CGPUNINA: Convolution execution failed. Fallback to CPU.");
+                    Patch_ResizeBicubic.ProcessFilter(ref sourceData, ref destinationData, CGPUNINAMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__MT);
+                }
             } else Patch_ResizeBicubic.ProcessFilter(ref sourceData, ref destinationData, CGPUNINAMediator.Plugin.Accord_Imaging_Filters_ResizeBicubic__MT);
             return false;
         }
