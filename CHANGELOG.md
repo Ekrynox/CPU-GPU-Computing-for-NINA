@@ -1,5 +1,9 @@
 ﻿# NINA++
 
+## 0.6.0.0
+- Fallback to CPU when the Compiler failed to build the OpenCL kernel
+- Fallback to CPU when the execution of OpenCL kernel fails.
+
 ## 0.5.3.1
 - Add the instruction to install VC Redist X64 in Description inside NINA
 

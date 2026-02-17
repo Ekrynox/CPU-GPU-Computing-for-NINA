@@ -104,19 +104,25 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 pin_ptr<uint8_t> src = (uint8_t*)sourceData->ImageData.ToPointer();
                 pin_ptr<uint8_t> dst = (uint8_t*)destinationData->ImageData.ToPointer();
 
-                // do the processing job
-                if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
-                    // grayscale image
-                    Process1CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
-                }
-                else {
-                    // RGB image
-                    if ((pixelSize == 3) || (!processAlpha)) {
-                        Process3CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                try {
+                    // do the processing job
+                    if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
+                        // grayscale image
+                        Process1CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                     }
                     else {
-                        Process4CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                        // RGB image
+                        if ((pixelSize == 3) || (!processAlpha)) {
+                            Process3CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                        }
+                        else {
+                            Process4CImage8bppOpenCL(OpCLM->GetNative(), context, (uint8_t*)src, (uint8_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                        }
                     }
+                }
+                catch (const std::exception& e) {
+                    System::String^ msg = gcnew System::String(e.what());
+                    throw gcnew System::Exception(msg);
                 }
             }
             else {
@@ -129,18 +135,24 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
                 pin_ptr<uint16_t> src = (uint16_t*)sourceData->ImageData.ToPointer();
                 pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
 
-                if (sourceData->PixelFormat == PixelFormat::Format16bppGrayScale) {
-                    // 16 bpp grayscale image
-                    Process1CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
-                }
-                else {
-                    // RGB image
-                    if ((pixelSize == 3) || (!processAlpha)) {
-                        Process3CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                try {
+                    if (sourceData->PixelFormat == PixelFormat::Format16bppGrayScale) {
+                        // 16 bpp grayscale image
+                        Process1CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
                     }
                     else {
-                        Process4CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                        // RGB image
+                        if ((pixelSize == 3) || (!processAlpha)) {
+                            Process3CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, pixelSize, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                        }
+                        else {
+                            Process4CImage16bppOpenCL(OpCLM->GetNative(), context, (uint16_t*)src, (uint16_t*)dst, srcStride, dstStride, startX, startY, stopX, stopY, kernel_ptr, divisor, threshold, size, dynamicDivisorForEdges);
+                        }
                     }
+                }
+                catch (const std::exception& e) {
+                    System::String^ msg = gcnew System::String(e.what());
+                    throw gcnew System::Exception(msg);
                 }
             }
         }

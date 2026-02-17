@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 
 // [MANDATORY] The assembly versioning
 //Should be incremented for each new release build of a plugin
-[assembly: AssemblyVersion("0.5.3.1")]
-[assembly: AssemblyFileVersion("0.5.3.1")]
+[assembly: AssemblyVersion("0.6.0.0")]
+[assembly: AssemblyFileVersion("0.6.0.0")]
 
 // [MANDATORY] The name of your plugin
 [assembly: AssemblyTitle("CPU\\GPU Computing for NINA")]
@@ -64,7 +64,7 @@ This plugin allow great performance gains on smaller configurations, with no imp
 Example: Ultrabook with an Intel I5 6200U (2c/4t) + 4Gb DDR4 => arround 2.5 times reduction on snashot pipeline (debayering & stars detections) => from arround 17s to 6s on a Nikon Z6II 24mp raw shot for 5000+ stars.
 
 # Requirements:
-This plugin requires [Microsoft Visual C++ Redistributable X64](https://aka.ms/vs/17/release/vc_redist.x64.exe).  
+This plugin requires [Microsoft Visual C++ Redistributable X64](https://aka.ms/vc14/vc_redist.x64.exe).  
 If not installed, you will encounter a missing ""CGPUNINA.Wrapper"" or ""CGPUNINA.Native"" error.
 ")]
 

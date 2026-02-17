@@ -33,17 +33,23 @@ namespace LucasAlias::NINA::CGPUNINA::Accord::Imaging::Filters {
 			pin_ptr<uint8_t> src = (uint8_t*)sourceData->ImageData.ToPointer();
 			pin_ptr<uint8_t> dst = (uint8_t*)destinationData->ImageData.ToPointer();
 
-			if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
-				ResizeBicubicGrayScaleOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
+			try {
+				if (destinationData->PixelFormat == PixelFormat::Format8bppIndexed) {
+					ResizeBicubicGrayScaleOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
+				}
+				else if (sourceData->PixelSize == 3) {
+					ResizeBicubicRGBOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
+				}
+				else if (sourceData->PixelSize == 4) {
+					ResizeBicubicARGBOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
+				}
+				else {
+					throw gcnew System::InvalidOperationException("Execution should never reach here.");
+				}
 			}
-			else if (sourceData->PixelSize == 3) {
-				ResizeBicubicRGBOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
-			}
-			else if (sourceData->PixelSize == 4) {
-				ResizeBicubicARGBOpenCL(OpCLM->GetNative(), context, src, sourceData->Width, sourceData->Height, sourceData->Stride, dst, destinationData->Width, destinationData->Height, destinationData->Stride, destinationData->Offset);
-			}
-			else {
-				throw gcnew System::InvalidOperationException("Execution should never reach here.");
+			catch (const std::exception& e) {
+				System::String^ msg = gcnew System::String(e.what());
+				throw gcnew System::Exception(msg);
 			}
 		}
 

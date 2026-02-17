@@ -27,7 +27,7 @@ using Settings = LucasAlias.NINA.CGPUNINA.Properties.Settings;
 
 namespace LucasAlias.NINA.CGPUNINA {
     [Export(typeof(IPluginManifest))]
-    public class CGPUNINA : PluginBase {
+    public class CGPUNINA : PluginBase, INotifyPropertyChanged {
         private readonly IPluginOptionsAccessor pluginSettings;
         private readonly IProfileService profileService;
 
@@ -50,6 +50,7 @@ namespace LucasAlias.NINA.CGPUNINA {
             }
 
             this._harmony = new Harmony("com.example.patch");
+            this._isPatching = false;
             this.PatchAllExecute();
         }
 
@@ -75,9 +76,12 @@ namespace LucasAlias.NINA.CGPUNINA {
         private readonly object _ctsLock = new object();
         private CancellationTokenSource _cts;
         private readonly TimeSpan _delay = TimeSpan.FromSeconds(5);
+        private bool _isPatching = false;
 
 
         private void PatchAll() {
+            if (this._isPatching) return;
+
             CancellationToken token;
             lock (_ctsLock) {
                 _cts?.Cancel();
@@ -103,13 +107,25 @@ namespace LucasAlias.NINA.CGPUNINA {
             }
         }
         private void PatchAllExecute() {
+            if(this._isPatching) return;
             this.UnPatchAll();
+            this._isPatching = true;
 
             lock (this._harmonyLock) {
                 if (NINA_Image_ImageAnalysis_BayerFilter16bpp) {
                     _harmony.PatchCategory("NINA_Image_ImageAnalysis_BayerFilter16bpp");
                     var info = NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL;
-                    if (info != null) NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
+                    if (info != null) {
+                        try {
+                            NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["BayerFilter16bpp.cl"]));
+                        }
+                        catch (Exception e) {
+                            Logger.Error($"CGPUNINA - BayerFilter16bpp - OpenCL compile error:\n{e.Message}");
+                            Notification.ShowError($"Failed to compile GPU Algorithm for BayerFilter16bpp on: {info?.Name}\nFallback to CPU.");
+                            NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL = null;
+                            NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = null;
+                        }
+                    }
                 }
                 if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) _harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
                 if (NINA_Image_ImageAnalysis_FastGaussianBlur) _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
@@ -121,13 +137,31 @@ namespace LucasAlias.NINA.CGPUNINA {
                 if (Accord_Imaging_Filters_Convolution) {
                     _harmony.PatchCategory("Accord_Imaging_Filters_Convolution");
                     var info = Accord_Imaging_Filters_Convolution__OpCL;
-                    if (info != null) Accord_Imaging_Filters_Convolution__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["Convolution.cl"]));
+                    if (info != null) {
+                        try {
+                            Accord_Imaging_Filters_Convolution__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["Convolution.cl"]));
+                        } catch (Exception e) {
+                            Logger.Error($"CGPUNINA - Convolution - OpenCL compile error:\n{e.Message}");
+                            Notification.ShowError($"Failed to compile GPU Algorithm for Convolution on: {info?.Name}\nFallback to CPU.");
+                            Accord_Imaging_Filters_Convolution__OpCL = null;
+                            Accord_Imaging_Filters_Convolution__OpCL_Context = null;
+                        }
+                    }
                 }
                 if (Accord_Imaging_Filters_NoBlurCannyEdgeDetector) _harmony.PatchCategory("Accord_Imaging_Filters_NoBlurCannyEdgeDetector");
                 if (Accord_Imaging_Filters_ResizeBicubic) {
                     _harmony.PatchCategory("Accord_Imaging_Filters_ResizeBicubic");
                     var info = Accord_Imaging_Filters_ResizeBicubic__OpCL;
-                    if (info != null) Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["ResizeBicubic.cl"]));
+                    if (info != null) {
+                        try {
+                            Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["ResizeBicubic.cl"]));
+                        } catch (Exception e) {
+                            Logger.Error($"CGPUNINA - ResizeBicubic - OpenCL compile error:\n{e.Message}");
+                            Notification.ShowError($"Failed to compile GPU Algorithm for ResizeBicubic on: {info?.Name}\nFallback to CPU.");
+                            Accord_Imaging_Filters_ResizeBicubic__OpCL = null;
+                            Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = null;
+                        }
+                    }
                 }
                 if (Accord_Imaging_Filters_SISThreshold) _harmony.PatchCategory("Accord_Imaging_Filters_SISThreshold");
 
@@ -136,8 +170,13 @@ namespace LucasAlias.NINA.CGPUNINA {
 
                 this._harmony.PatchAllUncategorized();
             }
+
+            this._isPatching = false;
         }
         private void UnPatchAll() {
+            if (this._isPatching) return;
+            this._isPatching = true;
+
             lock (this._harmonyLock) {
                 this._harmony.UnpatchAll(this._harmony.Id);
 
@@ -145,6 +184,8 @@ namespace LucasAlias.NINA.CGPUNINA {
                 NINA_Image_ImageAnalysis_BayerFilter16bpp__OpCL_Context = null;
                 Accord_Imaging_Filters_ResizeBicubic__OpCL_Context = null;
             }
+
+            this._isPatching = false;
         }
 
 

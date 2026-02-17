@@ -64,8 +64,8 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
 			pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
 
 			int32_t srcStride = sourceData->Stride / 2;
-			int32_t srcOffset = (srcStride - width) / 2;
-			int32_t dstOffset = (destinationData->Stride - width * 6) / 6;
+			int32_t srcOffset = srcStride - width;
+			int32_t dstOffset = destinationData->Stride / 2 - width * 3;
 
 			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
 
@@ -127,7 +127,13 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
 				copyImage(width, height, src, dst, srcOffset, dstOffset, bayerPattern, BayerPattern->GetLength(1));
 			}
 			else {
-				debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern);
+				try {
+					debayerPatternOpenCL(OpCLM->GetNative(), context, width, height, src, dst, srcStride, srcOffset, dstOffset, bayerPattern);
+				}
+				catch (const std::exception& e) {
+					System::String^ msg = gcnew System::String(e.what());
+					throw gcnew System::Exception(msg);
+				}
 
 				if (SaveColorChannels && SaveLumChannel) {
 					rgblArrCopy(width, height, dst, dstOffset, Rarr, Garr, Barr, Larr, *__MT);
