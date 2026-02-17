@@ -64,7 +64,7 @@ This plugin allow great performance gains on smaller configurations, with no imp
 Example: Ultrabook with an Intel I5 6200U (2c/4t) + 4Gb DDR4 => arround 2.5 times reduction on snashot pipeline (debayering & stars detections) => from arround 17s to 6s on a Nikon Z6II 24mp raw shot for 5000+ stars.
 
 # Requirements:
-This plugin requires [Microsoft Visual C++ Redistributable X64](https://aka.ms/vs/17/release/vc_redist.x64.exe).  
+This plugin requires [Microsoft Visual C++ Redistributable X64](https://aka.ms/vc14/vc_redist.x64.exe).  
 If not installed, you will encounter a missing ""CGPUNINA.Wrapper"" or ""CGPUNINA.Native"" error.
 ")]
 
