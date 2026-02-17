@@ -64,8 +64,8 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
 			pin_ptr<uint16_t> dst = (uint16_t*)destinationData->ImageData.ToPointer();
 
 			int32_t srcStride = sourceData->Stride / 2;
-			int32_t srcOffset = (srcStride - width) / 2;
-			int32_t dstOffset = (destinationData->Stride - width * 6) / 6;
+			int32_t srcOffset = srcStride - width;
+			int32_t dstOffset = destinationData->Stride / 2 - width * 3;
 
 			pin_ptr<int32_t> bayerPattern = &BayerPattern[0, 0];
 
