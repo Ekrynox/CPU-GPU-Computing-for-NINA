@@ -27,7 +27,7 @@ using Settings = LucasAlias.NINA.CGPUNINA.Properties.Settings;
 
 namespace LucasAlias.NINA.CGPUNINA {
     [Export(typeof(IPluginManifest))]
-    public class CGPUNINA : PluginBase {
+    public class CGPUNINA : PluginBase, INotifyPropertyChanged {
         private readonly IPluginOptionsAccessor pluginSettings;
         private readonly IProfileService profileService;
 
