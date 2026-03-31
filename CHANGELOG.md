@@ -1,5 +1,8 @@
 ﻿# NINA++
 
+## 0.6.1.0
+- Autoreload plugin settings with updates
+
 ## 0.6.0.0
 - Fallback to CPU when the Compiler failed to build the OpenCL kernel
 - Fallback to CPU when the execution of OpenCL kernel fails.

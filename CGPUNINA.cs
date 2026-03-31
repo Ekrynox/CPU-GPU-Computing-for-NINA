@@ -36,6 +36,12 @@ namespace LucasAlias.NINA.CGPUNINA {
 
         [ImportingConstructor]
         public CGPUNINA(IProfileService profileService, IOptionsVM options) {
+            if (Settings.Default.UpdateSettings) {
+                Settings.Default.Upgrade();
+                Settings.Default.UpdateSettings = false;
+                CoreUtil.SaveSettings(Settings.Default);
+            }
+
             this.pluginSettings = new PluginOptionsAccessor(profileService, Guid.Parse(this.Identifier));
             this.profileService = profileService;
 
