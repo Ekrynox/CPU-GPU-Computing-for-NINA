@@ -1,7 +1,10 @@
 ﻿# NINA++
 
-## 0.6.1.0
+## 0.6.1.0 (NINA 3.2) & 0.6.1.1 (NINA 3.3)
 - Autoreload plugin settings with updates
+
+## 0.6.0.1
+- Fix for NINA 3.3
 
 ## 0.6.0.0
 - Fallback to CPU when the Compiler failed to build the OpenCL kernel
