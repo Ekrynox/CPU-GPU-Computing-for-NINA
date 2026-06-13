@@ -134,7 +134,20 @@ namespace LucasAlias.NINA.CGPUNINA {
                     }
                 }
                 if (NINA_Image_ImageAnalysis_ColorRemappingGeneral) _harmony.PatchCategory("NINA_Image_ImageAnalysis_ColorRemappingGeneral");
-                if (NINA_Image_ImageAnalysis_FastGaussianBlur) _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
+                if (NINA_Image_ImageAnalysis_FastGaussianBlur) {
+                    _harmony.PatchCategory("NINA_Image_ImageAnalysis_FastGaussianBlur");
+                    var info = NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL;
+                    if (info != null) {
+                        try {
+                            NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL_Context = CGPUNINAMediator.OpenCLManager.CreateExecutionContext(info.PlatformId, info.DeviceId, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new List<string>(["FastGaussianBlur.cl"]));
+                        } catch (Exception e) {
+                            Logger.Error($"CGPUNINA - FastGaussianBlur - OpenCL compile error:\n{e.Message}");
+                            Notification.ShowError($"Failed to compile GPU Algorithm for FastGaussianBlur on: {info?.Name}\nFallback to CPU.");
+                            NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL = null;
+                            NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL_Context = null;
+                        }
+                    }
+                }
                 if (NINA_Image_ImageAnalysis_StarDetection) _harmony.PatchCategory("NINA_Image_ImageAnalysis_StarDetection");
 
 
@@ -234,6 +247,7 @@ namespace LucasAlias.NINA.CGPUNINA {
                 RaisePropertyChanged();
             }
         }
+
         public bool NINA_Image_ImageAnalysis_FastGaussianBlur {
             get => Settings.Default.NINA_Image_ImageAnalysis_FastGaussianBlur;
             set {
@@ -242,6 +256,19 @@ namespace LucasAlias.NINA.CGPUNINA {
                 RaisePropertyChanged();
             }
         }
+        public OpenCL.DeviceInfo? NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL {
+            get {
+                var i = OpenCLAvailableGpus.Where(e => $"{e.Vendor} -> {e.Name}" == Settings.Default.NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL);
+                return i.Count() > 0 ? (i.First().Name == "" && i.First().Vendor == "" ? null : i.First()) : null;
+            }
+            set {
+                Settings.Default.NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL = (value != null) ? $"{value.Vendor} -> {value.Name}" : "";
+                CoreUtil.SaveSettings(Settings.Default);
+                RaisePropertyChanged();
+            }
+        }
+        public uint? NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL_Context = null;
+
         public bool NINA_Image_ImageAnalysis_StarDetection {
             get => Settings.Default.NINA_Image_ImageAnalysis_StarDetection;
             set {

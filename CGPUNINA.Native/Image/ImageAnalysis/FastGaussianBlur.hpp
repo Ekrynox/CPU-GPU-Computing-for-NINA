@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <vector>
 
+#include "../../ninacl.hpp"
+
 
 
 namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
@@ -15,4 +17,5 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
     CGPUNINA_API void boxBlurH_4(uint8_t* source, uint8_t* dest, int32_t w, int32_t h, int32_t r);
     CGPUNINA_API void boxBlurT_4(uint8_t* source, uint8_t* dest, int32_t w, int32_t h, int32_t r);
 
+    CGPUNINA_API void gaussBlur_4OpenCL(OpenCLManager& opCLM, size_t context, uint8_t* source, size_t sourceLength, uint8_t* dest, int32_t r, int32_t _width, int32_t _height);
 }

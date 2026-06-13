@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <execution>
 
+#include "../../ninacl_internal.hpp"
+
 
 
 void LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::gaussBlur_4(uint8_t* source, size_t sourceLength, uint8_t* dest, int32_t r, int32_t _width, int32_t _height) {
@@ -164,4 +166,111 @@ void LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::boxBlurT_4(uint8_t* sourc
             ti += w;
         }
     });
+}
+
+
+
+void LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::gaussBlur_4OpenCL(OpenCLManager& opCLM, size_t context, uint8_t* source, size_t sourceLength, uint8_t* dest, int32_t r, int32_t _width, int32_t _height) {
+    auto bxs = boxesForGauss(r, 3);
+    
+
+
+    auto exctx = opCLM.GetImpl().getExecutionContext(context);
+
+    cl_bool unifiedMemory = false;
+    exctx.device.getInfo(CL_DEVICE_HOST_UNIFIED_MEMORY, &unifiedMemory);
+
+    cl::Buffer srcBuffer, dstBuffer, bayerBuffer;
+    if (unifiedMemory) {
+        srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sourceLength * sizeof(uint8_t), source, nullptr);
+        dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sourceLength * sizeof(uint8_t), dest, nullptr);
+    }
+    else {
+        srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, sourceLength * sizeof(uint8_t));
+        dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, sourceLength * sizeof(uint8_t));
+
+        exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, sourceLength * sizeof(uint8_t), source);
+    }
+
+    auto vendor = exctx.device.getInfo<CL_DEVICE_VENDOR_ID>();
+    cl::NDRange global;
+    cl::NDRange local;
+
+    if (vendor == 0x8086) { //Intel
+        global = cl::NDRange(_height, _width);
+        local = cl::NullRange;
+    }
+    else {
+        auto maxWg = exctx.device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+        int localX, localY;
+        if (maxWg >= 256) localX = 16, localY = 16;
+        else localX = 8, localY = 8;
+
+        size_t globalX = ((_width + localX - 1) / localX) * localX;
+        size_t globalY = ((_height + localY - 1) / localY) * localY;
+        global = cl::NDRange(globalY, globalX);
+        local = cl::NDRange(localY, localX);
+    }
+
+    auto kernel = cl::Kernel(exctx.programs[L"FastGaussianBlur.cl"], "boxBlurH_4OpenCL");
+    int arg = 0;
+    kernel.setArg(arg++, srcBuffer);
+    kernel.setArg(arg++, dstBuffer);
+    kernel.setArg(arg++, _width);
+    kernel.setArg(arg++, _height);
+    kernel.setArg(arg++, (int32_t)((bxs[0] - 1) / 2));
+    exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+
+    kernel = cl::Kernel(exctx.programs[L"FastGaussianBlur.cl"], "boxBlurT_4OpenCL");
+    arg = 0;
+    kernel.setArg(arg++, dstBuffer);
+    kernel.setArg(arg++, srcBuffer);
+    kernel.setArg(arg++, _width);
+    kernel.setArg(arg++, _height);
+    kernel.setArg(arg++, (int32_t)((bxs[0] - 1) / 2));
+    exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+
+
+    kernel = cl::Kernel(exctx.programs[L"FastGaussianBlur.cl"], "boxBlurH_4OpenCL");
+    arg = 0;
+    kernel.setArg(arg++, srcBuffer);
+    kernel.setArg(arg++, dstBuffer);
+    kernel.setArg(arg++, _width);
+    kernel.setArg(arg++, _height);
+    kernel.setArg(arg++, (int32_t)((bxs[1] - 1) / 2));
+    exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+
+    kernel = cl::Kernel(exctx.programs[L"FastGaussianBlur.cl"], "boxBlurT_4OpenCL");
+    arg = 0;
+    kernel.setArg(arg++, dstBuffer);
+    kernel.setArg(arg++, srcBuffer);
+    kernel.setArg(arg++, _width);
+    kernel.setArg(arg++, _height);
+    kernel.setArg(arg++, (int32_t)((bxs[1] - 1) / 2));
+    exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+
+
+    kernel = cl::Kernel(exctx.programs[L"FastGaussianBlur.cl"], "boxBlurH_4OpenCL");
+    arg = 0;
+    kernel.setArg(arg++, srcBuffer);
+    kernel.setArg(arg++, dstBuffer);
+    kernel.setArg(arg++, _width);
+    kernel.setArg(arg++, _height);
+    kernel.setArg(arg++, (int32_t)((bxs[2] - 1) / 2));
+    exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+
+    kernel = cl::Kernel(exctx.programs[L"FastGaussianBlur.cl"], "boxBlurT_4OpenCL");
+    arg = 0;
+    kernel.setArg(arg++, dstBuffer);
+    kernel.setArg(arg++, srcBuffer);
+    kernel.setArg(arg++, _width);
+    kernel.setArg(arg++, _height);
+    kernel.setArg(arg++, (int32_t)((bxs[2] - 1) / 2));
+    exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
+
+
+    cl::Event dstEvent;
+    exctx.commandQ.enqueueReadBuffer(srcBuffer, CL_FALSE, 0, sourceLength * sizeof(uint8_t), dest, nullptr, &dstEvent);
+    dstEvent.wait();
 }

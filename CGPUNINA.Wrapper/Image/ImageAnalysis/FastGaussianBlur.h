@@ -41,6 +41,14 @@ namespace LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis {
             pin_ptr<uint8_t> dst = &dest[0];
             LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::boxBlurT_4(src, dst, w, h, r);
         }
+
+
+
+        static void gaussBlur_4OpenCL(array<System::Byte>^ source, array<System::Byte>^ dest, System::Int32 r, System::Int32 _width, System::Int32 _height, OpenCL::Manager^ OpCLM, System::UInt32 context) {
+            pin_ptr<uint8_t> src = &source[0];
+            pin_ptr<uint8_t> dst = &dest[0];
+            LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::gaussBlur_4OpenCL(OpCLM->GetNative(), context, src, source->Length, dst, r, _width, _height);
+        }
 	};
 
 }

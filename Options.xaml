@@ -81,6 +81,22 @@
                 <TextBlock Text="NINA > Image > ImageAnalysis > FastGaussianBlur" VerticalAlignment="Center" />
                 <CheckBox IsChecked="{Binding NINA_Image_ImageAnalysis_FastGaussianBlur}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left" />
             </Grid>
+            <Grid Visibility="{Binding NINA_Image_ImageAnalysis_FastGaussianBlur, Converter={StaticResource BooleanToVisibilityConverter }}" Margin="0,7,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="NINA_Image_ImageAnalysis_FastGaussianBlur_Labels" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="↳ OpenCL" FontStyle="Italic" VerticalAlignment="Center">
+                    <TextBlock.LayoutTransform>
+                        <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                <ComboBox ItemsSource="{Binding OpenCLAvailableGpus}" SelectedItem="{Binding NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL, Mode=TwoWay}" DisplayMemberPath="Name"  IsEnabled="{Binding NINA_Image_ImageAnalysis_FastGaussianBlur}" Grid.Column="1" Margin="7,0,0,0" HorizontalAlignment="Left">
+                    <ComboBox.LayoutTransform>
+                        <ScaleTransform ScaleX="0.75" ScaleY="0.75"/>
+                    </ComboBox.LayoutTransform>
+                </ComboBox>
+            </Grid>
 
             <Grid Margin="0,7,0,0">
                 <Grid.ColumnDefinitions>

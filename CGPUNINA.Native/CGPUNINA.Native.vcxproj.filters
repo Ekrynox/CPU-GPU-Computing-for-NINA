@@ -150,5 +150,6 @@
     <CopyFileToFolders Include="Accord\Imaging\Filters\Convolution.cl">
       <Filter>Source Files\Accord\Imaging\Filters</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="Image\ImageAnalysis\FastGaussianBlur.cl" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,8 @@
 ﻿using Accord.Imaging;
 using HarmonyLib;
+using NINA.Core.Utility;
+using NINA.Core.Utility.Notification;
+using NINA.CustomControlLibrary;
 using NINA.Image.ImageAnalysis;
 using System;
 using System.Collections.Generic;
@@ -13,7 +16,23 @@ namespace LucasAlias.NINA.CGPUNINA.Image.ImageAnalysis {
     [HarmonyPatch(typeof(FastGaussianBlur), "gaussBlur_4", new Type[] { typeof(byte[]), typeof(byte[]), typeof(int) })]
     internal class Patch_FastGaussianBlur_gaussBlur_4 {
         static bool Prefix(FastGaussianBlur __instance, byte[] source, byte[] dest, int r) {
-            Patch_FastGaussianBlur.gaussBlur_4(source, dest, r,
+            if (CGPUNINAMediator.Plugin.NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL != null && CGPUNINAMediator.Plugin.NINA_Image_ImageAnalysis_FastGaussianBlur__OpCL_Context is uint context) {
+                try {
+                    Patch_FastGaussianBlur.gaussBlur_4OpenCL(source, dest, r,
+                        (int)AccessTools.Field(typeof(FastGaussianBlur), "_width").GetValue(__instance),
+                        (int)AccessTools.Field(typeof(FastGaussianBlur), "_height").GetValue(__instance),
+                        CGPUNINAMediator.OpenCLManager, context
+                        );
+                } catch (Exception e) {
+                    Logger.Error($"CGPUNINA - FastGaussianBlur - OpenCL execution error:\n{e.Message}");
+                    Notification.ShowWarning("CGPUNINA: FastGaussianBlur execution failed. Fallback to CPU.");
+                    Patch_FastGaussianBlur.gaussBlur_4(source, dest, r,
+                        (int)AccessTools.Field(typeof(FastGaussianBlur), "_width").GetValue(__instance),
+                        (int)AccessTools.Field(typeof(FastGaussianBlur), "_height").GetValue(__instance)
+                        );
+                }
+            }
+            else Patch_FastGaussianBlur.gaussBlur_4(source, dest, r,
                 (int)AccessTools.Field(typeof(FastGaussianBlur), "_width").GetValue(__instance),
                 (int)AccessTools.Field(typeof(FastGaussianBlur), "_height").GetValue(__instance)
                 );
