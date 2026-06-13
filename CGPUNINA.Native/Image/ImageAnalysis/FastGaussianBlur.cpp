@@ -180,14 +180,14 @@ void LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::gaussBlur_4OpenCL(OpenCLM
     cl_bool unifiedMemory = false;
     exctx.device.getInfo(CL_DEVICE_HOST_UNIFIED_MEMORY, &unifiedMemory);
 
-    cl::Buffer srcBuffer, dstBuffer, bayerBuffer;
+    cl::Buffer srcBuffer, dstBuffer;
     if (unifiedMemory) {
-        srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sourceLength * sizeof(uint8_t), source, nullptr);
-        dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, sourceLength * sizeof(uint8_t), dest, nullptr);
+        srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sourceLength * sizeof(uint8_t), source, nullptr);
+        dstBuffer = cl::Buffer(exctx.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, sourceLength * sizeof(uint8_t), dest, nullptr);
     }
     else {
-        srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_ONLY, sourceLength * sizeof(uint8_t));
-        dstBuffer = cl::Buffer(exctx.context, CL_MEM_WRITE_ONLY, sourceLength * sizeof(uint8_t));
+        srcBuffer = cl::Buffer(exctx.context, CL_MEM_READ_WRITE, sourceLength * sizeof(uint8_t));
+        dstBuffer = cl::Buffer(exctx.context, CL_MEM_READ_WRITE, sourceLength * sizeof(uint8_t));
 
         exctx.commandQ.enqueueWriteBuffer(srcBuffer, CL_FALSE, 0, sourceLength * sizeof(uint8_t), source);
     }
@@ -269,8 +269,5 @@ void LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::gaussBlur_4OpenCL(OpenCLM
     kernel.setArg(arg++, (int32_t)((bxs[2] - 1) / 2));
     exctx.commandQ.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
 
-
-    cl::Event dstEvent;
-    exctx.commandQ.enqueueReadBuffer(srcBuffer, CL_FALSE, 0, sourceLength * sizeof(uint8_t), dest, nullptr, &dstEvent);
-    dstEvent.wait();
+    exctx.commandQ.enqueueReadBuffer(srcBuffer, CL_TRUE, 0, sourceLength * sizeof(uint8_t), dest);
 }
