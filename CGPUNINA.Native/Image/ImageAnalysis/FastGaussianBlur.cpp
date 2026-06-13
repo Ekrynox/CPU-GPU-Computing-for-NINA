@@ -36,13 +36,13 @@ std::vector<int32_t> LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::boxesForG
     auto mIdeal = (double)(12 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4);
     auto m = std::round(mIdeal);
 
-    auto sizes = std::vector<int32_t>();
-    for (auto i = 0; i < n; i++) sizes.push_back(i < m ? wl : wu);
+    auto sizes = std::vector<int32_t>(n);
+    for (auto i = 0; i < n; i++) sizes[i] = (i < m ? wl : wu);
     return sizes;
 }
 
 void LucasAlias::NINA::CGPUNINA::Image::ImageAnalysis::boxBlur_4(uint8_t* source, size_t sourceLength, uint8_t* dest, int32_t w, int32_t h, int32_t r) {
-    for (auto i = 0; i < sourceLength; i++) dest[i] = source[i];
+    std::memcpy(dest, source, sourceLength);
     boxBlurH_4(dest, source, w, h, r);
     boxBlurT_4(source, dest, w, h, r);
 }
